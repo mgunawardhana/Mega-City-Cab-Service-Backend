@@ -95,10 +95,51 @@ mega-city-cab-service-backend/
 3. **Configure the Database**:
    - Update the `application.properties` file with your database credentials:
      ```properties
-     spring.datasource.url=jdbc:mysql://localhost:3306/mega_city_cab
-     spring.datasource.username=your_db_username
-     spring.datasource.password=your_db_password
-     spring.jpa.hibernate.ddl-auto=update
+     spring.application.name=mega-city-cab-service-backend
+     server.port=${PORT_NO}
+
+      # HikariCP Settings
+      spring.datasource.hikari.minimum-idle=5
+      spring.datasource.hikari.maximum-pool-size=20
+      spring.datasource.hikari.idle-timeout=30000
+      spring.datasource.hikari.pool-name=HikariPool-1
+      spring.datasource.hikari.max-lifetime=2000000
+      spring.datasource.hikari.connection-timeout=30000
+      spring.datasource.hikari.leak-detection-threshold=15000
+
+      # Hibernate/JPA properties
+      spring.jpa.properties.hibernate.show_sql=true
+      
+      # Read database configuration
+      spring.datasource.read.url=${DATA_SOURCE_URL}
+      spring.datasource.read.username=${DB_USER}
+      spring.datasource.read.password=${DB_PASSWORD}
+      spring.datasource.read.driver-class-name=org.postgresql.Driver
+      
+      # Write database configuration
+      spring.datasource.write.url=${DATA_SOURCE_URL}
+      spring.datasource.write.username=${DB_USER}
+      spring.datasource.write.password=${DB_PASSWORD}
+      spring.datasource.write.driver-class-name=org.postgresql.Driver
+      
+      # Hibernate properties
+      spring.jpa.hibernate.ddl-auto=update
+      spring.jpa.show-sql=true
+      spring.jpa.properties.hibernate.format_sql=true
+      
+      # Logging properties
+      logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+      logging.level.org.hibernate.type.descriptor.sql.BasicExtractor=TRACE
+      logging.level.org.hibernate.SQL=TRACE
+      
+      # Database type and dialect
+      spring.jpa.database=POSTGRESQL
+      spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+      
+      # JWT properties
+      application.security.jwt.secret-key=${JWT_SECRET}
+      application.security.jwt.expiration=${JWT_EXPIRY}
+      application.security.jwt.refresh-token.expiration=${JWT_REFRESH_EXPIRY}
      ```
 4. **Build the Project**:
    ```bash
