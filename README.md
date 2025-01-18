@@ -82,20 +82,6 @@ mega-city-cab-service-backend/
 
 ---
 
-## Role-Based Permissions
-
-| Feature                   | Admin      | Manager    | Driver     | Customer   | Support Staff |
-|---------------------------|------------|------------|------------|------------|---------------|
-| Manage users              | ✅          | ❌          | ❌          | ❌          | ❌             |
-| Create/manage bookings    | ✅          | ✅          | Limited    | ✅ (Own)    | ✅             |
-| Assign drivers/vehicles   | ✅          | ✅          | ❌          | ❌          | ❌             |
-| Update booking status     | ✅          | ✅          | ✅ (Own)    | ❌          | ❌             |
-| View system reports       | ✅          | ✅          | ❌          | ❌          | ❌             |
-| View personal records     | ✅          | ✅          | ✅          | ✅          | ❌             |
-| Access invoices           | ✅          | ✅          | ❌          | ✅          | ❌             |
-
----
-
 ## 🔧 Setup Instructions
 
 1. **Clone the Repository**:
@@ -141,6 +127,19 @@ mega-city-cab-service-backend/
 
 ### Authentication:
 - `POST /api/v1/auth/login`: User login (sample)
+
+## Role-Based Permissions
+
+| Feature                   | Admin      | Manager    | Driver     | Customer   | Support Staff |
+|---------------------------|------------|------------|------------|------------|---------------|
+| Manage users              | ✅          | ❌          | ❌          | ❌          | ❌             |
+| Create/manage bookings    | ✅          | ✅          | Limited    | ✅ (Own)    | ✅             |
+| Assign drivers/vehicles   | ✅          | ✅          | ❌          | ❌          | ❌             |
+| Update booking status     | ✅          | ✅          | ✅ (Own)    | ❌          | ❌             |
+| View system reports       | ✅          | ✅          | ❌          | ❌          | ❌             |
+| View personal records     | ✅          | ✅          | ✅          | ✅          | ❌             |
+| Access invoices           | ✅          | ✅          | ❌          | ✅          | ❌             |
+
 
 ### Customers:
 - `POST /api/v1/customers`: Add a new customer (sample)
