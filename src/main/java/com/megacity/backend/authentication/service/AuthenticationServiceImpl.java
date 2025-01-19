@@ -2,6 +2,9 @@ package com.megacity.backend.authentication.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.megacity.backend.authentication.repository.UserRepository;
+import com.megacity.backend.customer_management.repository.CustomerRepository;
+import com.megacity.backend.domain.entity.Customer;
+import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.entity.User;
 import com.megacity.backend.domain.enums.Role;
 import com.megacity.backend.domain.request.AuthenticationRequest;
@@ -35,6 +38,8 @@ public class AuthenticationServiceImpl {
     private final JwtServiceImpl jwtServiceImpl;
     @NonNull
     private final AuthenticationManager authenticationManager;
+    @NonNull
+    private CustomerRepository customerRepository;
 
     /**
      * Registers a new user in the system.
@@ -43,11 +48,17 @@ public class AuthenticationServiceImpl {
      * @return an AuthenticationResponse containing the access and refresh tokens
      */
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
-        var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName()).email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).role(Role.ADMIN).build();
+        var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName())
+                .email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).role(Role.ADMIN).build();
+
+        var customer = Customer.builder().address(registrationRequest.getAddress()).phoneNumber(registrationRequest.getPhoneNumber()).user(user).build();
+
+        var driver = Driver.builder().licenseNumber(registrationRequest.getLicenseNumber()).vehicleDetails(registrationRequest.getVehicleDetails()).user(user).build();
 
         log.info("AuthenticationResponse From Register: {}", user.toString());
 
         userRepository.save(user);
+        customerRepository.save(customer);
         var jwtToken = jwtServiceImpl.generateToken(Objects.requireNonNull(user));
         var refreshToken = jwtServiceImpl.generateRefreshToken(Objects.requireNonNull(user));
 
