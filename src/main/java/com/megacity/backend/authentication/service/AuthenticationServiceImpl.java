@@ -10,6 +10,7 @@ import com.megacity.backend.domain.enums.Role;
 import com.megacity.backend.domain.request.AuthenticationRequest;
 import com.megacity.backend.domain.request.RegistrationRequest;
 import com.megacity.backend.domain.response.AuthenticationResponse;
+import com.megacity.backend.driver_management.repository.DriverRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,9 @@ public class AuthenticationServiceImpl {
     @NonNull
     private final AuthenticationManager authenticationManager;
     @NonNull
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+    @NonNull
+    private final DriverRepository driverRepository;
 
     /**
      * Registers a new user in the system.
@@ -48,17 +51,27 @@ public class AuthenticationServiceImpl {
      * @return an AuthenticationResponse containing the access and refresh tokens
      */
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
-        var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName())
-                .email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).role(Role.ADMIN).build();
+        var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName()).email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).role(registrationRequest.getRole()).build();
 
         var customer = Customer.builder().address(registrationRequest.getAddress()).phoneNumber(registrationRequest.getPhoneNumber()).user(user).build();
 
         var driver = Driver.builder().licenseNumber(registrationRequest.getLicenseNumber()).vehicleDetails(registrationRequest.getVehicleDetails()).user(user).build();
 
-        log.info("AuthenticationResponse From Register: {}", user.toString());
-
         userRepository.save(user);
-        customerRepository.save(customer);
+        switch (registrationRequest.getRole()) {
+            case CUSTOMER:
+                log.info("Customer Registration");
+                customerRepository.save(customer);
+                break;
+            case DRIVER:
+                log.info("Driver Registration");
+                driverRepository.save(driver);
+                break;
+            default:
+                log.warn("Unsupported role: {}", registrationRequest.getRole());
+                throw new IllegalArgumentException("Unsupported role: " + registrationRequest.getRole());
+        }
+
         var jwtToken = jwtServiceImpl.generateToken(Objects.requireNonNull(user));
         var refreshToken = jwtServiceImpl.generateRefreshToken(Objects.requireNonNull(user));
 
