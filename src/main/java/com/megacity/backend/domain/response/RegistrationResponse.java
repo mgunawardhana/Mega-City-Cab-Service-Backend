@@ -1,4 +1,4 @@
-package com.megacity.backend.domain.request;
+package com.megacity.backend.domain.response;
 
 import com.megacity.backend.domain.enums.Role;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistrationRequest {
+public class RegistrationResponse {
     private Role role;
     private String firstName;
     private String lastName;
