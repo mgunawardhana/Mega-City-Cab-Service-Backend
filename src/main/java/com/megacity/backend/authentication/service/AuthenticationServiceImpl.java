@@ -6,7 +6,6 @@ import com.megacity.backend.customer_management.repository.CustomerRepository;
 import com.megacity.backend.domain.entity.Customer;
 import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.entity.User;
-import com.megacity.backend.domain.enums.Role;
 import com.megacity.backend.domain.request.AuthenticationRequest;
 import com.megacity.backend.domain.request.RegistrationRequest;
 import com.megacity.backend.domain.response.AuthenticationResponse;

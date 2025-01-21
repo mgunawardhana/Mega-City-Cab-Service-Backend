@@ -5,8 +5,6 @@ import lombok.*;
 
 @Data
 @Builder
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -17,8 +15,9 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude // Prevent recursion in generated methods
     private User user;
 
     private String address;
