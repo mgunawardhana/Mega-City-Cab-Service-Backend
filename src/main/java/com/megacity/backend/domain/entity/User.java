@@ -41,11 +41,11 @@ public class User implements UserDetails {
     private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @ToString.Exclude // Modern style to prevent recursion
+    @ToString.Exclude
     private Customer customer;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @ToString.Exclude // Modern style to prevent recursion
+    @ToString.Exclude
     private Driver driver;
 
     @Override

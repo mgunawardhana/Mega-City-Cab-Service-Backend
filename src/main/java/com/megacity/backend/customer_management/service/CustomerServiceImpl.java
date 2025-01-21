@@ -113,9 +113,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> getCustomer() {
+    public ResponseEntity<APIResponse> getCustomer(Integer userId) {
         return null;
     }
+
 
     @Override
     public ResponseEntity<APIResponse> getAllCustomers() {

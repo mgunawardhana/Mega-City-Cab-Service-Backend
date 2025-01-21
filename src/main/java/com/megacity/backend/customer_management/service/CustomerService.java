@@ -9,6 +9,6 @@ public interface CustomerService {
 
     ResponseEntity<APIResponse> updateCustomer(User user);
     ResponseEntity<APIResponse> deleteCustomer(Integer userId);
-    ResponseEntity<APIResponse> getCustomer();
+    ResponseEntity<APIResponse> getCustomer(Integer userId);
     ResponseEntity<APIResponse> getAllCustomers();
 }
