@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 public interface CustomerService {
 
     ResponseEntity<APIResponse> updateCustomer(User user);
-    ResponseEntity<APIResponse> deleteCustomer();
+    ResponseEntity<APIResponse> deleteCustomer(Integer userId);
     ResponseEntity<APIResponse> getCustomer();
     ResponseEntity<APIResponse> getAllCustomers();
 }

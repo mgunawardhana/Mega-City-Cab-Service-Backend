@@ -84,8 +84,32 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> deleteCustomer() {
-        return null;
+    public ResponseEntity<APIResponse> deleteCustomer(Integer userId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Customer customer = user.getCustomer();
+                Driver driver = user.getDriver();
+
+                if (customer != null) {
+                    customerRepository.delete(customer);
+                }
+
+                if (driver != null) {
+                    driverRepository.delete(driver);
+                }
+
+                userRepository.delete(user);
+
+                return responseUtil.wrapSuccess(userId + " Customer deleted successfully", HttpStatus.OK);
+            } else {
+                return responseUtil.wrapError("User not found", "User with ID " + userId + " does not exist", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while deleting customer: ", e);
+            return responseUtil.wrapError("Error occurred while deleting customer", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

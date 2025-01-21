@@ -1,7 +1,6 @@
 package com.megacity.backend.customer_management.controller;
 
 import com.megacity.backend.customer_management.service.CustomerServiceImpl;
-import com.megacity.backend.domain.entity.Customer;
 import com.megacity.backend.domain.entity.User;
 import com.megacity.backend.domain.response.APIResponse;
 import lombok.NonNull;
@@ -24,6 +23,14 @@ public class CustomerManagementController {
         log.info("logging request object : {}", user);
         var response = customerManagementServiceImpl.updateCustomer(user);
         log.info("logging response object : {}", response);
+        return response;
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<APIResponse> deleteCustomer(@PathVariable String id) {
+        log.info("logging request object from delete : {}", id);
+        var response = customerManagementServiceImpl.deleteCustomer(Integer.valueOf(id));
+        log.info("logging response object from delete : {}", response);
         return response;
     }
 
