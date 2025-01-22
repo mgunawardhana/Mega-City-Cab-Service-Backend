@@ -19,41 +19,41 @@ public class VehicleController {
     @NonNull
     private final VehicleService vehicleService;
 
-    //TODO: DONE
     @PostMapping("/register")
     public ResponseEntity<APIResponse> registerVehicle(@RequestBody Vehicle vehicle){
+        log.info("registerVehicle {}",vehicle);
         var response = vehicleService.registerVehicle(vehicle);
         log.info("registerVehicle {}",response);
         return response;
     }
 
-    //TODO: DONE
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse> fetchVehicleById(@PathVariable String id){
+        log.info("fetchVehicleById {}",id);
         var response = vehicleService.fetchVehicleById(Long.valueOf(id));
         log.info("fetchVehicleById {}",response);
         return response;
     }
 
-    //TODO: DONE
     @GetMapping("/fetch-all")
     public ResponseEntity<APIResponse> fetchAllVehicleRecords(){
+        log.info("fetchAllVehicleRecords start");
         var response = vehicleService.fetchAllVehicle();
         log.info("fetchAllVehicleRecords {}",response);
         return response;
     }
 
-    //TODO: DONE
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse> deleteVehicle(@PathVariable Long id){
+        log.info("deleteVehicle {}",id);
         var response = vehicleService.deleteVehicle(id);
         log.info("deleteVehicle {}",response);
         return response;
     }
 
-    //TODO: DONE
     @PutMapping("/update")
     public ResponseEntity<APIResponse> updateVehicle(@RequestBody Vehicle vehicle){
+        log.info("updateVehicle {}",vehicle);
         var response = vehicleService.updateVehicle(vehicle);
         log.info("updateVehicle {}",response);
         return response;

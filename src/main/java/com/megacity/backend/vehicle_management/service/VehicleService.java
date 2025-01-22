@@ -6,13 +6,42 @@ import org.springframework.http.ResponseEntity;
 
 public interface VehicleService {
 
-    ResponseEntity<APIResponse> registerVehicle(Vehicle item);
+    /**
+     * Registers a new vehicle.
+     *
+     * @param vehicle the vehicle to be registered
+     * @return a ResponseEntity containing the APIResponse
+     */
+    ResponseEntity<APIResponse> registerVehicle(Vehicle vehicle);
 
-    ResponseEntity<APIResponse> updateVehicle(Vehicle item);
+    /**
+     * Updates an existing vehicle.
+     *
+     * @param vehicle the vehicle to be updated
+     * @return a ResponseEntity containing the APIResponse
+     */
+    ResponseEntity<APIResponse> updateVehicle(Vehicle vehicle);
 
-    ResponseEntity<APIResponse> deleteVehicle(Long itemId);
+    /**
+     * Deletes a vehicle by its ID.
+     *
+     * @param vehicleId the ID of the vehicle to be deleted
+     * @return a ResponseEntity containing the APIResponse
+     */
+    ResponseEntity<APIResponse> deleteVehicle(Long vehicleId);
 
+    /**
+     * Fetches all vehicles.
+     *
+     * @return a ResponseEntity containing the APIResponse with the list of all vehicles
+     */
     ResponseEntity<APIResponse> fetchAllVehicle();
 
-    ResponseEntity<APIResponse> fetchVehicleById(Long itemId);
+    /**
+     * Fetches a vehicle by its ID.
+     *
+     * @param vehicleId the ID of the vehicle to be fetched
+     * @return a ResponseEntity containing the APIResponse with the vehicle details
+     */
+    ResponseEntity<APIResponse> fetchVehicleById(Long vehicleId);
 }
