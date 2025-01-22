@@ -2,14 +2,12 @@ package com.megacity.backend.authentication.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.megacity.backend.authentication.repository.UserRepository;
-import com.megacity.backend.customer_management.repository.CustomerRepository;
-import com.megacity.backend.domain.entity.Customer;
-import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.entity.User;
+import com.megacity.backend.domain.enums.Role;
 import com.megacity.backend.domain.request.AuthenticationRequest;
 import com.megacity.backend.domain.request.RegistrationRequest;
 import com.megacity.backend.domain.response.AuthenticationResponse;
-import com.megacity.backend.driver_management.repository.DriverRepository;
+import com.megacity.backend.vehicle_management.repository.VehicleRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +36,9 @@ public class AuthenticationServiceImpl {
     private final JwtServiceImpl jwtServiceImpl;
     @NonNull
     private final AuthenticationManager authenticationManager;
+
     @NonNull
-    private final CustomerRepository customerRepository;
-    @NonNull
-    private final DriverRepository driverRepository;
+    private final VehicleRepository driverRepository;
 
     /**
      * Registers a new user in the system.
@@ -50,27 +47,11 @@ public class AuthenticationServiceImpl {
      * @return an AuthenticationResponse containing the access and refresh tokens
      */
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
-        var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName()).email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).role(registrationRequest.getRole()).build();
+        var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName()).email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).role(Role.ADMIN).build();
 
-        var customer = Customer.builder().address(registrationRequest.getAddress()).phoneNumber(registrationRequest.getPhoneNumber()).user(user).build();
-
-        var driver = Driver.builder().licenseNumber(registrationRequest.getLicenseNumber()).vehicleDetails(registrationRequest.getVehicleDetails()).user(user).build();
+        log.info("AuthenticationResponse From Register: {}", user.toString());
 
         userRepository.save(user);
-        switch (registrationRequest.getRole()) {
-            case CUSTOMER:
-                log.info("Customer Registration");
-                customerRepository.save(customer);
-                break;
-            case DRIVER:
-                log.info("Driver Registration");
-                driverRepository.save(driver);
-                break;
-            default:
-                log.warn("Unsupported role: {}", registrationRequest.getRole());
-                throw new IllegalArgumentException("Unsupported role: " + registrationRequest.getRole());
-        }
-
         var jwtToken = jwtServiceImpl.generateToken(Objects.requireNonNull(user));
         var refreshToken = jwtServiceImpl.generateRefreshToken(Objects.requireNonNull(user));
 
