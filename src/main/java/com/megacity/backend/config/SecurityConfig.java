@@ -42,11 +42,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable).cors(withDefaults()).authorizeHttpRequests(auth -> {
             //without authentication
-            auth.requestMatchers("/api/v1/auth/public/register").permitAll();
-            auth.requestMatchers("api/v1/customer/**").permitAll();
+//            auth.requestMatchers("/api/v1/auth/public/register").permitAll();
+//            auth.requestMatchers("api/v1/customer/**").permitAll();
+            auth.requestMatchers("api/v1/**").permitAll();
 
             //with authentication
-            auth.requestMatchers("/api/v1/auth/**").fullyAuthenticated();
+//            auth.requestMatchers("/api/v1/auth/**").fullyAuthenticated();
             auth.anyRequest().authenticated();
         }).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authenticationProvider(authenticationProvider).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
