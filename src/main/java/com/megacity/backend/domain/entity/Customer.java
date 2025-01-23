@@ -3,6 +3,8 @@ package com.megacity.backend.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,4 +23,8 @@ public class Customer {
 
     @Column(nullable = false)
     private String phoneNumber;
+
+    private LocalDateTime created_at;
+
+    private LocalDateTime updated_at;
 }
