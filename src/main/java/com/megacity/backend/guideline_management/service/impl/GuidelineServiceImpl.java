@@ -1,9 +1,9 @@
-package com.megacity.backend.system_guidence.service.impl;
+package com.megacity.backend.guideline_management.service.impl;
 
 import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Guideline;
 import com.megacity.backend.domain.response.APIResponse;
-import com.megacity.backend.system_guidence.service.GuidelineService;
+import com.megacity.backend.guideline_management.service.GuidelineService;
 import com.megacity.backend.util.ResponseUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

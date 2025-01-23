@@ -19,7 +19,7 @@ CREATE TABLE driver
 CREATE TABLE _ARTICLE
 (
     article_id  SERIAL PRIMARY KEY,
-    discount    DOUBLE PRECISION NOT NULL,
+    discount    DOUBLE PRECISION            NOT NULL,
     title       TEXT,
     description TEXT,
     author      TEXT,
@@ -27,4 +27,25 @@ CREATE TABLE _ARTICLE
     is_active   BOOLEAN,
     created_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS Customer CASCADE;
+CREATE TABLE Customer
+(
+    customer_registration_number SERIAL PRIMARY KEY,
+    root_user_id                 INTEGER,
+    customer_address            VARCHAR(255),
+    customer_nic                VARCHAR(20),
+    phone_number                VARCHAR(15) NOT NULL
+);
+
+CREATE TABLE Manager
+(
+    manager_registration_number SERIAL PRIMARY KEY,
+    root_user_id                INTEGER,
+    manager_address             VARCHAR(255),
+    manager_nic                 VARCHAR(50),
+    phone_number                VARCHAR(50) NOT NULL,
+    created_at                  TIMESTAMP,
+    updated_at                  TIMESTAMP
 );

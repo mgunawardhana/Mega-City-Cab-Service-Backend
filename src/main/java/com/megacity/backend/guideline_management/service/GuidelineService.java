@@ -1,4 +1,4 @@
-package com.megacity.backend.system_guidence.service;
+package com.megacity.backend.guideline_management.service;
 
 import com.megacity.backend.domain.entity.Guideline;
 import com.megacity.backend.domain.response.APIResponse;

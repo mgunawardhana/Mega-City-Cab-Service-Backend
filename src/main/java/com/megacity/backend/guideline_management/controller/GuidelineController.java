@@ -1,8 +1,8 @@
-package com.megacity.backend.system_guidence.controller;
+package com.megacity.backend.guideline_management.controller;
 
 import com.megacity.backend.domain.entity.Guideline;
 import com.megacity.backend.domain.response.APIResponse;
-import com.megacity.backend.system_guidence.service.GuidelineService;
+import com.megacity.backend.guideline_management.service.GuidelineService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
