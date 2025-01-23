@@ -23,7 +23,7 @@ public class SqlQuery {
                 SELECT * FROM vehicles;""";
 
         public static final String GET_DRIVER_BY_NIC = """
-                SELECT * FROM driver WHERE driver_registration_number = ?""";
+                SELECT * FROM driver WHERE driver_nic = ?;""";
 
         public static final String FETCH_ALL_DRIVERS = """
                 SELECT * FROM driver""";
@@ -80,8 +80,8 @@ public class SqlQuery {
         public static final String DELETE_VEHICLE = """
                 DELETE FROM vehicles WHERE id = ?""";
 
-        public static final String DELETE_DRIVER_BY_LICENSE_NUMBER = """
-                DELETE FROM driver WHERE license_number = ?""";
+        public static final String DELETE_DRIVER_BY_NIC = """
+                DELETE FROM driver WHERE driver_nic = ?""";
 
         private DeleteQuery() {
         }
