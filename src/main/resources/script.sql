@@ -29,15 +29,14 @@ CREATE TABLE _ARTICLE
     updated_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TABLE IF EXISTS Customer CASCADE;
 CREATE TABLE Customer
 (
     customer_registration_number SERIAL PRIMARY KEY,
     root_user_id                 INTEGER,
-    customer_address             VARCHAR(255),
-    customer_nic                 VARCHAR(50),
-    phone_number                 VARCHAR(50) NOT NULL,
-    created_at                   TIMESTAMP,
-    updated_at                   TIMESTAMP
+    customer_address            VARCHAR(255),
+    customer_nic                VARCHAR(20),
+    phone_number                VARCHAR(15) NOT NULL
 );
 
 CREATE TABLE Manager
