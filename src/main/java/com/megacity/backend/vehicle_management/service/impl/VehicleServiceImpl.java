@@ -1,14 +1,16 @@
 package com.megacity.backend.vehicle_management.service.impl;
 
+import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Vehicle;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.util.ResponseUtil;
-import com.megacity.backend.vehicle_management.repository.VehicleRepository;
 import com.megacity.backend.vehicle_management.service.VehicleService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,22 +20,26 @@ import java.util.List;
 public class VehicleServiceImpl implements VehicleService {
 
     @NonNull
-    private final VehicleRepository vehicleRepository;
+    private final JdbcTemplate writeJdbcTemplate;
+
+    @NonNull
+    private final JdbcTemplate readJdbcTemplate;
 
     @NonNull
     private final ResponseUtil responseUtil;
 
-    public VehicleServiceImpl(@NonNull VehicleRepository vehicleRepository, @NonNull ResponseUtil responseUtil) {
-        this.vehicleRepository = vehicleRepository;
+    public VehicleServiceImpl(@NonNull JdbcTemplate writeJdbcTemplate, @NonNull JdbcTemplate readJdbcTemplate, @NonNull ResponseUtil responseUtil) {
+        this.writeJdbcTemplate = writeJdbcTemplate;
+        this.readJdbcTemplate = readJdbcTemplate;
         this.responseUtil = responseUtil;
     }
 
     @Override
     public ResponseEntity<APIResponse> registerVehicle(Vehicle vehicle) {
         try {
-            Vehicle save = vehicleRepository.save(vehicle);
-            log.info("Vehicle registered successfully {}",save);
-            return responseUtil.wrapSuccess(save, HttpStatus.OK);
+            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_VEHICLE, vehicle.getRegistrationNumber(), vehicle.getMake(), vehicle.getModel(), vehicle.getYearOfManufacture(), vehicle.getColor(), vehicle.getFuelType(), vehicle.getEngineCapacity(), vehicle.getChassisNumber(), vehicle.getVehicleType(), vehicle.getOwnerName(), vehicle.getOwnerContact(), vehicle.getOwnerAddress(), vehicle.getInsuranceProvider(), vehicle.getInsurancePolicyNumber(), vehicle.getInsuranceExpiryDate(), vehicle.getSeatingCapacity(), vehicle.getLicensePlateNumber(), vehicle.getPermitType(), vehicle.isAirConditioning(), vehicle.getVehiclePhoto(), vehicle.getAdditionalFeatures());
+            log.info("Vehicle registered successfully ");
+            return responseUtil.wrapSuccess("Vehicle registered successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.warn("Failed to register vehicle {}", e.getMessage());
             return responseUtil.wrapError("Failed to registering vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -43,14 +49,21 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public ResponseEntity<APIResponse> updateVehicle(Vehicle vehicle) {
         try {
-            if (vehicleRepository.existsById(Math.toIntExact(vehicle.getId()))) {
-                Vehicle updatedVehicle = vehicleRepository.save(vehicle);
-                log.info("Vehicle updated successfully {}",updatedVehicle);
-                return responseUtil.wrapSuccess(updatedVehicle, HttpStatus.OK);
-            } else {
-                log.warn("Vehicle not found");
-                return responseUtil.wrapError("Vehicle not found", "Vehicle with ID " + vehicle.getId() + " does not exist", HttpStatus.NOT_FOUND);
-            }
+            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_VEHICLE,
+                    vehicle.getRegistrationNumber(), vehicle.getMake(),
+                    vehicle.getModel(), vehicle.getYearOfManufacture(),
+                    vehicle.getColor(), vehicle.getFuelType(),
+                    vehicle.getEngineCapacity(), vehicle.getChassisNumber(),
+                    vehicle.getVehicleType(), vehicle.getOwnerName(),
+                    vehicle.getOwnerContact(), vehicle.getOwnerAddress(),
+                    vehicle.getInsuranceProvider(), vehicle.getInsurancePolicyNumber(),
+                    vehicle.getInsuranceExpiryDate(), vehicle.getSeatingCapacity(),
+                    vehicle.getLicensePlateNumber(), vehicle.getPermitType(),
+                    vehicle.isAirConditioning(), vehicle.getVehiclePhoto(),
+                    vehicle.getAdditionalFeatures(),vehicle.getId()
+            );
+            log.info("Vehicle updated successfully ");
+            return responseUtil.wrapSuccess("Vehicle registered successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.warn("Failed to update vehicle {}", e.getMessage());
             return responseUtil.wrapError("Failed to update vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -59,49 +72,75 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public ResponseEntity<APIResponse> deleteVehicle(Long itemId) {
+        if (itemId == null || itemId <= 0) {
+            log.warn("Invalid Vehicle ID");
+            return responseUtil.wrapError("Invalid Vehicle ID", "Vehicle ID must be a positive number", HttpStatus.BAD_REQUEST);
+        }
         try {
-            if (vehicleRepository.existsById(Math.toIntExact(itemId))) {
-                vehicleRepository.deleteById(Math.toIntExact(itemId));
-                log.info("Vehicle deleted successfully {}",itemId);
-                return responseUtil.wrapSuccess("Vehicle deleted successfully", HttpStatus.OK);
-            } else {
-                log.warn("Vehicle not found - {}",itemId);
-                return responseUtil.wrapError("Vehicle not found", "Vehicle with ID " + itemId + " does not exist", HttpStatus.NOT_FOUND);
-            }
+            writeJdbcTemplate.update(SqlQuery.DeleteQuery.DELETE_VEHICLE, itemId);
+            log.info("Vehicle deleted successfully {}", itemId);
+            return responseUtil.wrapSuccess("Vehicle deleted successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.warn("Failed to delete vehicle {}", e.getMessage());
             return responseUtil.wrapError("Failed to delete vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @Override
     public ResponseEntity<APIResponse> fetchVehicleById(Long vehicleId) {
         if (vehicleId == null || vehicleId <= 0) {
-            log.warn("Invalid item ID");
-            return responseUtil.wrapError("Invalid item ID", "Item ID must be a positive number", HttpStatus.BAD_REQUEST);
+            log.warn("Invalid Vehicle Id: {}", vehicleId);
+            return responseUtil.wrapError("Invalid Vehicle ID", "Vehicle ID must be a positive number", HttpStatus.BAD_REQUEST);
         }
+
         try {
-            Vehicle vehicle = vehicleRepository.findById(Math.toIntExact(vehicleId)).orElse(null);
-            log.info("Vehicle fetched successfully {}",vehicle);
-            if (vehicle == null) {
-                log.warn("Vehicle not found. fetchVehicleById - {}",vehicleId);
-                return responseUtil.wrapError("Vehicle not found", "No vehicle found with the given ID", HttpStatus.NOT_FOUND);
-            }
+            Vehicle vehicle = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.FETCH_VEHICLE_BY_ID, new Object[]{vehicleId}, (rs, rowNum) -> Vehicle.builder().id(rs.getLong("id")).registrationNumber(rs.getString("registration_number")).make(rs.getString("make")).model(rs.getString("model")).yearOfManufacture(rs.getInt("year_of_manufacture")).color(rs.getString("color")).fuelType(rs.getString("fuel_type")).engineCapacity(rs.getString("engine_capacity")).chassisNumber(rs.getString("chassis_number")).vehicleType(rs.getString("vehicle_type")).ownerName(rs.getString("owner_name")).ownerContact(rs.getString("owner_contact")).ownerAddress(rs.getString("owner_address")).insuranceProvider(rs.getString("insurance_provider")).insurancePolicyNumber(rs.getString("insurance_policy_number")).insuranceExpiryDate(rs.getDate("insurance_expiry_date") != null ? rs.getDate("insurance_expiry_date").toLocalDate() : null).seatingCapacity(rs.getInt("seating_capacity")).licensePlateNumber(rs.getString("license_plate_number")).permitType(rs.getString("permit_type")).airConditioning(rs.getBoolean("air_conditioning")).vehiclePhoto(rs.getString("vehicle_photo")).additionalFeatures(rs.getString("additional_features")).build());
+            log.info("Vehicle fetched successfully: {}", vehicle);
             return responseUtil.wrapSuccess(vehicle, HttpStatus.OK);
+        } catch (EmptyResultDataAccessException e) {
+            log.warn("No vehicle found with ID: {}", vehicleId);
+            return responseUtil.wrapError("Vehicle not found", "No vehicle found with the provided ID", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            log.warn("Failed to fetch vehicle {}", e.getMessage());
-            return responseUtil.wrapError("Failed to fetch vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error occurred while fetching vehicle by ID: {}", vehicleId, e);
+            return responseUtil.wrapError("Failed to fetch vehicle!", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @Override
     public ResponseEntity<APIResponse> fetchAllVehicle() {
         try {
-            List<Vehicle> all = vehicleRepository.findAll();
-            log.info("All vehicles fetched successfully {}",all);
-            return responseUtil.wrapSuccess(all, HttpStatus.OK);
+            List<Vehicle> vehicleList = readJdbcTemplate.query(SqlQuery.SelectQuery.FETCH_ALL_VEHICLE,
+                    (rs, rowNum) -> Vehicle.builder()
+                            .id(rs.getLong("id"))
+                            .registrationNumber(rs.getString("registration_number"))
+                            .make(rs.getString("make"))
+                            .model(rs.getString("model"))
+                            .yearOfManufacture(rs.getInt("year_of_manufacture"))
+                            .color(rs.getString("color"))
+                            .fuelType(rs.getString("fuel_type"))
+                            .engineCapacity(rs.getString("engine_capacity"))
+                            .chassisNumber(rs.getString("chassis_number"))
+                            .vehicleType(rs.getString("vehicle_type"))
+                            .ownerName(rs.getString("owner_name"))
+                            .ownerContact(rs.getString("owner_contact"))
+                            .ownerAddress(rs.getString("owner_address"))
+                            .insuranceProvider(rs.getString("insurance_provider"))
+                            .insurancePolicyNumber(rs.getString("insurance_policy_number"))
+                            .insuranceExpiryDate(rs.getDate("insurance_expiry_date") != null ? rs
+                                    .getDate("insurance_expiry_date").toLocalDate() : null)
+                            .seatingCapacity(rs.getInt("seating_capacity"))
+                            .licensePlateNumber(rs.getString("license_plate_number"))
+                            .permitType(rs.getString("permit_type"))
+                            .airConditioning(rs.getBoolean("air_conditioning"))
+                            .vehiclePhoto(rs.getString("vehicle_photo"))
+                            .additionalFeatures(rs.getString("additional_features"))
+                            .build());
+            log.info("All vehicles fetched successfully. Total: {}", vehicleList.size());
+            return responseUtil.wrapSuccess(vehicleList, HttpStatus.OK);
         } catch (Exception e) {
-            log.warn("Failed to fetch vehicles {}", e.getMessage());
-            return responseUtil.wrapError("Failed to fetch vehicles!", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error occurred while fetching all vehicles: ", e);
+            return responseUtil.wrapError("Failed to fetch all vehicles", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
