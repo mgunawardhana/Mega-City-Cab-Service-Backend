@@ -10,6 +10,12 @@ public class SqlQuery {
      */
     public static class SelectQuery {
 
+        public static final String SELECT_ARTICLES = """
+                SELECT article_id, discount, title, description, author, media, is_active, created_at, updated_at FROM _article LIMIT ? OFFSET ?""";
+
+        public static final String SELECT_ARTICLE_BY_ID = """
+                SELECT article_id, discount, title, description, author, media, is_active, created_at, updated_at FROM _article WHERE article_id = ?""";
+
         public static final String FETCH_ALL_GUIDELINE = """
                 SELECT * FROM guideline;""";
 
@@ -37,6 +43,9 @@ public class SqlQuery {
      */
     public static class InsertQuery {
 
+        public static final String INSERT_ARTICLE = """
+                INSERT INTO _article ( discount, title, description, author, media, is_active ) VALUES (?, ?, ?, ?, ?, ?);""";
+
         public static final String ADD_NEW_GUIDELINE = """
                 INSERT INTO guideline (title, description, category, priority, related_to) VALUES (?, ?, ?, ?, ?)""";
 
@@ -56,6 +65,9 @@ public class SqlQuery {
      */
     public static class UpdateQuery {
 
+        public static final String UPDATE_ARTICLE = """
+                UPDATE _article SET discount = ?, title = ?, description = ?, author = ?, media = ?, is_active = ? WHERE article_id = ?""";
+
         public static final String UPDATE_GUIDELINE = """
                 UPDATE guideline SET title = ?, description = ?, category = ?, priority = ?, related_to = ? WHERE guidance_id = ?;""";
 
@@ -73,6 +85,9 @@ public class SqlQuery {
      * This holds all  delete queries
      */
     public static class DeleteQuery {
+
+        public static final String DELETE_ARTICLE = """
+                DELETE FROM _article WHERE article_id = ?""";
 
         public static final String DELETE_GUIDELINE = """
                 DELETE FROM guideline WHERE guidance_id = ?;""";
