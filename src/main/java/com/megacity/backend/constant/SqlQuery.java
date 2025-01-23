@@ -22,6 +22,12 @@ public class SqlQuery {
         public static final String FETCH_ALL_VEHICLE = """
                 SELECT * FROM vehicles;""";
 
+        public static final String GET_DRIVER_BY_NIC = """
+                SELECT * FROM driver WHERE driver_registration_number = ?""";
+
+        public static final String FETCH_ALL_DRIVERS = """
+                SELECT * FROM driver""";
+
         private SelectQuery() {
         }
     }
@@ -36,6 +42,9 @@ public class SqlQuery {
 
         public static final String ADD_NEW_VEHICLE = """
                 INSERT INTO vehicles (registration_number,make,model,year_of_manufacture,color,fuel_type,engine_capacity,chassis_number,vehicle_type,owner_name,owner_contact,owner_address,insurance_provider,insurance_policy_number,insurance_expiry_date,seating_capacity,license_plate_number,permit_type,air_conditioning,vehicle_photo, additional_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+
+        public static final String ADD_NEW_DRIVER = """
+                INSERT INTO driver (driver_first_name, driver_last_name, driver_nic, phone_number, email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status, emergency_contact, date_of_birth, date_of_joining) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
 
         private InsertQuery() {
@@ -53,6 +62,9 @@ public class SqlQuery {
         public static final String UPDATE_VEHICLE = """
                 UPDATE vehicles SET registration_number = ?, make = ?, model = ?, year_of_manufacture = ?, color = ?, fuel_type = ?, engine_capacity = ?, chassis_number = ?, vehicle_type = ?, owner_name = ?, owner_contact = ?, owner_address = ?, insurance_provider = ?, insurance_policy_number = ?, insurance_expiry_date = ?, seating_capacity = ?, license_plate_number = ?, permit_type = ?, air_conditioning = ?, vehicle_photo = ?, additional_features = ? WHERE id = ?""";
 
+        public static final String UPDATE_DRIVER = """
+                UPDATE driver SET driver_first_name = ?, driver_last_name = ?, driver_nic = ?, phone_number = ?, email_address = ?, license_number = ?, license_expiry_date = ?, driver_address = ?, vehicle_assigned = ?, driver_status = ?, emergency_contact = ?, date_of_birth = ?, date_of_joining = ? WHERE driver_registration_number = ?""";
+
         private UpdateQuery() {
         }
     }
@@ -67,6 +79,9 @@ public class SqlQuery {
 
         public static final String DELETE_VEHICLE = """
                 DELETE FROM vehicles WHERE id = ?""";
+
+        public static final String DELETE_DRIVER_BY_LICENSE_NUMBER = """
+                DELETE FROM driver WHERE license_number = ?""";
 
         private DeleteQuery() {
         }
