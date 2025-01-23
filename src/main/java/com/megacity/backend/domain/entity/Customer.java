@@ -7,19 +7,17 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "customers")
 public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer customerRegistrationNumber;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    private Integer rootUserId;
 
-    private String address;
+    private String customerAddress;
+
+    private String customerNIC;
 
     @Column(nullable = false)
     private String phoneNumber;
