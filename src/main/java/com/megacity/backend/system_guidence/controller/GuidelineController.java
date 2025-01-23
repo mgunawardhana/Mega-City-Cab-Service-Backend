@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class GuidelineController {
 
+
+    //TODO check these services please using postman
     @NonNull
     private final GuidelineService guidelineService;
 
@@ -34,8 +36,8 @@ public class GuidelineController {
         return response;
     }
 
-    @DeleteMapping
-    public ResponseEntity<APIResponse> deleteGuideline(@RequestParam Long guidelineId) {
+    @DeleteMapping("/{guidelineId}")
+    public ResponseEntity<APIResponse> deleteGuideline(@PathVariable Long guidelineId) {
         log.info("deleteGuideline {}", guidelineId);
         var response = guidelineService.deleteGuideline(guidelineId);
         log.info("deleteGuideline {}", response);
@@ -50,7 +52,7 @@ public class GuidelineController {
         return response;
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<APIResponse> addNewGuideline(@RequestBody Guideline guideline) {
         log.info("addNewGuideline {}", guideline);
         var response = guidelineService.addNewGuideline(guideline);

@@ -7,7 +7,6 @@ import com.megacity.backend.domain.enums.Role;
 import com.megacity.backend.domain.request.AuthenticationRequest;
 import com.megacity.backend.domain.request.RegistrationRequest;
 import com.megacity.backend.domain.response.AuthenticationResponse;
-import com.megacity.backend.vehicle_management.repository.VehicleRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +35,6 @@ public class AuthenticationServiceImpl {
     private final JwtServiceImpl jwtServiceImpl;
     @NonNull
     private final AuthenticationManager authenticationManager;
-
-    @NonNull
-    private final VehicleRepository driverRepository;
 
     /**
      * Registers a new user in the system.
