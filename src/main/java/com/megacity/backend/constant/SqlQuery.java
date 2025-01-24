@@ -44,10 +44,10 @@ public class SqlQuery {
                 SELECT * FROM customer WHERE customer_nic = ?""";
 
         public static final String GET_MANAGER_BY_ID = """
-                SELECT * FROM customer WHERE customer_registration_number = ?""";
+                SELECT * FROM manager WHERE manager_registration_number = ?""";
 
         public static final String GET_ALL_MANAGERS = """
-                SELECT * FROM customer""";
+                SELECT * FROM manager""";
 
         private SelectQuery() {
         }
@@ -74,7 +74,7 @@ public class SqlQuery {
                 INSERT INTO customer (root_user_id, customer_address, customer_nic, phone_number) VALUES (?, ?, ?, ?)""";
 
         public static final String ADD_NEW_MANAGER = """
-                INSERT INTO customer (root_user_id, customer_address, customer_nic, phone_number) VALUES (?, ?, ?, ?)""";
+                INSERT INTO manager (root_user_id, manager_address, manager_nic, phone_number) VALUES (?, ?, ?, ?)""";
 
 
         private InsertQuery() {
@@ -100,8 +100,10 @@ public class SqlQuery {
 
         public static final String UPDATE_CUSTOMER = """
                 UPDATE customer SET root_user_id = ?, customer_address = ?, customer_nic = ?, phone_number = ? WHERE customer_registration_number = ?""";
+
         public static final String UPDATE_MANAGER = """
-                UPDATE customer SET root_user_id = ?, customer_address = ?, customer_nic = ?, phone_number = ? WHERE customer_registration_number = ?""";
+                UPDATE manager SET root_user_id = ?, manager_address = ?, manager_nic = ?, phone_number = ? WHERE manager_registration_number = ?;
+                """;
 
         private UpdateQuery() {
         }
@@ -128,7 +130,7 @@ public class SqlQuery {
                 DELETE FROM customer WHERE customer_registration_number = ?""";
 
         public static final String DELETE_MANAGER = """
-                DELETE FROM customer WHERE customer_registration_number = ?""";
+                DELETE FROM manager WHERE manager_registration_number = ?""";
 
         private DeleteQuery() {
         }
