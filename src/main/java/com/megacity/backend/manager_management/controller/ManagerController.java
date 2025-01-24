@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ManagerController {
 
-    //TODO must need to check
+
     @NonNull
     private final ManagerService managerService;
 
@@ -28,37 +28,35 @@ public class ManagerController {
         return response;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<APIResponse> getManagerById(@PathVariable String id) {
-        log.info("getManagerById {}", id);
-        var response = managerService.getManagerById(Integer.valueOf(id));
+    @GetMapping("/{managerId}")
+    public ResponseEntity<APIResponse> getManagerById(@PathVariable Integer managerId) {
+        log.info("getManagerById {}", managerId);
+        var response = managerService.getManagerById(managerId);
         log.info("getManagerById {}", response);
         return response;
     }
 
-    @GetMapping("/fetch-all")
-    public ResponseEntity<APIResponse> fetchAllManagerRecords() {
-        log.info("fetchAllManagerRecords start");
+    @GetMapping("/all")
+    public ResponseEntity<APIResponse> getAllManagers() {
+        log.info("getAllManagers");
         var response = managerService.getAllManagers();
-        log.info("fetchAllManagerRecords {}", response);
+        log.info("getAllManagers {}", response);
         return response;
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse> deleteManager(@PathVariable String id) {
-        log.info("deleteManager {}", id);
-        var response = managerService.deleteManager(Integer.valueOf(id));
+    @PostMapping("/create")
+    public ResponseEntity<APIResponse> createManager(@RequestBody Manager manager) {
+        log.info("createManager {}", manager);
+        var response = managerService.createManager(manager);
+        log.info("createManager {}", response);
+        return response;
+    }
+
+    @DeleteMapping("/delete/{managerId}")
+    public ResponseEntity<APIResponse> deleteManager(@PathVariable Integer managerId) {
+        log.info("deleteManager {}", managerId);
+        var response = managerService.deleteManager(managerId);
         log.info("deleteManager {}", response);
         return response;
     }
-
-    @PostMapping("/register")
-    public ResponseEntity<APIResponse> registerManager(@RequestBody Manager manager) {
-        log.info("registerManager {}", manager);
-        var response = managerService.createManager(manager);
-        log.info("registerManager {}", response);
-        return response;
-    }
-
-
 }

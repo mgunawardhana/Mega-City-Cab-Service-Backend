@@ -38,12 +38,13 @@ public class ManagerServiceImpl implements ManagerService {
     public ResponseEntity<APIResponse> UpdateManager(Manager manager) {
         try {
             writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_MANAGER,
-                    manager.getManagerRegistrationNumber(),
                     manager.getRootUserId(),
                     manager.getManagerAddress(),
                     manager.getManagerNIC(),
-                    manager.getPhoneNumber()
+                    manager.getPhoneNumber(),
+                    manager.getManagerRegistrationNumber()
             );
+
             log.info("Updated manager successfully");
             return responseUtil.wrapSuccess("Updated manager successfully", HttpStatus.OK);
         } catch (Exception e) {
