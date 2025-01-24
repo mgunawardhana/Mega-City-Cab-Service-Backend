@@ -4,33 +4,29 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
-
-@Data
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Manager {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "manager_registration_number")
     private Integer managerRegistrationNumber;
 
+    @Column(name = "root_user_id")
     private Integer rootUserId;
 
+    @Column(name = "manager_address",nullable = false)
     private String managerAddress;
 
+    @Column(name = "manager_nic",nullable = false)
     private String managerNIC;
 
-    @Column(nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    private LocalDateTime created_at;
-
-    private LocalDateTime updated_at;
 }
