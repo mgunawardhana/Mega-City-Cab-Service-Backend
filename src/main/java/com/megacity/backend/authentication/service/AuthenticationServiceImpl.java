@@ -2,16 +2,19 @@ package com.megacity.backend.authentication.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.megacity.backend.authentication.repository.UserRepository;
+import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.User;
 import com.megacity.backend.domain.enums.Role;
 import com.megacity.backend.domain.request.AuthenticationRequest;
 import com.megacity.backend.domain.request.RegistrationRequest;
 import com.megacity.backend.domain.response.AuthenticationResponse;
+import com.megacity.backend.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,10 +32,16 @@ public class AuthenticationServiceImpl {
 
     @NonNull
     private final UserRepository userRepository;
+
+    @NonNull
+    private final JdbcTemplate writeJdbcTemplate;
+
     @NonNull
     private final PasswordEncoder passwordEncoder;
+
     @NonNull
     private final JwtServiceImpl jwtServiceImpl;
+
     @NonNull
     private final AuthenticationManager authenticationManager;
 
@@ -43,11 +52,44 @@ public class AuthenticationServiceImpl {
      * @return an AuthenticationResponse containing the access and refresh tokens
      */
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
-        var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName()).email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).role(Role.ADMIN).build();
+        var user = User.builder()
+                .firstName(registrationRequest.getFirstName())
+                .lastName(registrationRequest.getLastName())
+                .email(registrationRequest.getEmail())
+                .password(passwordEncoder.encode(registrationRequest.getPassword()))
+                .role(registrationRequest.getRole())
+                .build();
 
         log.info("AuthenticationResponse From Register: {}", user.toString());
 
-        userRepository.save(user);
+        User save = userRepository.save(user);
+
+        if (save.getRole().equals(Role.CUSTOMER)) {
+            try {
+                writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_CUSTOMER,
+                        save.getId(),
+                        registrationRequest.getCustomerAddress(),
+                        registrationRequest.getCustomerNIC(),
+                        registrationRequest.getPhoneNumber()
+                );
+                log.info("New Customer Added Successfully");
+            } catch (Exception e) {
+                log.error("Error while adding new customer: {}", e.getMessage());
+            }
+        } else if (save.getRole().equals(Role.MANAGER)) {
+            try {
+                writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_MANAGER,
+                        save.getId(),
+                        registrationRequest.getManagerAddress(),
+                        registrationRequest.getManagerNIC(),
+                        registrationRequest.getPhoneNumber()
+                );
+                log.info("New Manager Added Successfully");
+            } catch (Exception e) {
+                log.error("Error while adding new manager: {}", e.getMessage());
+            }
+        }
+
         var jwtToken = jwtServiceImpl.generateToken(Objects.requireNonNull(user));
         var refreshToken = jwtServiceImpl.generateRefreshToken(Objects.requireNonNull(user));
 

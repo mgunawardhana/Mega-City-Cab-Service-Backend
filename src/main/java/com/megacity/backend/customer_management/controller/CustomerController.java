@@ -1,4 +1,4 @@
-package com.megacity.backend.customer_management.customer;
+package com.megacity.backend.customer_management.controller;
 
 
 import com.megacity.backend.customer_management.service.CustomerService;
