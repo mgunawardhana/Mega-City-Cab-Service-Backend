@@ -49,6 +49,12 @@ public class SqlQuery {
         public static final String GET_ALL_MANAGERS = """
                 SELECT * FROM manager""";
 
+        public static final String GET_ALL_BOOKINGS = """
+                SELECT * FROM booking""";
+
+        public static final String GET_BOOKING_BY_ID = """
+                SELECT * FROM booking WHERE booking_number = ?""";
+
         private SelectQuery() {
         }
     }
@@ -75,6 +81,10 @@ public class SqlQuery {
 
         public static final String ADD_NEW_MANAGER = """
                 INSERT INTO manager (root_user_id, manager_address, manager_nic, phone_number) VALUES (?, ?, ?, ?)""";
+
+        public static final String ADD_NEW_BOOKING = """
+                INSERT INTO booking (destination_details, booking_date, pickup_location, drop_off_location, car_number, fare, taxes, discount, total_amount, customer_registration_number, customer_name, driver_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+
 
 
         private InsertQuery() {
@@ -105,6 +115,10 @@ public class SqlQuery {
                 UPDATE manager SET root_user_id = ?, manager_address = ?, manager_nic = ?, phone_number = ? WHERE manager_registration_number = ?;
                 """;
 
+        public static final String UPDATE_BOOKING = """
+                UPDATE booking SET destination_details = ?, booking_date = ?, pickup_location = ?, drop_off_location = ?, car_number = ?, fare = ?, taxes = ?, discount = ?, total_amount = ?, customer_registration_number = ?, customer_name = ? WHERE booking_number = ?"";
+                """;
+
         private UpdateQuery() {
         }
     }
@@ -131,6 +145,9 @@ public class SqlQuery {
 
         public static final String DELETE_MANAGER = """
                 DELETE FROM manager WHERE manager_registration_number = ?""";
+
+        public static final String DELETE_BOOKING_BY_ID = """
+                DELETE FROM booking WHERE booking_number = ?""";
 
         private DeleteQuery() {
         }
