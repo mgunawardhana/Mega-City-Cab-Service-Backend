@@ -1,23 +1,29 @@
 package com.megacity.backend.domain.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.megacity.backend.domain.enums.Role;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.annotation.Nullable;
+import lombok.*;
 
-@Data
 @Builder
+@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegistrationRequest {
     private Role role;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
-    private String address;
+    private Integer customerRegistrationNumber;
+    private Integer managerRegistrationNumber;
+    private Integer rootUserId;
+    private String customerAddress;
+    private String managerAddress;
+    private String managerNIC;
+    private String customerNIC;
     private String phoneNumber;
-    private String licenseNumber;
-    private String vehicleDetails;
 }
