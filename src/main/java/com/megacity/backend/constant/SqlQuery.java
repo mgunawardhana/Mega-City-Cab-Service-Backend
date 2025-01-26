@@ -74,7 +74,7 @@ public class SqlQuery {
                 INSERT INTO vehicles (registration_number,make,model,year_of_manufacture,color,fuel_type,engine_capacity,chassis_number,vehicle_type,owner_name,owner_contact,owner_address,insurance_provider,insurance_policy_number,insurance_expiry_date,seating_capacity,license_plate_number,permit_type,air_conditioning,vehicle_photo, additional_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String ADD_NEW_DRIVER = """
-                INSERT INTO driver (driver_first_name, driver_last_name, driver_nic, phone_number, email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status, emergency_contact, date_of_birth, date_of_joining) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO driver (driver_first_name, driver_profile_picture, driver_last_name, driver_nic, phone_number, email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status, emergency_contact, date_of_birth, date_of_joining) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String ADD_NEW_CUSTOMER = """
                 INSERT INTO customer (root_user_id, customer_address, customer_nic, phone_number) VALUES (?, ?, ?, ?)""";
@@ -85,6 +85,8 @@ public class SqlQuery {
         public static final String ADD_NEW_BOOKING = """
                 INSERT INTO booking (destination_details, booking_date, pickup_location, drop_off_location, car_number, fare, taxes, discount, total_amount, customer_registration_number, customer_name, driver_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
+        public static final String INSERT_DOCTOR = """
+                INSERT INTO instructor ( first_name, last_name, email, phone_number, date_of_birth, specialization, license_number, license_expiry_date, issuing_country, qualifications, registration_authority, registration_id, nationality, years_of_experience, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""";
 
 
         private InsertQuery() {

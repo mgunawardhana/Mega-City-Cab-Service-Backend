@@ -36,7 +36,8 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public ResponseEntity<APIResponse> registerDriver(Driver driver) {
         try {
-            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_DRIVER, driver.getDriverFirstName(), driver.getDriverLastName(), driver.getDriverNIC(), driver.getPhoneNumber(), driver.getEmailAddress(), driver.getLicenseNumber(), driver.getLicenseExpiryDate(), driver.getDriverAddress(), driver.getVehicleAssigned(), driver.getDriverStatus(), driver.getEmergencyContact(), driver.getDateOfBirth(), driver.getDateOfJoining());
+            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_DRIVER,
+                    driver.getDriverFirstName(), driver.getDriverProfilePicture(), driver.getDriverLastName(), driver.getDriverNIC(), driver.getPhoneNumber(), driver.getEmailAddress(), driver.getLicenseNumber(), driver.getLicenseExpiryDate(), driver.getDriverAddress(), driver.getVehicleAssigned(), driver.getDriverStatus(), driver.getEmergencyContact(), driver.getDateOfBirth(), driver.getDateOfJoining());
             log.info("Driver registered successfully");
             return responseUtil.wrapSuccess("Driver registered successfully", HttpStatus.OK);
         } catch (Exception e) {
@@ -48,7 +49,11 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public ResponseEntity<APIResponse> getDriverById(String driverRegNo) {
         try {
-            Driver driver = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_DRIVER_BY_NIC, new Object[]{driverRegNo}, (rs, rowNum) -> Driver.builder().driverRegistrationNumber(rs.getInt("driver_registration_number")).driverFirstName(rs.getString("driver_first_name")).driverLastName(rs.getString("driver_last_name")).driverNIC(rs.getString("driver_nic")).phoneNumber(rs.getString("phone_number")).emailAddress(rs.getString("email_address")).licenseNumber(rs.getString("license_number")).licenseExpiryDate(rs.getDate("license_expiry_date")).driverAddress(rs.getString("driver_address")).vehicleAssigned(rs.getString("vehicle_assigned")).driverStatus(rs.getString("driver_status")).emergencyContact(rs.getString("emergency_contact")).dateOfBirth(rs.getDate("date_of_birth")).dateOfJoining(rs.getDate("date_of_joining")).build());
+            Driver driver = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_DRIVER_BY_NIC, new Object[]{driverRegNo}, (rs, rowNum) ->
+                    Driver.builder()
+                            .driverRegistrationNumber(rs.getInt("driver_registration_number"))
+                            .driverProfilePicture(rs.getString("driver_profile_picture"))
+                            .driverProfilePicture(rs.getString("driver_profile_picture")).driverFirstName(rs.getString("driver_first_name")).driverLastName(rs.getString("driver_last_name")).driverNIC(rs.getString("driver_nic")).phoneNumber(rs.getString("phone_number")).emailAddress(rs.getString("email_address")).licenseNumber(rs.getString("license_number")).licenseExpiryDate(rs.getDate("license_expiry_date")).driverAddress(rs.getString("driver_address")).vehicleAssigned(rs.getString("vehicle_assigned")).driverStatus(rs.getString("driver_status")).emergencyContact(rs.getString("emergency_contact")).dateOfBirth(rs.getDate("date_of_birth")).dateOfJoining(rs.getDate("date_of_joining")).build());
 
             return responseUtil.wrapSuccess(driver, HttpStatus.OK);
         } catch (Exception e) {
@@ -61,7 +66,11 @@ public class DriverServiceImpl implements DriverService {
     public ResponseEntity<APIResponse> getAllDrivers() {
         try {
             List<Driver> driverList = readJdbcTemplate.query(SqlQuery.SelectQuery.FETCH_ALL_DRIVERS,
-                    (rs, rowNum) -> Driver.builder().driverRegistrationNumber(rs.getInt("driver_registration_number")).driverFirstName(rs.getString("driver_first_name")).driverLastName(rs.getString("driver_last_name")).driverNIC(rs.getString("driver_nic")).phoneNumber(rs.getString("phone_number")).emailAddress(rs.getString("email_address")).licenseNumber(rs.getString("license_number")).licenseExpiryDate(rs.getDate("license_expiry_date")).driverAddress(rs.getString("driver_address")).vehicleAssigned(rs.getString("vehicle_assigned")).driverStatus(rs.getString("driver_status")).emergencyContact(rs.getString("emergency_contact")).dateOfBirth(rs.getDate("date_of_birth")).dateOfJoining(rs.getDate("date_of_joining")).build());
+                    (rs, rowNum) ->
+                            Driver.builder()
+                                    .driverRegistrationNumber(rs.getInt("driver_registration_number"))
+                                    .driverProfilePicture(rs.getString("driver_profile_picture"))
+                                    .driverFirstName(rs.getString("driver_first_name")).driverLastName(rs.getString("driver_last_name")).driverNIC(rs.getString("driver_nic")).phoneNumber(rs.getString("phone_number")).emailAddress(rs.getString("email_address")).licenseNumber(rs.getString("license_number")).licenseExpiryDate(rs.getDate("license_expiry_date")).driverAddress(rs.getString("driver_address")).vehicleAssigned(rs.getString("vehicle_assigned")).driverStatus(rs.getString("driver_status")).emergencyContact(rs.getString("emergency_contact")).dateOfBirth(rs.getDate("date_of_birth")).dateOfJoining(rs.getDate("date_of_joining")).build());
             log.info("All drivers fetched successfully. Total: {}", driverList.size());
             return responseUtil.wrapSuccess(driverList, HttpStatus.OK);
         } catch (Exception e) {
@@ -86,7 +95,9 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public ResponseEntity<APIResponse> updateDriver(Driver driver) {
         try {
-            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_DRIVER, driver.getDriverFirstName(), driver.getDriverLastName(), driver.getDriverNIC(), driver.getPhoneNumber(), driver.getEmailAddress(), driver.getLicenseNumber(), driver.getLicenseExpiryDate(), driver.getDriverAddress(), driver.getVehicleAssigned(), driver.getDriverStatus(), driver.getEmergencyContact(), driver.getDateOfBirth(), driver.getDateOfJoining(), driver.getDriverRegistrationNumber());
+            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_DRIVER, driver.getDriverFirstName(),
+                    driver.getDriverProfilePicture(),
+                    driver.getDriverLastName(), driver.getDriverNIC(), driver.getPhoneNumber(), driver.getEmailAddress(), driver.getLicenseNumber(), driver.getLicenseExpiryDate(), driver.getDriverAddress(), driver.getVehicleAssigned(), driver.getDriverStatus(), driver.getEmergencyContact(), driver.getDateOfBirth(), driver.getDateOfJoining(), driver.getDriverRegistrationNumber());
             return responseUtil.wrapSuccess("Driver updated successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.warn("Failed to update driver: {}", e.getMessage());
