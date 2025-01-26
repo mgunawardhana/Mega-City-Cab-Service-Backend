@@ -20,6 +20,9 @@ public class Driver {
     @Column(name = "driver_first_name", nullable = false)
     private String driverFirstName;
 
+    @Column(name = "driver_profile_picture", nullable = false)
+    private String driverProfilePicture;
+
     @Column(name = "driver_last_name", nullable = false)
     private String driverLastName;
 
