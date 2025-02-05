@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -108,11 +109,14 @@ public class VehicleServiceImpl implements VehicleService {
 
 
     @Override
-    public ResponseEntity<APIResponse> fetchAllVehicle() {
+    public ResponseEntity<APIResponse> fetchAllVehicle(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "100") int size) {
         try {
             List<Vehicle> vehicleList = readJdbcTemplate.query(SqlQuery.SelectQuery.FETCH_ALL_VEHICLE,
+                    new Object[]{size, page * size},
                     (rs, rowNum) -> Vehicle.builder()
                             .id(rs.getLong("id"))
+                            .vehicleImage(rs.getString("vehicle_image"))
                             .registrationNumber(rs.getString("registration_number"))
                             .make(rs.getString("make"))
                             .model(rs.getString("model"))

@@ -17,31 +17,31 @@ public class Driver {
     @Column(name = "driver_registration_number")
     private Integer driverRegistrationNumber;
 
-    @Column(name = "driver_first_name", nullable = false)
+    @Column(name = "driver_first_name", nullable = false)/** HOLD */
     private String driverFirstName;
 
     @Column(name = "driver_profile_picture", nullable = false)
     private String driverProfilePicture;
 
-    @Column(name = "driver_last_name", nullable = false)
+    @Column(name = "driver_last_name", nullable = false)/** HOLD */
     private String driverLastName;
 
-    @Column(name = "driver_nic", nullable = false)
+    @Column(name = "driver_nic", nullable = false)/** HOLD */
     private String driverNIC;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number", nullable = false)/** HOLD */
     private String phoneNumber;
 
-    @Column(name = "email_address")
+    @Column(name = "email_address")/** HOLD */
     private String emailAddress;
 
-    @Column(name = "license_number", nullable = false)
+    @Column(name = "license_number", nullable = false)/** HOLD */
     private String licenseNumber;
 
     @Column(name = "license_expiry_date")
     private Date licenseExpiryDate;
 
-    @Column(name = "driver_address")
+    @Column(name = "driver_address")/** HOLD */
     private String driverAddress;
 
     @Column(name = "vehicle_assigned")
