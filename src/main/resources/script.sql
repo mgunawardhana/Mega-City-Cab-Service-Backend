@@ -16,27 +16,6 @@ CREATE TABLE Driver (
                         date_of_joining DATE
 );
 
-INSERT INTO Driver (
-    driver_first_name,
-    driver_profile_picture,
-    driver_last_name,
-    driver_nic,
-    phone_number,
-    email_address,
-    license_number,
-    license_expiry_date,
-    driver_address,
-    vehicle_assigned,
-    driver_status,
-    emergency_contact,
-    date_of_birth,
-    date_of_joining
-) VALUES
-      ('John', NULL, 'Doe', '987654321V', '1234567890', 'john.doe@example.com', 'LN001', '2030-12-31', '123 Main Street, City A', 'FALSE', 'Active', '0987654321', '1990-01-01', '2023-01-15'),
-      ('Jane', NULL, 'Smith', '123456789V', '9876543210', 'jane.smith@example.com', 'LN002', '2028-11-15', '456 Elm Street, City B', 'FALSE', 'Active', '0123456789', '1985-05-21', '2020-05-10'),
-      ('Michael', NULL, 'Brown', '753951456V', '7894561230', 'michael.brown@example.com', 'LN003', '2025-06-20', '789 Oak Street, City C', 'FALSE', 'Active', '9638527410', '1988-03-15', '2022-07-01'),
-      ('Emma', NULL, 'Davis', '852456123V', '3216549870', 'emma.davis@example.com', 'LN004', '2031-09-25', '321 Pine Street, City D', 'FALSE', 'Active', '7418529630', '1992-11-05', '2021-03-20');
-
 CREATE TABLE _ARTICLE
 (
     article_id  SERIAL PRIMARY KEY,
@@ -53,20 +32,49 @@ CREATE TABLE _ARTICLE
 DROP TABLE IF EXISTS Customer CASCADE;
 CREATE TABLE Customer
 (
-    customer_registration_number SERIAL PRIMARY KEY,
+    registration_number SERIAL PRIMARY KEY,
     root_user_id                 INTEGER,
-    customer_address            VARCHAR(255),
-    customer_nic                VARCHAR(20),
+    address            VARCHAR(255),
+    nic                VARCHAR(20),
     phone_number                VARCHAR(15) NOT NULL
 );
 
+DROP TABLE IF EXISTS Manager CASCADE ;
 CREATE TABLE Manager
 (
-    manager_registration_number SERIAL PRIMARY KEY,
+    registration_number SERIAL PRIMARY KEY,
     root_user_id                INTEGER,
-    manager_address             VARCHAR(255),
-    manager_nic                 VARCHAR(50),
+    address             VARCHAR(255),
+    nic                 VARCHAR(50),
     phone_number                VARCHAR(50) NOT NULL,
     created_at                  TIMESTAMP,
     updated_at                  TIMESTAMP
 );
+
+
+CREATE TABLE vehicles (
+                          id SERIAL PRIMARY KEY,
+                          registration_number VARCHAR NOT NULL UNIQUE,
+                          vehicle_image TEXT,
+                          make VARCHAR NOT NULL,
+                          model VARCHAR NOT NULL,
+                          year_of_manufacture INT NOT NULL,
+                          color VARCHAR,
+                          fuel_type VARCHAR,
+                          engine_capacity VARCHAR,
+                          chassis_number VARCHAR NOT NULL UNIQUE,
+                          vehicle_type VARCHAR NOT NULL,
+                          owner_name VARCHAR NOT NULL,
+                          owner_contact VARCHAR NOT NULL,
+                          owner_address VARCHAR,
+                          insurance_provider VARCHAR,
+                          insurance_policy_number VARCHAR,
+                          insurance_expiry_date DATE,
+                          seating_capacity INT NOT NULL,
+                          license_plate_number VARCHAR NOT NULL UNIQUE,
+                          permit_type VARCHAR,
+                          air_conditioning BOOLEAN,
+                          vehicle_photo VARCHAR,
+                          additional_features VARCHAR
+);
+

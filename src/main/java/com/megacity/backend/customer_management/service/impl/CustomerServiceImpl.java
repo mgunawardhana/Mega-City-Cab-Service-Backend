@@ -38,10 +38,10 @@ public class CustomerServiceImpl implements CustomerService {
         try {
             List<Customer> customers = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_CUSTOMERS,
                     (rs, rowNum) -> Customer.builder()
-                            .customerRegistrationNumber(rs.getInt("customer_registration_number"))
+                            .registrationNumber(rs.getInt("registration_number"))
                             .rootUserId(rs.getInt("root_user_id"))
-                            .customerAddress(rs.getString("customer_address"))
-                            .customerNIC(rs.getString("customer_nic"))
+                            .address(rs.getString("address"))
+                            .NIC(rs.getString("nic"))
                             .phoneNumber(rs.getString("phone_number")).build());
             log.info("Fetched all customers successfully");
             return responseUtil.wrapSuccess(customers, HttpStatus.OK);
@@ -54,7 +54,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseEntity<APIResponse> getCustomerById(Integer customerId) {
         try {
-            Customer customer = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_CUSTOMER_BY_ID, new Object[]{customerId}, (rs, rowNum) -> Customer.builder().customerRegistrationNumber(rs.getInt("customer_registration_number")).rootUserId(rs.getInt("root_user_id")).customerAddress(rs.getString("customer_address")).customerNIC(rs.getString("customer_nic")).phoneNumber(rs.getString("phone_number")).build());
+            Customer customer = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_CUSTOMER_BY_ID,
+                    new Object[]{customerId}, (rs, rowNum) ->
+                            Customer.builder().registrationNumber(
+                                    rs.getInt("registration_number"))
+                                    .rootUserId(rs.getInt("root_user_id"))
+                                    .address(rs.getString("address"))
+                                    .NIC(rs.getString("nic"))
+                                    .phoneNumber(rs.getString("phone_number"))
+                                    .build());
             log.info("Fetched customer successfully");
             return responseUtil.wrapSuccess(customer, HttpStatus.OK);
         } catch (Exception e) {
@@ -68,8 +76,8 @@ public class CustomerServiceImpl implements CustomerService {
         try{
             writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_CUSTOMER,
                     customer.getRootUserId(),
-                    customer.getCustomerAddress(),
-                    customer.getCustomerNIC(),
+                    customer.getAddress(),
+                    customer.getNIC(),
                     customer.getPhoneNumber());
             log.info("Customer created successfully");
             return responseUtil.wrapSuccess("Customer created successfully", HttpStatus.OK);
@@ -82,7 +90,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseEntity<APIResponse> updateCustomer(Customer customer) {
         try{
-            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_CUSTOMER, customer.getRootUserId(), customer.getCustomerAddress(), customer.getCustomerNIC(), customer.getPhoneNumber(), customer.getCustomerRegistrationNumber());
+            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_CUSTOMER, customer.getRootUserId(), customer.getAddress(), customer.getNIC(), customer.getPhoneNumber(), customer.getRegistrationNumber());
             log.info("Customer updated successfully");
             return responseUtil.wrapSuccess("Customer updated successfully", HttpStatus.OK);
         } catch (Exception e) {
@@ -106,7 +114,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseEntity<APIResponse> getCustomerByNIC(String customerNIC) {
         try {
-            Customer customer = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_CUSTOMER_BY_NIC, new Object[]{customerNIC}, (rs, rowNum) -> Customer.builder().customerRegistrationNumber(rs.getInt("customer_registration_number")).rootUserId(rs.getInt("root_user_id")).customerAddress(rs.getString("customer_address")).customerNIC(rs.getString("customer_nic")).phoneNumber(rs.getString("phone_number")).build());
+            Customer customer = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_CUSTOMER_BY_NIC,
+                    new Object[]{customerNIC}, (rs, rowNum) ->
+                            Customer.builder()
+                                    .registrationNumber(rs.getInt("registration_number"))
+                                    .rootUserId(rs.getInt("root_user_id"))
+                                    .address(rs.getString("address"))
+                                    .NIC(rs.getString("nic"))
+                                    .phoneNumber(rs.getString("phone_number"))
+                                    .build());
             log.info("Fetched customer by NIC successfully");
             return responseUtil.wrapSuccess(customer, HttpStatus.OK);
         } catch (Exception e) {

@@ -15,17 +15,17 @@ public class Manager {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "manager_registration_number")
-    private Integer managerRegistrationNumber;
+    @Column(name = "registration_number")
+    private Integer registrationNumber;
 
     @Column(name = "root_user_id")
     private Integer rootUserId;
 
-    @Column(name = "manager_address",nullable = false)
-    private String managerAddress;
+    @Column(name = "address",nullable = false)
+    private String address;
 
-    @Column(name = "manager_nic",nullable = false)
-    private String managerNIC;
+    @Column(name = "nic",nullable = false)
+    private String NIC;
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;

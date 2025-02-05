@@ -36,9 +36,9 @@ public class VehicleController {
     }
 
     @GetMapping("/fetch-all")
-    public ResponseEntity<APIResponse> fetchAllVehicleRecords(){
+    public ResponseEntity<APIResponse> fetchAllVehicleRecords(@RequestParam Integer page, @RequestParam Integer size){
         log.info("fetchAllVehicleRecords start");
-        var response = vehicleService.fetchAllVehicle();
+        var response = vehicleService.fetchAllVehicle(page,size);
         log.info("fetchAllVehicleRecords {}",response);
         return response;
     }

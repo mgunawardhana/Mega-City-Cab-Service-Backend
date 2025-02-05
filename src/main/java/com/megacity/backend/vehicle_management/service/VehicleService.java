@@ -35,7 +35,7 @@ public interface VehicleService {
      *
      * @return a ResponseEntity containing the APIResponse with the list of all vehicles
      */
-    ResponseEntity<APIResponse> fetchAllVehicle();
+    ResponseEntity<APIResponse> fetchAllVehicle(int page, int size);
 
     /**
      * Fetches a vehicle by its ID.
