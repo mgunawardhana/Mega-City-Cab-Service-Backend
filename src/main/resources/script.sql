@@ -1,80 +1,163 @@
-CREATE TABLE Driver (
-                        driver_registration_number SERIAL PRIMARY KEY,
-                        driver_first_name VARCHAR(255) NOT NULL,
-                        driver_profile_picture TEXT,
-                        driver_last_name VARCHAR(255) NOT NULL,
-                        driver_nic VARCHAR(255) NOT NULL,
-                        phone_number VARCHAR(255) NOT NULL,
-                        email_address VARCHAR(255),
-                        license_number VARCHAR(255) NOT NULL,
-                        license_expiry_date DATE,
-                        driver_address VARCHAR(255),
-                        vehicle_assigned VARCHAR(255) DEFAULT 'FALSE',
-                        driver_status VARCHAR(255) NOT NULL DEFAULT 'Active',
-                        emergency_contact VARCHAR(255),
-                        date_of_birth DATE NOT NULL,
-                        date_of_joining DATE
-);
-
-CREATE TABLE _ARTICLE
+CREATE TABLE Article
 (
     article_id  SERIAL PRIMARY KEY,
-    discount    DOUBLE PRECISION            NOT NULL,
-    title       TEXT,
-    description TEXT,
-    author      TEXT,
-    media       TEXT,
+    ratings     DOUBLE PRECISION NOT NULL,
+    title       TEXT             NOT NULL,
+    description TEXT             NOT NULL,
+    author      TEXT             NOT NULL,
+    media       TEXT             NOT NULL,
     is_active   BOOLEAN,
-    created_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS Customer CASCADE;
+INSERT INTO Article (ratings, title, description, author, media, is_active)
+VALUES (4.5, 'AI in Future', 'Discussion on AI impact', 'John Doe', 'image1.jpg', TRUE),
+       (3.8, 'Tech Innovations', 'Latest tech trends', 'Jane Smith', 'image2.jpg', FALSE);
+
+CREATE TABLE Booking
+(
+    booking_number               SERIAL PRIMARY KEY,
+    destination_details          TEXT           NOT NULL,
+    booking_date                 TIMESTAMP      NOT NULL,
+    pickup_location              TEXT           NOT NULL,
+    drop_off_location            TEXT           NOT NULL,
+    car_number                   TEXT           NOT NULL,
+    fare                         NUMERIC(10, 2) NOT NULL,
+    taxes                        NUMERIC(10, 2) NOT NULL,
+    discount                     NUMERIC(10, 2),
+    total_amount                 NUMERIC(10, 2) NOT NULL,
+    customer_registration_number TEXT           NOT NULL,
+    customer_name                TEXT           NOT NULL,
+    address                      TEXT           NOT NULL,
+    telephone_number             TEXT           NOT NULL,
+    nic                          TEXT           NOT NULL UNIQUE,
+    driver_id                    TEXT           NOT NULL
+);
+
+INSERT INTO Booking (destination_details, booking_date, pickup_location, drop_off_location, car_number, fare, taxes,
+                     discount, total_amount, customer_registration_number, customer_name, address, telephone_number,
+                     nic, driver_id)
+VALUES ('Downtown', NOW(), 'Location A', 'Location B', 'ABC123', 50.00, 5.00, 0.00, 55.00, 'CUST001', 'Alice Brown',
+        '123 Street', '123456789', '987654321V', 'DRV001'),
+       ('Airport', NOW(), 'Hotel X', 'Airport', 'XYZ789', 80.00, 8.00, 5.00, 83.00, 'CUST002', 'Bob Green',
+        '456 Avenue', '987654321', '123456789V', 'DRV002');
+
 CREATE TABLE Customer
 (
     registration_number SERIAL PRIMARY KEY,
-    root_user_id                 INTEGER,
-    address            VARCHAR(255),
-    nic                VARCHAR(20),
-    phone_number                VARCHAR(15) NOT NULL
+    root_user_id        INTEGER,
+    address             TEXT NOT NULL,
+    nic                 TEXT NOT NULL UNIQUE,
+    phone_number        TEXT NOT NULL
 );
 
-DROP TABLE IF EXISTS Manager CASCADE ;
+INSERT INTO Customer (root_user_id, address, nic, phone_number)
+VALUES (1, '789 Street', '456789123V', '111222333'),
+       (2, '101 Road', '789123456V', '444555666');
+
+CREATE TABLE Driver
+(
+    driver_registration_number SERIAL PRIMARY KEY,
+    driver_first_name          TEXT NOT NULL,
+    driver_profile_picture     TEXT NOT NULL,
+    driver_last_name           TEXT NOT NULL,
+    driver_nic                 TEXT NOT NULL UNIQUE,
+    phone_number               TEXT NOT NULL,
+    email_address              TEXT,
+    license_number             TEXT NOT NULL,
+    license_expiry_date        DATE,
+    driver_address             TEXT,
+    vehicle_assigned           TEXT          DEFAULT 'FALSE',
+    driver_status              TEXT NOT NULL DEFAULT 'Active',
+    emergency_contact          TEXT,
+    date_of_birth              DATE NOT NULL,
+    date_of_joining            DATE
+);
+
+INSERT INTO Driver (driver_first_name, driver_profile_picture, driver_last_name, driver_nic, phone_number,
+                    email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status,
+                    emergency_contact, date_of_birth, date_of_joining)
+VALUES ('Mike', 'driver1.jpg', 'Johnson', '555666777V', '999888777', 'mike@mail.com', 'LN12345', '2030-01-01',
+        '12 Driver St', 'TRUE', 'Active', '123456789', '1985-05-12', '2020-06-15'),
+       ('Sara', 'driver2.jpg', 'Williams', '888999000V', '777666555', 'sara@mail.com', 'LN67890', '2032-12-31',
+        '34 Taxi Ave', 'FALSE', 'Active', '987654321', '1990-09-25', '2021-08-20');
+
+CREATE TABLE Guideline
+(
+    guidance_id SERIAL PRIMARY KEY,
+    title       TEXT NOT NULL,
+    description TEXT NOT NULL,
+    category    TEXT NOT NULL,
+    priority    TEXT NOT NULL,
+    related_to  TEXT NOT NULL
+);
+
+INSERT INTO Guideline (title, description, category, priority, related_to)
+VALUES ('Safety First', 'Follow safety protocols', 'Safety', 'High', 'Drivers'),
+       ('Customer Service', 'Provide excellent service', 'Service', 'Medium', 'Bookings');
+
 CREATE TABLE Manager
 (
     registration_number SERIAL PRIMARY KEY,
-    root_user_id                INTEGER,
-    address             VARCHAR(255),
-    nic                 VARCHAR(50),
-    phone_number                VARCHAR(50) NOT NULL,
-    created_at                  TIMESTAMP,
-    updated_at                  TIMESTAMP
+    root_user_id        INTEGER,
+    address             TEXT NOT NULL,
+    nic                 TEXT NOT NULL UNIQUE,
+    phone_number        TEXT NOT NULL
 );
 
+INSERT INTO Manager (root_user_id, address, nic, phone_number)
+VALUES (3, '234 Business St', '321654987V', '888999111'),
+       (4, '567 Admin Rd', '654321987V', '666777888');
 
-CREATE TABLE vehicles (
-                          id SERIAL PRIMARY KEY,
-                          registration_number VARCHAR NOT NULL UNIQUE,
-                          vehicle_image TEXT,
-                          make VARCHAR NOT NULL,
-                          model VARCHAR NOT NULL,
-                          year_of_manufacture INT NOT NULL,
-                          color VARCHAR,
-                          fuel_type VARCHAR,
-                          engine_capacity VARCHAR,
-                          chassis_number VARCHAR NOT NULL UNIQUE,
-                          vehicle_type VARCHAR NOT NULL,
-                          owner_name VARCHAR NOT NULL,
-                          owner_contact VARCHAR NOT NULL,
-                          owner_address VARCHAR,
-                          insurance_provider VARCHAR,
-                          insurance_policy_number VARCHAR,
-                          insurance_expiry_date DATE,
-                          seating_capacity INT NOT NULL,
-                          license_plate_number VARCHAR NOT NULL UNIQUE,
-                          permit_type VARCHAR,
-                          air_conditioning BOOLEAN,
-                          vehicle_photo VARCHAR,
-                          additional_features VARCHAR
+CREATE TABLE Users
+(
+    id         SERIAL PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name  TEXT NOT NULL,
+    email      TEXT NOT NULL UNIQUE,
+    password   TEXT NOT NULL,
+    role       TEXT NOT NULL
 );
 
+INSERT INTO Users (first_name, last_name, email, password, role)
+VALUES ('Admin', 'User', 'admin@example.com', 'securepassword', 'ADMIN'),
+       ('Guest', 'User', 'guest@example.com', 'guestpassword', 'USER');
+
+CREATE TABLE Vehicle
+(
+    id                      SERIAL PRIMARY KEY,
+    registration_number     TEXT    NOT NULL UNIQUE,
+    vehicle_image           TEXT    NOT NULL,
+    make                    TEXT    NOT NULL,
+    model                   TEXT    NOT NULL,
+    year_of_manufacture     INTEGER NOT NULL,
+    color                   TEXT,
+    fuel_type               TEXT,
+    engine_capacity         TEXT,
+    chassis_number          TEXT    NOT NULL UNIQUE,
+    vehicle_type            TEXT    NOT NULL,
+    owner_name              TEXT    NOT NULL,
+    owner_contact           TEXT    NOT NULL,
+    owner_address           TEXT,
+    insurance_provider      TEXT,
+    insurance_policy_number TEXT,
+    insurance_expiry_date   DATE,
+    seating_capacity        INTEGER NOT NULL,
+    license_plate_number    TEXT    NOT NULL UNIQUE,
+    permit_type             TEXT,
+    air_conditioning        BOOLEAN,
+    vehicle_photo           TEXT,
+    additional_features     TEXT
+);
+
+INSERT INTO Vehicle (registration_number, vehicle_image, make, model, year_of_manufacture, color, fuel_type,
+                     engine_capacity, chassis_number, vehicle_type, owner_name, owner_contact, owner_address,
+                     insurance_provider, insurance_policy_number, insurance_expiry_date, seating_capacity,
+                     license_plate_number, permit_type, air_conditioning, vehicle_photo, additional_features)
+VALUES ('REG123', 'car1.jpg', 'Toyota', 'Corolla', 2019, 'White', 'Petrol', '1800cc', 'CH123456789', 'Sedan',
+        'John Doe', '123456789', '123 Street', 'ABC Insurance', 'POL12345', '2026-05-20', 5, 'LP123', 'Private', TRUE,
+        'photo1.jpg', 'GPS, Sunroof'),
+       ('REG456', 'car2.jpg', 'Honda', 'Civic', 2020, 'Black', 'Diesel', '2000cc', 'CH987654321', 'Sedan', 'Jane Doe',
+        '987654321', '456 Avenue', 'XYZ Insurance', 'POL67890', '2027-08-15', 5, 'LP456', 'Commercial', FALSE,
+        'photo2.jpg', 'Leather seats, Bluetooth');

@@ -29,6 +29,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -215,6 +216,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Pageable pageable = PageRequest.of(page, size);
         Page<User> usersPage = userRepository.findAll(pageable);
 
+
         List<Map<String, Object>> userDetailsList = usersPage.getContent().stream().map(user -> {
             Map<String, Object> userDetails = new HashMap<>();
             userDetails.put("id", user.getId());
@@ -223,7 +225,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userDetails.put("email", user.getEmail());
             userDetails.put("role", user.getRole());
 
-            // Fetch user-related details based on role
+            userDetails.put("password", passwordEncoder.encode(user.getPassword()));
+
+
+
+
+        // Fetch user-related details based on role
             if (user.getRole().equals(Role.CUSTOMER)) {
                 try {
                     List<Customer> query = readJdbcTemplate.query(
