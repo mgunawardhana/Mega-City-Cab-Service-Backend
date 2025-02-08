@@ -36,7 +36,7 @@ public interface GuidelineService {
      *
      * @return the response entity with API response
      */
-    ResponseEntity<APIResponse> fetchAllGuidelineRecords();
+    ResponseEntity<APIResponse> fetchAllGuidelineRecords(int page, int size);
 
     /**
      * Fetches a guideline by ID.
