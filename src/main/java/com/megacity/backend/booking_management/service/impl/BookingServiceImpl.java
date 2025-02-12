@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -34,22 +36,22 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public ResponseEntity<APIResponse> getAllBookings() {
         try {
-            readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS, (rs, rowNum) -> Booking.builder()
+            List<Booking> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS, (rs, rowNum) -> Booking.builder()
                     .bookingNumber(rs.getLong("booking_number"))
-                    .destinationDetails(rs.getString("destination_details"))
                     .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
                     .pickupLocation(rs.getString("pickup_location"))
                     .dropOffLocation(rs.getString("drop_off_location"))
                     .carNumber(rs.getString("car_number"))
-                    .fare(rs.getBigDecimal("fare"))
                     .taxes(rs.getBigDecimal("taxes"))
-                    .discount(rs.getBigDecimal("discount"))
+                    .distance(rs.getDouble("distance"))
+                    .estimatedTime(rs.getDouble("estimatedTime"))
+                    .taxWithoutCost(rs.getDouble("tax_without_cost"))
                     .totalAmount(rs.getBigDecimal("total_amount"))
                     .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                    .customerName(rs.getString("customer_name"))
+                    .driverId(rs.getString("driver_id"))
                     .build());
             log.info("Fetched all bookings successfully");
-            return responseUtil.wrapSuccess("Fetched all bookings successfully", HttpStatus.OK);
+            return responseUtil.wrapSuccess(query, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error fetching bookings", e);
             return responseUtil.wrapError("Error fetching bookings", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,17 +63,17 @@ public class BookingServiceImpl implements BookingService {
         try {
             Booking booking = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_BOOKING_BY_ID, new Object[]{bookingId}, (rs, rowNum) -> Booking.builder()
                     .bookingNumber(rs.getLong("booking_number"))
-                    .destinationDetails(rs.getString("destination_details"))
                     .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
                     .pickupLocation(rs.getString("pickup_location"))
                     .dropOffLocation(rs.getString("drop_off_location"))
                     .carNumber(rs.getString("car_number"))
-                    .fare(rs.getBigDecimal("fare"))
                     .taxes(rs.getBigDecimal("taxes"))
-                    .discount(rs.getBigDecimal("discount"))
+                    .distance(rs.getDouble("distance"))
+                    .estimatedTime(rs.getDouble("estimatedTime"))
+                    .taxWithoutCost(rs.getDouble("tax_without_cost"))
                     .totalAmount(rs.getBigDecimal("total_amount"))
                     .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                    .customerName(rs.getString("customer_name"))
+                    .driverId(rs.getString("driver_id"))
                     .build());
             log.info("Fetched booking successfully");
             return responseUtil.wrapSuccess(booking, HttpStatus.OK);
@@ -85,17 +87,17 @@ public class BookingServiceImpl implements BookingService {
     public ResponseEntity<APIResponse> createBooking(Booking booking) {
         try {
             writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING,
-                    booking.getDestinationDetails(),
                     booking.getBookingDate(),
                     booking.getPickupLocation(),
                     booking.getDropOffLocation(),
                     booking.getCarNumber(),
-                    booking.getFare(),
                     booking.getTaxes(),
-                    booking.getDiscount(),
+                    booking.getDistance(),
+                    booking.getEstimatedTime(),
+                    booking.getTaxWithoutCost(),
                     booking.getTotalAmount(),
                     booking.getCustomerRegistrationNumber(),
-                    booking.getCustomerName());
+                    booking.getDriverId());
             log.info("Booking created successfully");
             return responseUtil.wrapSuccess("Booking created successfully", HttpStatus.OK);
         } catch (Exception e) {
@@ -108,17 +110,17 @@ public class BookingServiceImpl implements BookingService {
     public ResponseEntity<APIResponse> updateBooking(Booking booking) {
         try {
             writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_BOOKING,
-                    booking.getDestinationDetails(),
                     booking.getBookingDate(),
                     booking.getPickupLocation(),
                     booking.getDropOffLocation(),
                     booking.getCarNumber(),
-                    booking.getFare(),
                     booking.getTaxes(),
-                    booking.getDiscount(),
+                    booking.getDistance(),
+                    booking.getEstimatedTime(),
+                    booking.getTaxWithoutCost(),
                     booking.getTotalAmount(),
                     booking.getCustomerRegistrationNumber(),
-                    booking.getCustomerName(),
+                    booking.getDriverId(),
                     booking.getBookingNumber());
             log.info("Booking updated successfully");
             return responseUtil.wrapSuccess("Booking updated successfully", HttpStatus.OK);

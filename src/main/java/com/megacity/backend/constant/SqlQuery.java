@@ -90,7 +90,7 @@ public class SqlQuery {
                 INSERT INTO manager (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";
 
         public static final String ADD_NEW_BOOKING = """
-                INSERT INTO booking (destination_details, booking_date, pickup_location, drop_off_location, car_number, fare, taxes, discount, total_amount, customer_registration_number, customer_name, driver_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String INSERT_DOCTOR = """
                 INSERT INTO instructor ( first_name, last_name, email, phone_number, date_of_birth, specialization, license_number, license_expiry_date, issuing_country, qualifications, registration_authority, registration_id, nationality, years_of_experience, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""";
@@ -125,8 +125,8 @@ public class SqlQuery {
                 """;
 
         public static final String UPDATE_BOOKING = """
-                UPDATE booking SET destination_details = ?, booking_date = ?, pickup_location = ?, drop_off_location = ?, car_number = ?, fare = ?, taxes = ?, discount = ?, total_amount = ?, customer_registration_number = ?, customer_name = ? WHERE booking_number = ?"";
-                """;
+                UPDATE booking SET booking_date = ?, pickup_location = ?, drop_off_location = ?, car_number = ?, taxes = ?, distance = ?, estimated_time = ?, tax_without_cost = ?, total_amount = ?, customer_registration_number = ?, driver_id = ? WHERE booking_number = ?""";
+
 
         private UpdateQuery() {
         }
