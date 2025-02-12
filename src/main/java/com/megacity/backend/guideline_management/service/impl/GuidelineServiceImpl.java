@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -67,9 +68,12 @@ public class GuidelineServiceImpl implements GuidelineService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> fetchAllGuidelineRecords() {
+    public ResponseEntity<APIResponse> fetchAllGuidelineRecords(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "100") int size) {
         try {
-            List<Guideline> guidelines = writeJdbcTemplate.query(SqlQuery.SelectQuery.FETCH_ALL_GUIDELINE, (rs, rowNum) -> Guideline.builder().guidanceId(rs.getInt("guidance_id")).title(rs.getString("title")).description(rs.getString("description")).category(rs.getString("category")).priority(rs.getString("priority")).relatedTo(rs.getString("related_to")).build());
+            List<Guideline> guidelines = writeJdbcTemplate.query(SqlQuery.SelectQuery.FETCH_ALL_GUIDELINE,
+                    new Object[]{size, page*size},
+                    (rs, rowNum) -> Guideline.builder().guidanceId(rs.getInt("guidance_id")).title(rs.getString("title")).description(rs.getString("description")).category(rs.getString("category")).priority(rs.getString("priority")).relatedTo(rs.getString("related_to")).build());
 
             return responseUtil.wrapSuccess(guidelines, HttpStatus.OK);
         } catch (Exception e) {

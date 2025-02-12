@@ -19,9 +19,9 @@ public class GuidelineController {
     private final GuidelineService guidelineService;
 
     @GetMapping("/fetch-all")
-    public ResponseEntity<APIResponse> fetchAllGuidelineRecords() {
+    public ResponseEntity<APIResponse> fetchAllGuidelineRecords(@RequestParam Integer page, @RequestParam Integer size) {
         log.info("fetchAllGuidelineRecords start");
-        var response = guidelineService.fetchAllGuidelineRecords();
+        var response = guidelineService.fetchAllGuidelineRecords(page,size);
         log.info("/fetch-all {}", response);
         return response;
     }

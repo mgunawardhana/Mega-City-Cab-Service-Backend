@@ -17,7 +17,7 @@ public class SqlQuery {
                 SELECT article_id, discount, title, description, author, media, is_active, created_at, updated_at FROM _article WHERE article_id = ?""";
 
         public static final String FETCH_ALL_GUIDELINE = """
-                SELECT * FROM guideline;""";
+                SELECT * FROM guideline LIMIT ? OFFSET ?;""";
 
         public static final String FETCH_GUIDELINE_BY_ID = """
                 SELECT * FROM guideline WHERE guidance_id = ?""";
