@@ -50,7 +50,27 @@ public class SqlQuery {
                 SELECT * FROM manager""";
 
         public static final String GET_ALL_BOOKINGS = """
-                SELECT * FROM booking""";
+                SELECT * FROM booking LIMIT ? OFFSET ?;""";
+
+        public static final String GET_TOTAL_REVENUE_BY_STATUS_ORDERED = """
+                    SELECT order_status, 
+                           SUM(taxes) AS total_taxes, 
+                           SUM(tax_without_cost) AS total_tax_without_cost, 
+                           SUM(total_amount) AS total_amount 
+                    FROM booking
+                    WHERE order_status IN ('CLOSED', 'CANCELLED', 'COMPLETED', 'PENDING')
+                    GROUP BY order_status
+                    ORDER BY CASE 
+                                WHEN order_status = 'CLOSED' THEN 1
+                                WHEN order_status = 'CANCELLED' THEN 2
+                                WHEN order_status = 'COMPLETED' THEN 3
+                                WHEN order_status = 'PENDING' THEN 4
+                             END
+                """;
+
+
+        public static final String GET_TAX_DETAILS_BY_STATUS_WISE = """
+                SELECT status, COUNT(*) AS row_count, SUM(taxes) AS total_taxes, SUM(tax_without_cost) AS total_tax_without_cost, SUM(total_amount) AS total_amount FROM booking GROUP BY status""";
 
         public static final String GET_BOOKING_BY_ID = """
                 SELECT * FROM booking WHERE booking_number = ?""";
@@ -90,7 +110,7 @@ public class SqlQuery {
                 INSERT INTO manager (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";
 
         public static final String ADD_NEW_BOOKING = """
-                INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String INSERT_DOCTOR = """
                 INSERT INTO instructor ( first_name, last_name, email, phone_number, date_of_birth, specialization, license_number, license_expiry_date, issuing_country, qualifications, registration_authority, registration_id, nationality, years_of_experience, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""";
@@ -125,8 +145,22 @@ public class SqlQuery {
                 """;
 
         public static final String UPDATE_BOOKING = """
-                UPDATE booking SET booking_date = ?, pickup_location = ?, drop_off_location = ?, car_number = ?, taxes = ?, distance = ?, estimated_time = ?, tax_without_cost = ?, total_amount = ?, customer_registration_number = ?, driver_id = ? WHERE booking_number = ?""";
-
+                    UPDATE booking 
+                    SET booking_date = ?, 
+                        pickup_location = ?, 
+                        drop_off_location = ?, 
+                        car_number = ?, 
+                        taxes = ?, 
+                        distance = ?, 
+                        estimatedTime = ?, 
+                        tax_without_cost = ?, 
+                        total_amount = ?, 
+                        customer_registration_number = ?, 
+                        driver_id = ?, 
+                        status = ?, 
+                        updated_date = ? 
+                    WHERE booking_number = ?
+                """;
 
         private UpdateQuery() {
         }

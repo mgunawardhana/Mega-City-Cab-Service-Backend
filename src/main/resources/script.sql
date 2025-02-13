@@ -15,6 +15,7 @@ INSERT INTO Article (ratings, title, description, author, media, is_active)
 VALUES (4.5, 'AI in Future', 'Discussion on AI impact', 'John Doe', 'image1.jpg', TRUE),
        (3.8, 'Tech Innovations', 'Latest tech trends', 'Jane Smith', 'image2.jpg', FALSE);
 
+DROP TABLE IF EXISTS booking;
 CREATE TABLE booking
 (
     booking_number               SERIAL PRIMARY KEY,
@@ -24,23 +25,28 @@ CREATE TABLE booking
     car_number                   VARCHAR(50)      NOT NULL,
     taxes                        NUMERIC(10, 2)   NOT NULL,
     distance                     DOUBLE PRECISION NOT NULL,
-    estimatedTime                DOUBLE PRECISION NOT NULL,
+    estimatedTime               DOUBLE PRECISION NOT NULL,
     tax_without_cost             DOUBLE PRECISION NOT NULL,
     total_amount                 NUMERIC(10, 2)   NOT NULL,
     customer_registration_number VARCHAR(50)      NOT NULL,
-    driver_id                    VARCHAR(50)      NOT NULL
+    driver_id                    VARCHAR(50)      NOT NULL,
+    status                       VARCHAR(50)      NOT NULL,
+    created_date                 TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_date                 TIMESTAMP
 );
+
 
 -- Insert Sample Data
 INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance,
-                     estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id)
+                     estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status)
 VALUES ('2025-02-12 10:00:00', 'Colombo', 'Kandy', 'ABC1234', 150.50, 115.75, 2.5, 120.00, 270.50, 'CUST001',
-        'DRIVER001'),
-       ('2025-02-13 14:30:00', 'Galle', 'Matara', 'XYZ5678', 100.00, 80.25, 1.8, 85.00, 185.00, 'CUST002', 'DRIVER002'),
+        'DRIVER001', 'PENDING'),
+       ('2025-02-13 14:30:00', 'Galle', 'Matara', 'XYZ5678', 100.00, 80.25, 1.8, 85.00, 185.00, 'CUST002', 'DRIVER002',
+        'COMPETED'),
        ('2025-02-14 09:15:00', 'Jaffna', 'Trincomalee', 'JKL9101', 200.75, 150.00, 3.2, 170.00, 370.75, 'CUST003',
-        'DRIVER003'),
+        'DRIVER003', 'PENDING'),
        ('2025-02-15 17:45:00', 'Negombo', 'Anuradhapura', 'DEF4321', 180.25, 130.50, 2.9, 160.00, 340.25, 'CUST004',
-        'DRIVER004');
+        'DRIVER004', 'PENDING');
 
 
 CREATE TABLE Customer

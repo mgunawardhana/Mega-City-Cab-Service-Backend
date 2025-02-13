@@ -20,6 +20,22 @@ public class ReportController {
     @NonNull
     private final ReportService reportService;
 
+    @GetMapping("/get-business-report")
+    public ResponseEntity<APIResponse> getReport() {
+        log.info("getReport start");
+        var response = reportService.getTotalReportDetails();
+        log.info("getReport {}", response);
+        return response;
+    }
+
+    @GetMapping("/get-business-details-status-wise")
+    public ResponseEntity<APIResponse> getReportStatusWise() {
+        log.info("getReportStatusWise start");
+        var response = reportService.getTaxDetailsByStatusWise();
+        log.info("getReportStatusWise {}", response);
+        return response;
+    }
+
     @GetMapping("/fetch-all")
     public ResponseEntity<APIResponse> getTotalIncome() {
         log.info("getTotalIncome start");
@@ -65,22 +81,6 @@ public class ReportController {
         log.info("getCustomerWiseBookings start");
         var response = reportService.getCustomerWiseBookings(customerNIC);
         log.info("getCustomerWiseBookings {}", response);
-        return response;
-    }
-
-    @GetMapping("/driver")
-    public ResponseEntity<APIResponse> getDriverWiseSalary(@RequestParam String driverNIC) {
-        log.info("getDriverWiseSalary start");
-        var response = reportService.getDriverWiseSalary(driverNIC);
-        log.info("getDriverWiseSalary {}", response);
-        return response;
-    }
-
-    @GetMapping("/manager")
-    public ResponseEntity<APIResponse> getManagerWiseSalary(@RequestParam String managerNIC) {
-        log.info("getManagerWiseSalary start");
-        var response = reportService.getManagerWiseSalary(managerNIC);
-        log.info("getManagerWiseSalary {}", response);
         return response;
     }
 

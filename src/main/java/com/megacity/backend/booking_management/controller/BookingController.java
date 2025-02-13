@@ -20,9 +20,9 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping("/bookings")
-    public ResponseEntity<APIResponse> getAllBookings() {
+    public ResponseEntity<APIResponse> getAllBookings(@RequestParam Integer page, @RequestParam Integer size) {
         log.info("getAllBookings start");
-        var response = bookingService.getAllBookings();
+        var response = bookingService.getAllBookings(page,size);
         log.info("getAllBookings {}", response);
         return response;
     }
@@ -43,7 +43,7 @@ public class BookingController {
         return response;
     }
 
-    @PutMapping("/booking/update")
+    @PutMapping("/update")
     public ResponseEntity<APIResponse> updateBooking(@RequestBody Booking booking) {
         log.info("updateBooking {}", booking);
         var response = bookingService.updateBooking(booking);
@@ -51,7 +51,7 @@ public class BookingController {
         return response;
     }
 
-    @PostMapping("/booking/register")
+    @PostMapping("/register")
     public ResponseEntity<APIResponse> registerBooking(@RequestBody Booking booking) {
         log.info("registerBooking {}", booking);
         var response = bookingService.createBooking(booking);

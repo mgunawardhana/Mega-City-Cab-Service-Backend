@@ -6,9 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -57,5 +59,14 @@ public class Booking {
     /** driver related details for booking */
     @Column(name = "driver_id", nullable = false)
     private String driverId;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date", nullable = false)
+    private LocalDateTime updatedDate;
 
 }

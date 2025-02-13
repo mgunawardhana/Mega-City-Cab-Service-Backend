@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -34,9 +36,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> getAllBookings() {
+    public ResponseEntity<APIResponse> getAllBookings(@RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "100") int size) {
         try {
-            List<Booking> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS, (rs, rowNum) -> Booking.builder()
+            List<Booking> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS,new Object[]{size, page*size}, (rs, rowNum) -> Booking.builder()
                     .bookingNumber(rs.getLong("booking_number"))
                     .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
                     .pickupLocation(rs.getString("pickup_location"))
@@ -49,6 +52,7 @@ public class BookingServiceImpl implements BookingService {
                     .totalAmount(rs.getBigDecimal("total_amount"))
                     .customerRegistrationNumber(rs.getString("customer_registration_number"))
                     .driverId(rs.getString("driver_id"))
+                    .status(rs.getString("status"))
                     .build());
             log.info("Fetched all bookings successfully");
             return responseUtil.wrapSuccess(query, HttpStatus.OK);
@@ -74,6 +78,7 @@ public class BookingServiceImpl implements BookingService {
                     .totalAmount(rs.getBigDecimal("total_amount"))
                     .customerRegistrationNumber(rs.getString("customer_registration_number"))
                     .driverId(rs.getString("driver_id"))
+                    .status(rs.getString("status"))
                     .build());
             log.info("Fetched booking successfully");
             return responseUtil.wrapSuccess(booking, HttpStatus.OK);
@@ -97,7 +102,8 @@ public class BookingServiceImpl implements BookingService {
                     booking.getTaxWithoutCost(),
                     booking.getTotalAmount(),
                     booking.getCustomerRegistrationNumber(),
-                    booking.getDriverId());
+                    booking.getDriverId(),
+                    booking.getStatus());
             log.info("Booking created successfully");
             return responseUtil.wrapSuccess("Booking created successfully", HttpStatus.OK);
         } catch (Exception e) {
@@ -109,6 +115,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public ResponseEntity<APIResponse> updateBooking(Booking booking) {
         try {
+            if (booking.getBookingNumber() == null) {
+                return responseUtil.wrapError("Booking number is required", "Invalid request", HttpStatus.BAD_REQUEST);
+            }
+            LocalDateTime updatedDate = LocalDateTime.now();
+
             writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_BOOKING,
                     booking.getBookingDate(),
                     booking.getPickupLocation(),
@@ -121,11 +132,15 @@ public class BookingServiceImpl implements BookingService {
                     booking.getTotalAmount(),
                     booking.getCustomerRegistrationNumber(),
                     booking.getDriverId(),
-                    booking.getBookingNumber());
-            log.info("Booking updated successfully");
+                    booking.getStatus(),
+                    updatedDate,
+                    booking.getBookingNumber()
+            );
+
+            log.info("Booking updated successfully for booking number: {}", booking.getBookingNumber());
             return responseUtil.wrapSuccess("Booking updated successfully", HttpStatus.OK);
         } catch (Exception e) {
-            log.error("Error updating booking", e);
+            log.error("Error updating booking: {}", e.getMessage(), e);
             return responseUtil.wrapError("Error updating booking", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

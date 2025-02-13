@@ -11,7 +11,7 @@ public interface BookingService {
      *
      * @return a ResponseEntity containing the APIResponse with the list of bookings
      */
-    ResponseEntity<APIResponse> getAllBookings();
+    ResponseEntity<APIResponse> getAllBookings(int page, int size);
 
     /**
      * Retrieves a booking by its ID.
@@ -44,4 +44,6 @@ public interface BookingService {
      * @return a ResponseEntity containing the APIResponse
      */
     ResponseEntity<APIResponse> deleteBooking(Integer bookingId);
+
+
 }

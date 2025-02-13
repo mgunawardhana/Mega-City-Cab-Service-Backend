@@ -38,22 +38,6 @@ public interface ReportService {
     ResponseEntity<APIResponse> getCustomerWiseBookings(String customerNIC);
 
     /**
-     * Retrieves the salary details for a specific driver.
-     *
-     * @param driverNIC the NIC of the driver for whom to retrieve the salary details
-     * @return a ResponseEntity containing the APIResponse with the driver salary details
-     */
-    ResponseEntity<APIResponse> getDriverWiseSalary(String driverNIC);
-
-    /**
-     * Retrieves the salary details for a specific manager.
-     *
-     * @param managerNIC the NIC of the manager for whom to retrieve the salary details
-     * @return a ResponseEntity containing the APIResponse with the manager salary details
-     */
-    ResponseEntity<APIResponse> getManagerWiseSalary(String managerNIC);
-
-    /**
      * Retrieves the income details for a specific vehicle.
      *
      * @param vehicleNumber the number of the vehicle for which to retrieve the income details
@@ -83,4 +67,18 @@ public interface ReportService {
      * @return a ResponseEntity containing the APIResponse with the total expenses
      */
     ResponseEntity<APIResponse> getTotalExpenses(String customerNIC);
+
+    /**
+     * Retrieves the tax details by status.
+     *
+     * @return a ResponseEntity containing the APIResponse with the tax details by status
+     */
+    ResponseEntity<APIResponse> getTaxDetailsByStatusWise();
+
+    /**
+     * Retrieves the total report details.
+     *
+     * @return a ResponseEntity containing the APIResponse with the total report details
+     */
+    ResponseEntity<APIResponse> getTotalReportDetails();
 }
