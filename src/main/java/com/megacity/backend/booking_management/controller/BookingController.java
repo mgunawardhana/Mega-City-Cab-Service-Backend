@@ -4,6 +4,7 @@ package com.megacity.backend.booking_management.controller;
 import com.megacity.backend.booking_management.service.BookingService;
 import com.megacity.backend.domain.entity.Booking;
 import com.megacity.backend.domain.response.APIResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class BookingController {
 
+
     @NonNull
     private final BookingService bookingService;
+
+    @GetMapping("/export")
+    public void exportToExcel(HttpServletResponse response) {
+        bookingService.exportBookingsToExcel(response);
+    }
+
 
     @GetMapping("/bookings")
     public ResponseEntity<APIResponse> getAllBookings(@RequestParam Integer page, @RequestParam Integer size) {

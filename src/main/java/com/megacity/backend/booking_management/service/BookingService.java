@@ -2,6 +2,7 @@ package com.megacity.backend.booking_management.service;
 
 import com.megacity.backend.domain.entity.Booking;
 import com.megacity.backend.domain.response.APIResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface BookingService {
@@ -45,5 +46,7 @@ public interface BookingService {
      */
     ResponseEntity<APIResponse> deleteBooking(Integer bookingId);
 
+
+    void exportBookingsToExcel(HttpServletResponse response);
 
 }

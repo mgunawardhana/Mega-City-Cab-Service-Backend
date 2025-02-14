@@ -52,6 +52,10 @@ public class SqlQuery {
         public static final String GET_ALL_BOOKINGS = """
                 SELECT * FROM booking LIMIT ? OFFSET ?;""";
 
+        public static final String GET_ALL_BOOKINGS_WITHOUT_PAGINATION = """
+                    SELECT booking_number, booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status, created_date, updated_date FROM booking
+                """;
+
         public static final String GET_TOTAL_REVENUE_BY_STATUS_ORDERED = """
                     SELECT order_status, 
                            SUM(taxes) AS total_taxes, 
