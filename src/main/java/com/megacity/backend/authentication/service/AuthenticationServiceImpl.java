@@ -136,7 +136,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtServiceImpl.generateRefreshToken(user);
 
         log.info("Generated Token from Authenticate Function: {}", jwtToken);
-        return AuthenticationResponse.builder().accessToken(Objects.requireNonNull(jwtToken)).refreshToken(Objects.requireNonNull(refreshToken)).build();
+        return AuthenticationResponse.builder()
+                .accessToken(Objects.requireNonNull(jwtToken))
+                .refreshToken(Objects.requireNonNull(refreshToken))
+                .userName(user.getFirstName()+" "+user.getLastName())
+                .build();
     }
 
     /**

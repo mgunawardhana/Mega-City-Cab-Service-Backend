@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @RestController
 @RequestMapping("api/v1/booking")
@@ -21,11 +23,26 @@ public class BookingController {
     @NonNull
     private final BookingService bookingService;
 
+    @PostMapping("/advancedSearch")
+    public ResponseEntity<APIResponse> advancedSearch(@RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "100") int size,
+                                                      @RequestParam(required = false) LocalDateTime bookingDate,
+                                                      @RequestParam(required = false) String pickupLocation,
+                                                      @RequestParam(required = false) String dropOffLocation,
+                                                      @RequestParam(required = false) String carNumber,
+                                                      @RequestParam(required = false) String driverId,
+                                                      @RequestParam(required = false) String status,
+                                                      @RequestParam(required = false) LocalDateTime createdDate) {
+        log.info("advancedSearch {} {} {} {} {} {} {} {} {}",page, size, bookingDate, pickupLocation, dropOffLocation, carNumber, driverId, status, createdDate);
+        var response = bookingService.advancedSearch(page, size, bookingDate, pickupLocation, dropOffLocation, carNumber, driverId, status, createdDate);
+        log.info("advancedSearch {}", response);
+        return response;
+    }
+
     @GetMapping("/export")
     public void exportToExcel(HttpServletResponse response) {
         bookingService.exportBookingsToExcel(response);
     }
-
 
     @GetMapping("/bookings")
     public ResponseEntity<APIResponse> getAllBookings(@RequestParam Integer page, @RequestParam Integer size) {

@@ -5,7 +5,12 @@ import com.megacity.backend.domain.response.APIResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
+
 public interface BookingService {
+
+
+    ResponseEntity<APIResponse> advancedSearch(int page, int size, LocalDateTime bookingDate, String pickupLocation, String dropOffLocation, String carNumber, String driverId, String status, LocalDateTime createdDate);
 
     /**
      * Retrieves all bookings.

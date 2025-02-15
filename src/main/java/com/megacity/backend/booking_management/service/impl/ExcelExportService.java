@@ -22,18 +22,16 @@ public class ExcelExportService {
 
             String[] headers = {"Booking Number", "Booking Date", "Pickup Location", "Drop Off Location", "Car Number", "Taxes", "Distance", "Estimated Time", "Tax Without Cost", "Total Amount", "Customer Reg Number", "Driver ID", "Status", "Created Date", "Updated Date"};
 
-            // Header Style
             CellStyle headerCellStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
-            headerFont.setColor(IndexedColors.WHITE.getIndex()); // White font
+            headerFont.setColor(IndexedColors.WHITE.getIndex());
             headerCellStyle.setFont(headerFont);
-            headerCellStyle.setFillForegroundColor(IndexedColors.BLACK.getIndex()); // Black background
+            headerCellStyle.setFillForegroundColor(IndexedColors.BLACK.getIndex());
             headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
             headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
-            // Create header cells
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -41,11 +39,10 @@ public class ExcelExportService {
                 sheet.autoSizeColumn(i);
             }
 
-            // Define colors for statuses
-            CellStyle completedStyle = createCustomColorStyle(workbook, (byte) 46, (byte) 204, (byte) 113); // #2ecc71
-            CellStyle closedStyle = createCustomColorStyle(workbook, (byte) 52, (byte) 152, (byte) 219); // #3498db
-            CellStyle pendingStyle = createCustomColorStyle(workbook, (byte) 243, (byte) 156, (byte) 18); // #f39c12
-            CellStyle cancelledStyle = createCustomColorStyle(workbook, (byte) 231, (byte) 76, (byte) 60); // #e74c3c
+            CellStyle completedStyle = createCustomColorStyle(workbook, (byte) 46, (byte) 204, (byte) 113);
+            CellStyle closedStyle = createCustomColorStyle(workbook, (byte) 52, (byte) 152, (byte) 219);
+            CellStyle pendingStyle = createCustomColorStyle(workbook, (byte) 243, (byte) 156, (byte) 18);
+            CellStyle cancelledStyle = createCustomColorStyle(workbook, (byte) 231, (byte) 76, (byte) 60);
 
 
             int rowNum = 1;
@@ -53,7 +50,6 @@ public class ExcelExportService {
             double totalTaxWithoutCost = 0;
             double totalAmount = 0;
 
-            // Populate booking data
             for (Booking booking : bookings) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(booking.getBookingNumber());
@@ -80,7 +76,6 @@ public class ExcelExportService {
                 row.createCell(10).setCellValue(booking.getCustomerRegistrationNumber());
                 row.createCell(11).setCellValue(booking.getDriverId());
 
-                // Apply status-based styling
                 Cell statusCell = row.createCell(12);
                 statusCell.setCellValue(booking.getStatus());
 
@@ -103,24 +98,20 @@ public class ExcelExportService {
                 row.createCell(14).setCellValue(booking.getUpdatedDate().toString());
             }
 
-            // Create total row
             Row totalRow = sheet.createRow(rowNum);
             Cell totalLabelCell = totalRow.createCell(4);
             totalLabelCell.setCellValue("Total:");
 
-            // Style for total row
             CellStyle totalCellStyle = workbook.createCellStyle();
             Font totalFont = workbook.createFont();
             totalFont.setBold(true);
-            totalFont.setColor(IndexedColors.BLACK.getIndex()); // Black font
+            totalFont.setColor(IndexedColors.BLACK.getIndex());
             totalCellStyle.setFont(totalFont);
-            totalCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex()); // Yellow background
+            totalCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
             totalCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-            // Apply style to the label
             totalLabelCell.setCellStyle(totalCellStyle);
 
-            // Insert total values
             Cell totalTaxesCell = totalRow.createCell(5);
             totalTaxesCell.setCellValue(totalTaxes);
             totalTaxesCell.setCellStyle(totalCellStyle);
@@ -153,7 +144,7 @@ public class ExcelExportService {
 
         Font font = workbook.createFont();
         font.setBold(true);
-        font.setColor(IndexedColors.BLACK.getIndex()); // Black font
+        font.setColor(IndexedColors.BLACK.getIndex());
         style.setFont(font);
 
         return style;
