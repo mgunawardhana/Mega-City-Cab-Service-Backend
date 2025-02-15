@@ -6,9 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -24,9 +26,6 @@ public class Booking {
     @Column(name = "booking_number", nullable = false)
     private Long bookingNumber;
 
-    @Column(name = "destination_details", nullable = false)
-    private String destinationDetails;
-
     @Column(name = "booking_date", nullable = false)
     private LocalDateTime bookingDate;
 
@@ -39,37 +38,35 @@ public class Booking {
     @Column(name = "car_number", nullable = false)
     private String carNumber;
 
-    @Column(name = "fare", nullable = false, precision = 10, scale = 2)
-    private BigDecimal fare;
-
     @Column(name = "taxes", nullable = false, precision = 10, scale = 2)
     private BigDecimal taxes;
 
-    @Column(name = "discount", precision = 10, scale = 2)
-    private BigDecimal discount;
+    @Column(name = "distance", nullable = false)
+    private double distance;
+
+    @Column(name = "estimatedTime", nullable = false)
+    private double estimatedTime;
+
+    @Column(name = "tax_without_cost", nullable = false)
+    private double taxWithoutCost;
 
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
-
-    /** customer related details for booking */
     @Column(name = "customer_registration_number", nullable = false)
     private String customerRegistrationNumber;
-
-    @Column(name = "customer_name", nullable = false)
-    private String customerName;
-
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    @Column(name = "telephone_number", nullable = false)
-    private String telephoneNumber;
-
-    @Column(name = "nic", nullable = false, unique = true)
-    private String nic;
 
     /** driver related details for booking */
     @Column(name = "driver_id", nullable = false)
     private String driverId;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date", nullable = false)
+    private LocalDateTime updatedDate;
 
 }

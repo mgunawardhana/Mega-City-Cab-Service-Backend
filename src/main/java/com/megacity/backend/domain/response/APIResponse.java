@@ -10,11 +10,11 @@ import lombok.ToString;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class APIResponse {
-    private String statusMessage;
-    private String statusCode;
-    private String transactionId;
-    private String responseTime;
-    private String origin;
-    private String errorType;
-    private Object result;
+    public String statusMessage;
+    public String statusCode;
+    public String transactionId;
+    public String responseTime;
+    public String origin;
+    public String errorType;
+    public Object result;
 }

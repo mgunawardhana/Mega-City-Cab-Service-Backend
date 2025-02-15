@@ -18,12 +18,7 @@ public class RegistrationRequest {
     private String lastName;
     private String email;
     private String password;
-    private Integer customerRegistrationNumber;
-    private Integer managerRegistrationNumber;
-    private Integer rootUserId;
-    private String customerAddress;
-    private String managerAddress;
-    private String managerNIC;
-    private String customerNIC;
-    private String phoneNumber;
+    private String address;
+    private String nic;
+    private String phone_number;
 }

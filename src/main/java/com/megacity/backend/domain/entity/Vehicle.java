@@ -11,8 +11,6 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "vehicles")
 public class Vehicle {
 
     @Id
@@ -21,6 +19,9 @@ public class Vehicle {
 
     @Column(name = "registration_number", nullable = false, unique = true)
     private String registrationNumber;
+
+    @Column(name = "vehicle_image", nullable = false)
+    private String vehicleImage;
 
     @Column(name = "make", nullable = false)
     private String make;

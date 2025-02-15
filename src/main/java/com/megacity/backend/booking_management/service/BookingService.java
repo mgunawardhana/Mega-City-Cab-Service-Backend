@@ -2,16 +2,22 @@ package com.megacity.backend.booking_management.service;
 
 import com.megacity.backend.domain.entity.Booking;
 import com.megacity.backend.domain.response.APIResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
+
 public interface BookingService {
+
+
+    ResponseEntity<APIResponse> advancedSearch(int page, int size, LocalDateTime bookingDate, String pickupLocation, String dropOffLocation, String carNumber, String driverId, String status, LocalDateTime createdDate);
 
     /**
      * Retrieves all bookings.
      *
      * @return a ResponseEntity containing the APIResponse with the list of bookings
      */
-    ResponseEntity<APIResponse> getAllBookings();
+    ResponseEntity<APIResponse> getAllBookings(int page, int size);
 
     /**
      * Retrieves a booking by its ID.
@@ -44,4 +50,8 @@ public interface BookingService {
      * @return a ResponseEntity containing the APIResponse
      */
     ResponseEntity<APIResponse> deleteBooking(Integer bookingId);
+
+
+    void exportBookingsToExcel(HttpServletResponse response);
+
 }

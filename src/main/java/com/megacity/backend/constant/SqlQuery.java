@@ -17,7 +17,7 @@ public class SqlQuery {
                 SELECT article_id, discount, title, description, author, media, is_active, created_at, updated_at FROM _article WHERE article_id = ?""";
 
         public static final String FETCH_ALL_GUIDELINE = """
-                SELECT * FROM guideline;""";
+                SELECT * FROM guideline LIMIT ? OFFSET ?;""";
 
         public static final String FETCH_GUIDELINE_BY_ID = """
                 SELECT * FROM guideline WHERE guidance_id = ?""";
@@ -26,7 +26,7 @@ public class SqlQuery {
                 SELECT * FROM vehicles WHERE id = ?""";
 
         public static final String FETCH_ALL_VEHICLE = """
-                SELECT * FROM vehicles;""";
+                SELECT * FROM vehicles LIMIT ? OFFSET ?;""";
 
         public static final String GET_DRIVER_BY_NIC = """
                 SELECT * FROM driver WHERE driver_nic = ?;""";
@@ -38,22 +38,53 @@ public class SqlQuery {
                 SELECT * FROM customer""";
 
         public static final String GET_CUSTOMER_BY_ID = """
-                SELECT * FROM customer WHERE customer_registration_number = ?""";
+                SELECT * FROM customer WHERE registration_number = ?""";
 
         public static final String GET_CUSTOMER_BY_NIC = """
-                SELECT * FROM customer WHERE customer_nic = ?""";
+                SELECT * FROM customer WHERE nic = ?""";
 
         public static final String GET_MANAGER_BY_ID = """
-                SELECT * FROM manager WHERE manager_registration_number = ?""";
+                SELECT * FROM manager WHERE registration_number = ?""";
 
         public static final String GET_ALL_MANAGERS = """
                 SELECT * FROM manager""";
 
         public static final String GET_ALL_BOOKINGS = """
-                SELECT * FROM booking""";
+                SELECT * FROM booking LIMIT ? OFFSET ?;""";
+
+        public static final String GET_ALL_BOOKINGS_WITHOUT_PAGINATION = """
+                    SELECT booking_number, booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status, created_date, updated_date FROM booking
+                """;
+
+        public static final String GET_TOTAL_REVENUE_BY_STATUS_ORDERED = """
+                    SELECT order_status, 
+                           SUM(taxes) AS total_taxes, 
+                           SUM(tax_without_cost) AS total_tax_without_cost, 
+                           SUM(total_amount) AS total_amount 
+                    FROM booking
+                    WHERE order_status IN ('CLOSED', 'CANCELLED', 'COMPLETED', 'PENDING')
+                    GROUP BY order_status
+                    ORDER BY CASE 
+                                WHEN order_status = 'CLOSED' THEN 1
+                                WHEN order_status = 'CANCELLED' THEN 2
+                                WHEN order_status = 'COMPLETED' THEN 3
+                                WHEN order_status = 'PENDING' THEN 4
+                             END
+                """;
+
+
+        public static final String GET_TAX_DETAILS_BY_STATUS_WISE = """
+                SELECT status, COUNT(*) AS row_count, SUM(taxes) AS total_taxes, SUM(tax_without_cost) AS total_tax_without_cost, SUM(total_amount) AS total_amount FROM booking GROUP BY status""";
 
         public static final String GET_BOOKING_BY_ID = """
                 SELECT * FROM booking WHERE booking_number = ?""";
+
+        public static final String FIND_CUSTOMER_BY_ROOT_USER_ID = """
+                SELECT registration_number, root_user_id, address, nic, phone_number FROM customer WHERE root_user_id = ?""";
+
+        public static final String FIND_MANAGER_BY_ROOT_USER_ID = """
+                SELECT registration_number, root_user_id, address, nic, phone_number FROM manager WHERE root_user_id = ?""";
+
 
         private SelectQuery() {
         }
@@ -77,13 +108,13 @@ public class SqlQuery {
                 INSERT INTO driver (driver_first_name, driver_profile_picture, driver_last_name, driver_nic, phone_number, email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status, emergency_contact, date_of_birth, date_of_joining) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String ADD_NEW_CUSTOMER = """
-                INSERT INTO customer (root_user_id, customer_address, customer_nic, phone_number) VALUES (?, ?, ?, ?)""";
+                INSERT INTO customer (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";
 
         public static final String ADD_NEW_MANAGER = """
-                INSERT INTO manager (root_user_id, manager_address, manager_nic, phone_number) VALUES (?, ?, ?, ?)""";
+                INSERT INTO manager (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";
 
         public static final String ADD_NEW_BOOKING = """
-                INSERT INTO booking (destination_details, booking_date, pickup_location, drop_off_location, car_number, fare, taxes, discount, total_amount, customer_registration_number, customer_name, driver_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String INSERT_DOCTOR = """
                 INSERT INTO instructor ( first_name, last_name, email, phone_number, date_of_birth, specialization, license_number, license_expiry_date, issuing_country, qualifications, registration_authority, registration_id, nationality, years_of_experience, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""";
@@ -111,14 +142,28 @@ public class SqlQuery {
                 UPDATE driver SET driver_first_name = ?, driver_last_name = ?, driver_nic = ?, phone_number = ?, email_address = ?, license_number = ?, license_expiry_date = ?, driver_address = ?, vehicle_assigned = ?, driver_status = ?, emergency_contact = ?, date_of_birth = ?, date_of_joining = ? WHERE driver_registration_number = ?""";
 
         public static final String UPDATE_CUSTOMER = """
-                UPDATE customer SET root_user_id = ?, customer_address = ?, customer_nic = ?, phone_number = ? WHERE customer_registration_number = ?""";
+                UPDATE customer SET root_user_id = ?, address = ?, nic = ?, phone_number = ? WHERE registration_number = ?""";
 
         public static final String UPDATE_MANAGER = """
-                UPDATE manager SET root_user_id = ?, manager_address = ?, manager_nic = ?, phone_number = ? WHERE manager_registration_number = ?;
+                UPDATE manager SET root_user_id = ?, address = ?, nic = ?, phone_number = ? WHERE registration_number = ?;
                 """;
 
         public static final String UPDATE_BOOKING = """
-                UPDATE booking SET destination_details = ?, booking_date = ?, pickup_location = ?, drop_off_location = ?, car_number = ?, fare = ?, taxes = ?, discount = ?, total_amount = ?, customer_registration_number = ?, customer_name = ? WHERE booking_number = ?"";
+                    UPDATE booking 
+                    SET booking_date = ?, 
+                        pickup_location = ?, 
+                        drop_off_location = ?, 
+                        car_number = ?, 
+                        taxes = ?, 
+                        distance = ?, 
+                        estimatedTime = ?, 
+                        tax_without_cost = ?, 
+                        total_amount = ?, 
+                        customer_registration_number = ?, 
+                        driver_id = ?, 
+                        status = ?, 
+                        updated_date = ? 
+                    WHERE booking_number = ?
                 """;
 
         private UpdateQuery() {
@@ -143,10 +188,10 @@ public class SqlQuery {
                 DELETE FROM driver WHERE driver_nic = ?""";
 
         public static final String DELETE_CUSTOMER_BY_ID = """
-                DELETE FROM customer WHERE customer_registration_number = ?""";
+                DELETE FROM customer WHERE registration_number = ?""";
 
         public static final String DELETE_MANAGER = """
-                DELETE FROM manager WHERE manager_registration_number = ?""";
+                DELETE FROM manager WHERE registration_number = ?""";
 
         public static final String DELETE_BOOKING_BY_ID = """
                 DELETE FROM booking WHERE booking_number = ?""";
