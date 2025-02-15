@@ -2,7 +2,7 @@ name: Deploy to Github Actions
 
 on:
   push:
-    branches: [master]
+    branches: [deploy-to-ec2]
 
 jobs:
   build:
@@ -26,8 +26,8 @@ jobs:
 
       - name: Docker Build
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/power-house-fitness-backend .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/mega-city-cab-service-backend .
 
       - name: Publishing Docker Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/power-house-fitness-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/mega-city-cab-service-backend:latest
