@@ -133,7 +133,7 @@ VALUES ('Admin', 'User', 'admin@example.com', 'securepassword', 'ADMIN'),
 CREATE TABLE Vehicle
 (
     id                      SERIAL PRIMARY KEY,
-    registration_number     TEXT    NOT NULL UNIQUE,
+    registration_number     TEXT    NOT NULL,
     vehicle_image           TEXT    NOT NULL,
     make                    TEXT    NOT NULL,
     model                   TEXT    NOT NULL,
@@ -141,7 +141,7 @@ CREATE TABLE Vehicle
     color                   TEXT,
     fuel_type               TEXT,
     engine_capacity         TEXT,
-    chassis_number          TEXT    NOT NULL UNIQUE,
+    chassis_number          TEXT    NOT NULL,
     vehicle_type            TEXT    NOT NULL,
     owner_name              TEXT    NOT NULL,
     owner_contact           TEXT    NOT NULL,
@@ -150,10 +150,9 @@ CREATE TABLE Vehicle
     insurance_policy_number TEXT,
     insurance_expiry_date   DATE,
     seating_capacity        INTEGER NOT NULL,
-    license_plate_number    TEXT    NOT NULL UNIQUE,
+    license_plate_number    TEXT    NOT NULL,
     permit_type             TEXT,
     air_conditioning        BOOLEAN,
-    vehicle_photo           TEXT,
     additional_features     TEXT
 );
 

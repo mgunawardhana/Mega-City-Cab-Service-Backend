@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mega-city-cab-service-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mega-city-cab-service-backend
+  template:
+    metadata:
+      labels:
+        app: mega-city-cab-service-backend
+    spec:
+      containers:
+        - name: my-app
+          image: gstwarrier/mega-city-cab-service-backend:latest
+          ports:
+            - containerPort: 3000  # Change this if your app runs on a different port

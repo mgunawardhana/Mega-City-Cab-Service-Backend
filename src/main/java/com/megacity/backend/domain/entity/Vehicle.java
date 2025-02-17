@@ -17,10 +17,10 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "registration_number", nullable = false, unique = true)
+    @Column(name = "registration_number", nullable = false)
     private String registrationNumber;
 
-    @Column(name = "vehicle_image", nullable = false)
+    @Column(name = "vehicle_image", nullable = false)//
     private String vehicleImage;
 
     @Column(name = "make", nullable = false)
@@ -41,7 +41,7 @@ public class Vehicle {
     @Column(name = "engine_capacity")
     private String engineCapacity;
 
-    @Column(name = "chassis_number", nullable = false, unique = true)
+    @Column(name = "chassis_number", nullable = false)
     private String chassisNumber;
 
     @Column(name = "vehicle_type", nullable = false)
@@ -68,7 +68,7 @@ public class Vehicle {
     @Column(name = "seating_capacity", nullable = false)
     private int seatingCapacity;
 
-    @Column(name = "license_plate_number", nullable = false, unique = true)
+    @Column(name = "license_plate_number", nullable = false)
     private String licensePlateNumber;
 
     @Column(name = "permit_type")
@@ -76,9 +76,6 @@ public class Vehicle {
 
     @Column(name = "air_conditioning")
     private boolean airConditioning;
-
-    @Column(name = "vehicle_photo")
-    private String vehiclePhoto;
 
     @Column(name = "additional_features")
     private String additionalFeatures;
