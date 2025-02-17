@@ -87,7 +87,7 @@ public class WebContentManagementServiceImpl implements WebContentManagementServ
     }
 
     @Override
-    public ResponseEntity<APIResponse> getArticle(Integer articleId) {
+    public ResponseEntity<APIResponse> getArticleById(Integer articleId) {
         try {
             Article article = readJdbcTemplate.queryForObject(
                     SqlQuery.SelectQuery.SELECT_ARTICLE_BY_ID,

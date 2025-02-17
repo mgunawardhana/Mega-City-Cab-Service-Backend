@@ -37,7 +37,7 @@ public interface WebContentManagementService {
      * @param articleId the ID of the article to be retrieved
      * @return a ResponseEntity containing the APIResponse with the article details
      */
-    ResponseEntity<APIResponse> getArticle(Integer articleId);
+    ResponseEntity<APIResponse> getArticleById(Integer articleId);
 
     /**
      * Retrieves a paginated list of articles.

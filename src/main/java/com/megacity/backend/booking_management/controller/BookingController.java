@@ -2,12 +2,16 @@ package com.megacity.backend.booking_management.controller;
 
 
 import com.megacity.backend.booking_management.service.BookingService;
+import com.megacity.backend.booking_management.service.impl.StripeService;
 import com.megacity.backend.domain.entity.Booking;
+import com.megacity.backend.domain.request.ProductRequest;
 import com.megacity.backend.domain.response.APIResponse;
+import com.megacity.backend.domain.response.StripeResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +28,10 @@ public class BookingController {
     @NonNull
     private final BookingService bookingService;
 
+    @NonNull
+    private final StripeService stripeService;
+
+
     @PostMapping("/advancedSearch")
     public ResponseEntity<APIResponse> advancedSearch(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "100") int size,
@@ -38,6 +46,14 @@ public class BookingController {
         var response = bookingService.advancedSearch(page, size, bookingDate, pickupLocation, dropOffLocation, carNumber, driverId, status, createdDate);
         log.info("advancedSearch {}", response);
         return response;
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<StripeResponse> checkOutProducts(@RequestBody ProductRequest productRequest) {
+        System.out.println("awa");
+        StripeResponse stripeResponse = stripeService.checkProduct(productRequest);
+        return ResponseEntity .status(HttpStatus.OK)
+                .body(stripeResponse);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

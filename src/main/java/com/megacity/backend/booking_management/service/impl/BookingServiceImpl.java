@@ -3,7 +3,9 @@ package com.megacity.backend.booking_management.service.impl;
 import com.megacity.backend.booking_management.service.BookingService;
 import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Booking;
+import com.megacity.backend.domain.request.ProductRequest;
 import com.megacity.backend.domain.response.APIResponse;
+import com.megacity.backend.domain.response.StripeResponse;
 import com.megacity.backend.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
@@ -42,8 +46,6 @@ public class BookingServiceImpl implements BookingService {
         this.responseUtil = responseUtil;
         this.excelExportService = excelExportService;
     }
-
-
 
     @Override
     public void exportBookingsToExcel(HttpServletResponse response) {
