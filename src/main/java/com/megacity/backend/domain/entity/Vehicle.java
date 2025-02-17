@@ -20,7 +20,7 @@ public class Vehicle {
     @Column(name = "registration_number", nullable = false)
     private String registrationNumber;
 
-    @Column(name = "vehicle_image", nullable = false)
+    @Column(name = "vehicle_image", nullable = false)//
     private String vehicleImage;
 
     @Column(name = "make", nullable = false)
@@ -76,9 +76,6 @@ public class Vehicle {
 
     @Column(name = "air_conditioning")
     private boolean airConditioning;
-
-    @Column(name = "vehicle_photo")
-    private String vehiclePhoto;
 
     @Column(name = "additional_features")
     private String additionalFeatures;

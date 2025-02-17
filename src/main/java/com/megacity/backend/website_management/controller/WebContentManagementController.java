@@ -53,4 +53,10 @@ public class WebContentManagementController {
         log.info("Page: {}, Size: {}", page, size);
         return webContentManagementService.getArticles(page, size);
     }
+
+    @PutMapping("/updateArticle")
+    public ResponseEntity<APIResponse> updateArticle(@RequestBody Article article) {
+        log.info("Article update: {}", article.toString());
+        return webContentManagementService.updateArticle(article);
+    }
 }

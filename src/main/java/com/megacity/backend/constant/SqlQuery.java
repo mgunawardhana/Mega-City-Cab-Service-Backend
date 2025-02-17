@@ -102,15 +102,15 @@ public class SqlQuery {
                 INSERT INTO guideline (title, description, category, priority, related_to) VALUES (?, ?, ?, ?, ?)""";
 
         public static final String ADD_NEW_VEHICLE = """
-                INSERT INTO vehicle (
-                    registration_number, make, model, year_of_manufacture, color, fuel_type,\s
-                    engine_capacity, chassis_number, vehicle_type, owner_name, owner_contact,\s
-                    owner_address, insurance_provider, insurance_policy_number,\s
-                    insurance_expiry_date, seating_capacity, license_plate_number,\s
-                    permit_type, air_conditioning, vehicle_image, additional_features
-                )\s
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                    INSERT INTO vehicle (
+                        registration_number, make, model, year_of_manufacture, color, fuel_type,
+                        engine_capacity, chassis_number, vehicle_type, owner_name, owner_contact,
+                        owner_address, insurance_provider, insurance_policy_number,
+                        insurance_expiry_date, seating_capacity, license_plate_number,
+                        permit_type, air_conditioning, vehicle_image, additional_features
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """;
+
 
         public static final String ADD_NEW_DRIVER = """
                 INSERT INTO driver (driver_first_name, driver_profile_picture, driver_last_name, driver_nic, phone_number, email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status, emergency_contact, date_of_birth, date_of_joining) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
@@ -144,29 +144,30 @@ public class SqlQuery {
                 UPDATE guideline SET title = ?, description = ?, category = ?, priority = ?, related_to = ? WHERE guidance_id = ?;""";
 
         public static final String UPDATE_VEHICLE = """
-                UPDATE vehicle SET 
-                    registration_number = ?, 
-                    make = ?, 
-                    model = ?, 
-                    year_of_manufacture = ?, 
-                    color = ?, 
-                    fuel_type = ?, 
-                    engine_capacity = ?, 
-                    chassis_number = ?, 
-                    vehicle_type = ?, 
-                    owner_name = ?, 
-                    owner_contact = ?, 
-                    owner_address = ?, 
-                    insurance_provider = ?, 
-                    insurance_policy_number = ?, 
-                    insurance_expiry_date = ?, 
-                    seating_capacity = ?, 
-                    license_plate_number = ?, 
-                    permit_type = ?, 
-                    air_conditioning = ?, 
-                    vehicle_image = ?, 
-                    additional_features = ? 
-                WHERE id = ?""";
+                    UPDATE vehicle SET 
+                        registration_number = ?, 
+                        make = ?, 
+                        model = ?, 
+                        year_of_manufacture = ?, 
+                        color = ?, 
+                        fuel_type = ?, 
+                        engine_capacity = ?, 
+                        chassis_number = ?, 
+                        vehicle_type = ?, 
+                        owner_name = ?, 
+                        owner_contact = ?, 
+                        owner_address = ?, 
+                        insurance_provider = ?, 
+                        insurance_policy_number = ?, 
+                        insurance_expiry_date = ?, 
+                        seating_capacity = ?, 
+                        license_plate_number = ?, 
+                        permit_type = ?, 
+                        air_conditioning = ?, 
+                        vehicle_image = ?, 
+                        additional_features = ? 
+                    WHERE id = ?
+                """;
 
 
         public static final String UPDATE_DRIVER = """
