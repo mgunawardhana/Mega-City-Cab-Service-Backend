@@ -166,3 +166,13 @@ VALUES ('REG123', 'car1.jpg', 'Toyota', 'Corolla', 2019, 'White', 'Petrol', '180
        ('REG456', 'car2.jpg', 'Honda', 'Civic', 2020, 'Black', 'Diesel', '2000cc', 'CH987654321', 'Sedan', 'Jane Doe',
         '987654321', '456 Avenue', 'XYZ Insurance', 'POL67890', '2027-08-15', 5, 'LP456', 'Commercial', FALSE,
         'photo2.jpg', 'Leather seats, Bluetooth');
+
+
+CREATE TABLE users (
+                       id SERIAL PRIMARY KEY,
+                       first_name VARCHAR(255) NOT NULL,
+                       last_name VARCHAR(255) NOT NULL,
+                       email VARCHAR(255) NOT NULL UNIQUE,
+                       password VARCHAR(255) NOT NULL,
+                       role VARCHAR(50) NOT NULL CHECK (role IN ('ROLE_ADMIN', 'ROLE_DRIVER', 'ROLE_CUSTOMER'))
+);

@@ -1,6 +1,7 @@
 package com.megacity.backend.authentication.service;
 
 import com.megacity.backend.authentication.service.impl.JwtService;
+import com.megacity.backend.domain.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -52,14 +53,8 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        T claimResolverValue = null;
-        try {
-            final Claims claims = extractAllClaims(Objects.requireNonNull(token));
-            claimResolverValue = claimsResolver.apply(Objects.requireNonNull(claims));
-        } catch (ExpiredJwtException e) {
-            log.error("Access Token Expired Exception: {}", e.getMessage().toUpperCase());
-        }
-        return claimResolverValue;
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
     /**
@@ -105,14 +100,17 @@ public class JwtServiceImpl implements JwtService {
      * @return the built JWT token
      */
     private String buildToken(Map<String, Object> extractClaims, UserDetails userDetails, long expiration) {
-        String buildToken = null;
-        try {
-            buildToken = Jwts.builder().setClaims(extractClaims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + expiration)).signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
-        } catch (JwtException e) {
-            log.error("Error Occurred While Building Token");
-        }
-        return Objects.requireNonNull(buildToken, "This Token is Null!");
+        extractClaims.put("role", ((User) userDetails).getRole().name()); // Make sure the role is added
+        return Jwts.builder()
+                .setClaims(extractClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
+
+
 
     /**
      * Validates the provided JWT token against the user details.
@@ -124,8 +122,9 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean isTokenValidated(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
+
 
     /**
      * Checks if the provided JWT token is expired.

@@ -1,4 +1,4 @@
-package com.megacity.backend;
+package com.megacity.backend.service;
 
 import com.megacity.backend.domain.entity.Article;
 import com.megacity.backend.domain.response.APIResponse;

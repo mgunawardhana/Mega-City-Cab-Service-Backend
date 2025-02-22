@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestController
 @RequestMapping("api/v1/booking")
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -31,8 +32,8 @@ public class BookingController {
     @NonNull
     private final StripeService stripeService;
 
-
-    @PostMapping("/advancedSearch")
+    @GetMapping("/advancedSearch")
+    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<APIResponse> advancedSearch(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "100") int size,
                                                       @RequestParam(required = false) LocalDateTime bookingDate,
@@ -56,13 +57,15 @@ public class BookingController {
                 .body(stripeResponse);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping("/export")
+    @PreAuthorize("hasAuthority('admin:read')")
     public void exportToExcel(HttpServletResponse response) {
         bookingService.exportBookingsToExcel(response);
     }
 
     @GetMapping("/bookings")
+    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<APIResponse> getAllBookings(@RequestParam Integer page, @RequestParam Integer size) {
         log.info("getAllBookings start");
         var response = bookingService.getAllBookings(page,size);
@@ -71,6 +74,7 @@ public class BookingController {
     }
 
     @GetMapping("/booking/{id}")
+    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<APIResponse> getBookingById(@PathVariable String id) {
         log.info("getBookingById {}", id);
         var response = bookingService.getBookingById(Integer.valueOf(id));
@@ -79,6 +83,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/booking/{id}")
+    @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<APIResponse> deleteBooking(@PathVariable String id) {
         log.info("deleteBooking {}", id);
         var response = bookingService.deleteBooking(Integer.valueOf(id));
@@ -87,6 +92,7 @@ public class BookingController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<APIResponse> updateBooking(@RequestBody Booking booking) {
         log.info("updateBooking {}", booking);
         var response = bookingService.updateBooking(booking);
@@ -95,6 +101,7 @@ public class BookingController {
     }
 
     @PostMapping("/register")
+    @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<APIResponse> registerBooking(@RequestBody Booking booking) {
         log.info("registerBooking {}", booking);
         var response = bookingService.createBooking(booking);
