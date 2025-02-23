@@ -95,6 +95,9 @@ public class SqlQuery {
      */
     public static class InsertQuery {
 
+        public static  final String INSERT_TOKEN = "INSERT INTO token (token, token_type, revoked, expired, user_id)\n" +
+                "VALUES (?, ?, ?, ?, ?);\n";
+
         public static final String INSERT_ARTICLE = """
                 INSERT INTO _article ( discount, title, description, author, media, is_active ) VALUES (?, ?, ?, ?, ?, ?);""";
 
@@ -124,9 +127,12 @@ public class SqlQuery {
         public static final String ADD_NEW_BOOKING = """
                 INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
-        public static final String INSERT_DOCTOR = """
-                INSERT INTO instructor ( first_name, last_name, email, phone_number, date_of_birth, specialization, license_number, license_expiry_date, issuing_country, qualifications, registration_authority, registration_id, nationality, years_of_experience, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""";
-
+        public static final String VALIDATE_BOOKING = """
+                SELECT COUNT(*) 
+                FROM booking 
+                WHERE car_number = ? 
+                AND ABS(TIMESTAMPDIFF(HOUR, booking_date, ?)) < 5
+            """;
 
         private InsertQuery() {
         }
@@ -136,6 +142,8 @@ public class SqlQuery {
      * This holds all the update queries
      */
     public static class UpdateQuery {
+
+        public static final String REVOKE_ALL_USER_TOKENS = "UPDATE token SET revoked = ?, expired = ? WHERE user_id = ? AND (revoked = false OR expired = false)";
 
         public static final String UPDATE_ARTICLE = """
                 UPDATE _article SET discount = ?, title = ?, description = ?, author = ?, media = ?, is_active = ? WHERE article_id = ?""";

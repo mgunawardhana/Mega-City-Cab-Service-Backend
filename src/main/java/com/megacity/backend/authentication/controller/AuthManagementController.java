@@ -31,7 +31,7 @@ public class AuthManagementController {
      * @param registrationRequest the registration request containing user details
      * @return a ResponseEntity containing the authentication response
      */
-    @PostMapping("/public/register")
+    @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest registrationRequest) {
         System.out.println("RegistrationRequest: " + registrationRequest.toString());
         log.info("RegistrationRequest: {}", registrationRequest);

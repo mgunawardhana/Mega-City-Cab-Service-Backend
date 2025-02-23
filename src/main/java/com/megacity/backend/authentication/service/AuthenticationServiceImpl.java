@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.megacity.backend.authentication.repository.UserRepository;
 import com.megacity.backend.authentication.service.impl.AuthenticationService;
 import com.megacity.backend.constant.SqlQuery;
-import com.megacity.backend.domain.entity.Booking;
 import com.megacity.backend.domain.entity.Customer;
 import com.megacity.backend.domain.entity.Manager;
 import com.megacity.backend.domain.entity.User;
 import com.megacity.backend.domain.enums.Role;
+import com.megacity.backend.domain.enums.TokenType;
 import com.megacity.backend.domain.request.AuthenticationRequest;
 import com.megacity.backend.domain.request.RegistrationRequest;
 import com.megacity.backend.domain.response.APIResponse;
@@ -16,6 +16,7 @@ import com.megacity.backend.domain.response.AuthenticationResponse;
 import com.megacity.backend.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,91 +65,127 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @NonNull
     private final ResponseUtil responseUtil;
 
-    /**
-     * Registers a new user in the system.
-     *
-     * @param registrationRequest the registration request containing user details
-     * @return an AuthenticationResponse containing the access and refresh tokens
-     */
     @Override
+    @Transactional
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
-        var user = User.builder()
-                .firstName(registrationRequest.getFirstName())
-                .lastName(registrationRequest.getLastName())
-                .email(registrationRequest.getEmail())
-                .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                .role(registrationRequest.getRole())
-                .build();
+        try {
+            // Create user entity
+            var user = User.builder()
+                    .firstName(registrationRequest.getFirstName())
+                    .lastName(registrationRequest.getLastName())
+                    .email(registrationRequest.getEmail())
+                    .password(passwordEncoder.encode(registrationRequest.getPassword()))
+                    .role(registrationRequest.getRole())
+                    .build();
 
-        log.info("AuthenticationResponse From Register: {}", user.toString());
+            log.info("Processing registration for user: {}", user.getEmail());
 
-        User save = userRepository.save(user);
+            // Save user
+            User savedUser = userRepository.save(user);
 
-        if (save.getRole().equals(Role.CUSTOMER)) {
+            // Handle role-specific data
             try {
-                writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_CUSTOMER,
-                        save.getId(),
-                        registrationRequest.getAddress(),
-                        registrationRequest.getNic(),
-                        registrationRequest.getPhone_number()
-                );
-                log.info("New Customer Added Successfully");
+                if (savedUser.getRole().equals(Role.USER)) {
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_CUSTOMER,
+                            savedUser.getId(),
+                            registrationRequest.getAddress(),
+                            registrationRequest.getNic(),
+                            registrationRequest.getPhone_number()
+                    );
+                    log.info("New Customer profile created successfully");
+                } else if (savedUser.getRole().equals(Role.ADMIN)) {
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_MANAGER,
+                            savedUser.getId(),
+                            registrationRequest.getAddress(),
+                            registrationRequest.getNic(),
+                            registrationRequest.getPhone_number()
+                    );
+                    log.info("New Manager profile created successfully");
+                }
             } catch (Exception e) {
-                log.error("Error while adding new customer: {}", e.getMessage());
+                log.error("Error creating profile for user {}: {}", savedUser.getEmail(), e.getMessage());
+                throw new RuntimeException("Failed to create user profile", e);
             }
-        } else if (save.getRole().equals(Role.MANAGER)) {
+
+            // Generate tokens
+            String accessToken = jwtServiceImpl.generateToken(savedUser);
+            String refreshToken = jwtServiceImpl.generateRefreshToken(savedUser);
+
+            // Save token
             try {
-                writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_MANAGER,
-                        save.getId(),
-                        registrationRequest.getAddress(),
-                        registrationRequest.getNic(),
-                        registrationRequest.getPhone_number()
+                writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
+                        accessToken,
+                        TokenType.BEARER.name(),
+                        Boolean.FALSE,
+                        Boolean.FALSE,
+                        savedUser.getId()
                 );
-                log.info("New Manager Added Successfully");
+                log.info("Token saved successfully for user: {}", savedUser.getEmail());
             } catch (Exception e) {
-                log.error("Error while adding new manager: {}", e.getMessage());
+                log.error("Error saving token for user {}: {}", savedUser.getEmail(), e.getMessage());
+                throw new RuntimeException("Failed to save authentication token", e);
             }
+
+            return AuthenticationResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Registration failed: {}", e.getMessage());
+            throw new RuntimeException("Registration failed", e);
         }
-
-        var jwtToken = jwtServiceImpl.generateToken(Objects.requireNonNull(user));
-        var refreshToken = jwtServiceImpl.generateRefreshToken(Objects.requireNonNull(user));
-
-        log.info("Generated Token from Register Function: {}", jwtToken);
-
-        return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).build();
     }
 
-    /**
-     * Authenticates a user based on the provided authentication request.
-     *
-     * @param request the authentication request containing user credentials
-     * @return an AuthenticationResponse containing the access and refresh tokens
-     */
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         log.info("AuthenticationResponse From Authenticate Function: {}", user);
 
-        var jwtToken = jwtServiceImpl.generateToken(Objects.requireNonNull(user));
+        // Generate new tokens
+        var accessToken = jwtServiceImpl.generateToken(user);
         var refreshToken = jwtServiceImpl.generateRefreshToken(user);
 
-        log.info("Generated Token from Authenticate Function: {}", jwtToken);
+        // Try to update existing token first
+        try {
+            int updatedRows = writeJdbcTemplate.update(
+                    "UPDATE token SET token = ?, revoked = ?, expired = ? WHERE user_id = ? AND revoked = false",
+                    accessToken,
+                    Boolean.FALSE,
+                    Boolean.FALSE,
+                    user.getId()
+            );
+
+            // If no existing active token found, insert new one
+            if (updatedRows == 0) {
+                writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
+                        accessToken,
+                        TokenType.BEARER.name(),
+                        Boolean.FALSE,
+                        Boolean.FALSE,
+                        user.getId()
+                );
+            }
+            log.info("Token updated/saved successfully for user: {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Error managing token for user {}: {}", user.getEmail(), e.getMessage());
+            throw new RuntimeException("Failed to manage authentication token", e);
+        }
+
+        log.info("Generated Token from Authenticate Function: {}", accessToken);
+
         return AuthenticationResponse.builder()
-                .accessToken(Objects.requireNonNull(jwtToken))
+                .accessToken(Objects.requireNonNull(accessToken))
                 .refreshToken(Objects.requireNonNull(refreshToken))
-                .userName(user.getFirstName()+" "+user.getLastName())
                 .build();
     }
 
-    /**
-     * Refreshes the authentication token.
-     *
-     * @param request  the HTTP request containing the refresh token
-     * @param response the HTTP response to be sent back to the client
-     * @throws IOException if an input or output exception occurs
-     */
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authorizationHeader = request.getHeader(Objects.requireNonNull(HttpHeaders.AUTHORIZATION, "Authorization header cannot be null"));
@@ -169,11 +205,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             log.info("User Details from Refresh Token: {}", userDetails);
 
             if (jwtServiceImpl.isTokenValidated(refreshToken, userDetails)) {
-
                 var accessToken = jwtServiceImpl.generateToken(userDetails);
                 log.info("Generated Token from Refresh Token Function: {}", accessToken);
 
-                var authResponse = AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+                // Save the new access token
+                try {
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
+                            accessToken,
+                            TokenType.BEARER.name(),
+                            Boolean.FALSE,
+                            Boolean.FALSE,
+                            userDetails.getId()
+                    );
+                    log.info("New access token saved successfully for user: {}", userDetails.getEmail());
+                } catch (Exception e) {
+                    log.error("Error saving new access token for user {}: {}", userDetails.getEmail(), e.getMessage());
+                }
+
+                var authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
                 log.info("Authentication Response from Refresh Token Function: {}", authResponse);
 
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
@@ -183,43 +235,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-//
-//        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-//            log.error("Invalid Authorization Header");
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            response.getWriter().write("Invalid Authorization Header");
-//            return;
-//        }
-//
-//        String token = authorizationHeader.substring(7);
-//        String userEmail = jwtServiceImpl.extractUserName(token);
-//
-//        if (userEmail != null) {
-//            var user = userRepository.findByEmail(userEmail).orElse(null);
-//            if (user != null) {
-//                jwtServiceImpl.invalidateToken(token);
-//                SecurityContextHolder.clearContext();
-//                log.info("User {} logged out successfully", userEmail);
-//                response.setStatus(HttpServletResponse.SC_OK);
-//                response.getWriter().write("Logout successful");
-//            } else {
-//                log.error("User not found for logout");
-//                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//                response.getWriter().write("User not found");
-//            }
-//        } else {
-//            log.error("Invalid token, cannot extract user");
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            response.getWriter().write("Invalid token");
-//        }
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return;
+        }
+
+        final String jwt = authHeader.substring(7);
+        var userEmail = jwtServiceImpl.extractUserName(jwt);
+
+        if (userEmail != null) {
+            var user = userRepository.findByEmail(userEmail).orElse(null);
+            if (user != null) {
+                try {
+                    writeJdbcTemplate.update(SqlQuery.UpdateQuery.REVOKE_ALL_USER_TOKENS,
+                            Boolean.TRUE,
+                            Boolean.TRUE,
+                            user.getId()
+                    );
+                    log.info("Successfully logged out user: {}", userEmail);
+                } catch (Exception e) {
+                    log.error("Error during logout for user {}: {}", userEmail, e.getMessage());
+                }
+            }
+        }
     }
 
     @Override
     public ResponseEntity<APIResponse> getAllAuthentications(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<User> usersPage = userRepository.findAll(pageable);
-
 
         List<Map<String, Object>> userDetailsList = usersPage.getContent().stream().map(user -> {
             Map<String, Object> userDetails = new HashMap<>();
@@ -228,14 +272,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userDetails.put("lastName", user.getLastName());
             userDetails.put("email", user.getEmail());
             userDetails.put("role", user.getRole());
-
             userDetails.put("password", passwordEncoder.encode(user.getPassword()));
 
-
-
-
-        // Fetch user-related details based on role
-            if (user.getRole().equals(Role.CUSTOMER)) {
+            // Fetch user-related details based on role
+            if (user.getRole().equals(Role.USER)) {
                 try {
                     List<Customer> query = readJdbcTemplate.query(
                             SqlQuery.SelectQuery.FIND_CUSTOMER_BY_ROOT_USER_ID,
@@ -261,7 +301,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             }
 
-            if (user.getRole().equals(Role.MANAGER)) {
+            if (user.getRole().equals(Role.ADMIN)) {
                 try {
                     List<Manager> query = readJdbcTemplate.query(
                             SqlQuery.SelectQuery.FIND_MANAGER_BY_ROOT_USER_ID,
@@ -289,11 +329,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return userDetails;
         }).toList();
 
-
         return responseUtil.wrapSuccess(userDetailsList, HttpStatus.OK);
     }
-
-
-
-
 }

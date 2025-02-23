@@ -45,7 +45,7 @@ public class WebContentManagementController {
     @GetMapping("/public/getArticle/{articleId}")
     public ResponseEntity<APIResponse> getArticle(@PathVariable Integer articleId) {
         log.info("Article ID for getArticle By ID: {}", articleId);
-        return webContentManagementService.getArticle(articleId);
+        return webContentManagementService.getArticleById(articleId);
     }
 
     @PostMapping("/public/get-article-with-pagination")

@@ -11,10 +11,6 @@ CREATE TABLE Article
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO Article (ratings, title, description, author, media, is_active)
-VALUES (4.5, 'AI in Future', 'Discussion on AI impact', 'John Doe', 'image1.jpg', TRUE),
-       (3.8, 'Tech Innovations', 'Latest tech trends', 'Jane Smith', 'image2.jpg', FALSE);
-
 DROP TABLE IF EXISTS booking;
 CREATE TABLE booking
 (
@@ -35,20 +31,6 @@ CREATE TABLE booking
     updated_date                 TIMESTAMP
 );
 
-
--- Insert Sample Data
-INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance,
-                     estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status)
-VALUES ('2025-02-12 10:00:00', 'Colombo', 'Kandy', 'ABC1234', 150.50, 115.75, 2.5, 120.00, 270.50, 'CUST001',
-        'DRIVER001', 'PENDING'),
-       ('2025-02-13 14:30:00', 'Galle', 'Matara', 'XYZ5678', 100.00, 80.25, 1.8, 85.00, 185.00, 'CUST002', 'DRIVER002',
-        'COMPETED'),
-       ('2025-02-14 09:15:00', 'Jaffna', 'Trincomalee', 'JKL9101', 200.75, 150.00, 3.2, 170.00, 370.75, 'CUST003',
-        'DRIVER003', 'PENDING'),
-       ('2025-02-15 17:45:00', 'Negombo', 'Anuradhapura', 'DEF4321', 180.25, 130.50, 2.9, 160.00, 340.25, 'CUST004',
-        'DRIVER004', 'PENDING');
-
-
 CREATE TABLE Customer
 (
     registration_number SERIAL PRIMARY KEY,
@@ -57,10 +39,6 @@ CREATE TABLE Customer
     nic                 TEXT NOT NULL UNIQUE,
     phone_number        TEXT NOT NULL
 );
-
-INSERT INTO Customer (root_user_id, address, nic, phone_number)
-VALUES (1, '789 Street', '456789123V', '111222333'),
-       (2, '101 Road', '789123456V', '444555666');
 
 CREATE TABLE Driver
 (
@@ -74,20 +52,14 @@ CREATE TABLE Driver
     license_number             TEXT NOT NULL,
     license_expiry_date        DATE,
     driver_address             TEXT,
-    vehicle_assigned           TEXT          DEFAULT 'FALSE',
+    vehicle_assigned           TEXT NOT NULL DEFAULT 'FALSE',
     driver_status              TEXT NOT NULL DEFAULT 'Active',
     emergency_contact          TEXT,
     date_of_birth              DATE NOT NULL,
-    date_of_joining            DATE
+    date_of_joining            DATE,
+    license_images             JSONB -- Store images as JSON array
 );
 
-INSERT INTO Driver (driver_first_name, driver_profile_picture, driver_last_name, driver_nic, phone_number,
-                    email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status,
-                    emergency_contact, date_of_birth, date_of_joining)
-VALUES ('Mike', 'driver1.jpg', 'Johnson', '555666777V', '999888777', 'mike@mail.com', 'LN12345', '2030-01-01',
-        '12 Driver St', 'TRUE', 'Active', '123456789', '1985-05-12', '2020-06-15'),
-       ('Sara', 'driver2.jpg', 'Williams', '888999000V', '777666555', 'sara@mail.com', 'LN67890', '2032-12-31',
-        '34 Taxi Ave', 'FALSE', 'Active', '987654321', '1990-09-25', '2021-08-20');
 
 CREATE TABLE Guideline
 (
@@ -99,10 +71,6 @@ CREATE TABLE Guideline
     related_to  TEXT NOT NULL
 );
 
-INSERT INTO Guideline (title, description, category, priority, related_to)
-VALUES ('Safety First', 'Follow safety protocols', 'Safety', 'High', 'Drivers'),
-       ('Customer Service', 'Provide excellent service', 'Service', 'Medium', 'Bookings');
-
 CREATE TABLE Manager
 (
     registration_number SERIAL PRIMARY KEY,
@@ -111,10 +79,6 @@ CREATE TABLE Manager
     nic                 TEXT NOT NULL UNIQUE,
     phone_number        TEXT NOT NULL
 );
-
-INSERT INTO Manager (root_user_id, address, nic, phone_number)
-VALUES (3, '234 Business St', '321654987V', '888999111'),
-       (4, '567 Admin Rd', '654321987V', '666777888');
 
 CREATE TABLE Users
 (
@@ -125,10 +89,6 @@ CREATE TABLE Users
     password   TEXT NOT NULL,
     role       TEXT NOT NULL
 );
-
-INSERT INTO Users (first_name, last_name, email, password, role)
-VALUES ('Admin', 'User', 'admin@example.com', 'securepassword', 'ADMIN'),
-       ('Guest', 'User', 'guest@example.com', 'guestpassword', 'USER');
 
 CREATE TABLE Vehicle
 (
@@ -156,13 +116,3 @@ CREATE TABLE Vehicle
     additional_features     TEXT
 );
 
-INSERT INTO Vehicle (registration_number, vehicle_image, make, model, year_of_manufacture, color, fuel_type,
-                     engine_capacity, chassis_number, vehicle_type, owner_name, owner_contact, owner_address,
-                     insurance_provider, insurance_policy_number, insurance_expiry_date, seating_capacity,
-                     license_plate_number, permit_type, air_conditioning, vehicle_photo, additional_features)
-VALUES ('REG123', 'car1.jpg', 'Toyota', 'Corolla', 2019, 'White', 'Petrol', '1800cc', 'CH123456789', 'Sedan',
-        'John Doe', '123456789', '123 Street', 'ABC Insurance', 'POL12345', '2026-05-20', 5, 'LP123', 'Private', TRUE,
-        'photo1.jpg', 'GPS, Sunroof'),
-       ('REG456', 'car2.jpg', 'Honda', 'Civic', 2020, 'Black', 'Diesel', '2000cc', 'CH987654321', 'Sedan', 'Jane Doe',
-        '987654321', '456 Avenue', 'XYZ Insurance', 'POL67890', '2027-08-15', 5, 'LP456', 'Commercial', FALSE,
-        'photo2.jpg', 'Leather seats, Bluetooth');

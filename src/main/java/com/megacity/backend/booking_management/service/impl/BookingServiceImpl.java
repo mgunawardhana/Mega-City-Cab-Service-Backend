@@ -3,7 +3,9 @@ package com.megacity.backend.booking_management.service.impl;
 import com.megacity.backend.booking_management.service.BookingService;
 import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Booking;
+import com.megacity.backend.domain.request.ProductRequest;
 import com.megacity.backend.domain.response.APIResponse;
+import com.megacity.backend.domain.response.StripeResponse;
 import com.megacity.backend.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
@@ -42,8 +46,6 @@ public class BookingServiceImpl implements BookingService {
         this.responseUtil = responseUtil;
         this.excelExportService = excelExportService;
     }
-
-
 
     @Override
     public void exportBookingsToExcel(HttpServletResponse response) {
@@ -211,6 +213,17 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public ResponseEntity<APIResponse> createBooking(Booking booking) {
         try {
+
+            Integer count = writeJdbcTemplate.queryForObject(SqlQuery.InsertQuery.VALIDATE_BOOKING, Integer.class,
+                    booking.getCarNumber(), booking.getBookingDate());
+
+            if (count != null && count > 0) {
+                log.warn("Booking conflict: Another booking exists within 5 hours for car {}", booking.getCarNumber());
+                return responseUtil.wrapError("Booking conflict: Another booking exists within 5 hours.",
+                        "Please select a different time slot.",
+                        HttpStatus.CONFLICT);
+            }
+
             writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING,
                     booking.getBookingDate(),
                     booking.getPickupLocation(),
@@ -224,13 +237,16 @@ public class BookingServiceImpl implements BookingService {
                     booking.getCustomerRegistrationNumber(),
                     booking.getDriverId(),
                     booking.getStatus());
-            log.info("Booking created successfully");
+
+            log.info("Booking created successfully for car {}", booking.getCarNumber());
             return responseUtil.wrapSuccess("Booking created successfully", HttpStatus.OK);
+
         } catch (Exception e) {
             log.error("Error creating booking", e);
             return responseUtil.wrapError("Error creating booking", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @Override
     public ResponseEntity<APIResponse> updateBooking(Booking booking) {
