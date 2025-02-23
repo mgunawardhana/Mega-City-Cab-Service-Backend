@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -58,4 +59,7 @@ public class Driver {
 
     @Column(name = "date_of_joining")
     private Date dateOfJoining;
+
+    @Column(name = "license_images")
+    private List<String> licenseImages;
 }

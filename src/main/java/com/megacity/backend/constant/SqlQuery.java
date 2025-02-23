@@ -95,8 +95,8 @@ public class SqlQuery {
      */
     public static class InsertQuery {
 
-        public static  final String INSERT_TOKEN = "INSERT INTO token (id, token, token_type, revoked, expired, user_id)\n" +
-                "VALUES (?,?, ?, ?, ?, ?);\n";
+        public static  final String INSERT_TOKEN = "INSERT INTO token (token, token_type, revoked, expired, user_id)\n" +
+                "VALUES (?, ?, ?, ?, ?);\n";
 
         public static final String INSERT_ARTICLE = """
                 INSERT INTO _article ( discount, title, description, author, media, is_active ) VALUES (?, ?, ?, ?, ?, ?);""";
@@ -142,6 +142,8 @@ public class SqlQuery {
      * This holds all the update queries
      */
     public static class UpdateQuery {
+
+        public static final String REVOKE_ALL_USER_TOKENS = "UPDATE token SET revoked = ?, expired = ? WHERE user_id = ? AND (revoked = false OR expired = false)";
 
         public static final String UPDATE_ARTICLE = """
                 UPDATE _article SET discount = ?, title = ?, description = ?, author = ?, media = ?, is_active = ? WHERE article_id = ?""";

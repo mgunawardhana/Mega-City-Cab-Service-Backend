@@ -65,12 +65,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @NonNull
     private final ResponseUtil responseUtil;
 
-    /**
-     * Registers a new user in the system.
-     *
-     * @param registrationRequest the registration request containing user details
-     * @return an AuthenticationResponse containing the access and refresh tokens
-     */
     @Override
     @Transactional
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
@@ -117,14 +111,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String accessToken = jwtServiceImpl.generateToken(savedUser);
             String refreshToken = jwtServiceImpl.generateRefreshToken(savedUser);
 
-            // Save token - Fixed boolean parameters
+            // Save token
             try {
                 writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
-                        1000,
                         accessToken,
                         TokenType.BEARER.name(),
                         Boolean.FALSE,
-                        Boolean.FALSE ,
+                        Boolean.FALSE,
                         savedUser.getId()
                 );
                 log.info("Token saved successfully for user: {}", savedUser.getEmail());
@@ -133,7 +126,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new RuntimeException("Failed to save authentication token", e);
             }
 
-            // Return authentication response
             return AuthenticationResponse.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
@@ -144,36 +136,56 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("Registration failed", e);
         }
     }
-    /**
-     * Authenticates a user based on the provided authentication request.
-     *
-     * @param request the authentication request containing user credentials
-     * @return an AuthenticationResponse containing the access and refresh tokens
-     */
+
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         log.info("AuthenticationResponse From Authenticate Function: {}", user);
 
-        var jwtToken = jwtServiceImpl.generateToken(Objects.requireNonNull(user));
+        // Generate new tokens
+        var accessToken = jwtServiceImpl.generateToken(user);
         var refreshToken = jwtServiceImpl.generateRefreshToken(user);
 
-        log.info("Generated Token from Authenticate Function: {}", jwtToken);
+        // Try to update existing token first
+        try {
+            int updatedRows = writeJdbcTemplate.update(
+                    "UPDATE token SET token = ?, revoked = ?, expired = ? WHERE user_id = ? AND revoked = false",
+                    accessToken,
+                    Boolean.FALSE,
+                    Boolean.FALSE,
+                    user.getId()
+            );
+
+            // If no existing active token found, insert new one
+            if (updatedRows == 0) {
+                writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
+                        accessToken,
+                        TokenType.BEARER.name(),
+                        Boolean.FALSE,
+                        Boolean.FALSE,
+                        user.getId()
+                );
+            }
+            log.info("Token updated/saved successfully for user: {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Error managing token for user {}: {}", user.getEmail(), e.getMessage());
+            throw new RuntimeException("Failed to manage authentication token", e);
+        }
+
+        log.info("Generated Token from Authenticate Function: {}", accessToken);
+
         return AuthenticationResponse.builder()
-                .accessToken(Objects.requireNonNull(jwtToken))
+                .accessToken(Objects.requireNonNull(accessToken))
                 .refreshToken(Objects.requireNonNull(refreshToken))
                 .build();
     }
 
-    /**
-     * Refreshes the authentication token.
-     *
-     * @param request  the HTTP request containing the refresh token
-     * @param response the HTTP response to be sent back to the client
-     * @throws IOException if an input or output exception occurs
-     */
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authorizationHeader = request.getHeader(Objects.requireNonNull(HttpHeaders.AUTHORIZATION, "Authorization header cannot be null"));
@@ -193,11 +205,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             log.info("User Details from Refresh Token: {}", userDetails);
 
             if (jwtServiceImpl.isTokenValidated(refreshToken, userDetails)) {
-
                 var accessToken = jwtServiceImpl.generateToken(userDetails);
                 log.info("Generated Token from Refresh Token Function: {}", accessToken);
 
-                var authResponse = AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+                // Save the new access token
+                try {
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
+                            accessToken,
+                            TokenType.BEARER.name(),
+                            Boolean.FALSE,
+                            Boolean.FALSE,
+                            userDetails.getId()
+                    );
+                    log.info("New access token saved successfully for user: {}", userDetails.getEmail());
+                } catch (Exception e) {
+                    log.error("Error saving new access token for user {}: {}", userDetails.getEmail(), e.getMessage());
+                }
+
+                var authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
                 log.info("Authentication Response from Refresh Token Function: {}", authResponse);
 
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
@@ -207,13 +235,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return;
+        }
+
+        final String jwt = authHeader.substring(7);
+        var userEmail = jwtServiceImpl.extractUserName(jwt);
+
+        if (userEmail != null) {
+            var user = userRepository.findByEmail(userEmail).orElse(null);
+            if (user != null) {
+                try {
+                    writeJdbcTemplate.update(SqlQuery.UpdateQuery.REVOKE_ALL_USER_TOKENS,
+                            Boolean.TRUE,
+                            Boolean.TRUE,
+                            user.getId()
+                    );
+                    log.info("Successfully logged out user: {}", userEmail);
+                } catch (Exception e) {
+                    log.error("Error during logout for user {}: {}", userEmail, e.getMessage());
+                }
+            }
+        }
     }
 
     @Override
     public ResponseEntity<APIResponse> getAllAuthentications(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<User> usersPage = userRepository.findAll(pageable);
-
 
         List<Map<String, Object>> userDetailsList = usersPage.getContent().stream().map(user -> {
             Map<String, Object> userDetails = new HashMap<>();
@@ -222,13 +272,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userDetails.put("lastName", user.getLastName());
             userDetails.put("email", user.getEmail());
             userDetails.put("role", user.getRole());
-
             userDetails.put("password", passwordEncoder.encode(user.getPassword()));
 
-
-
-
-        // Fetch user-related details based on role
+            // Fetch user-related details based on role
             if (user.getRole().equals(Role.USER)) {
                 try {
                     List<Customer> query = readJdbcTemplate.query(
@@ -283,11 +329,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return userDetails;
         }).toList();
 
-
         return responseUtil.wrapSuccess(userDetailsList, HttpStatus.OK);
     }
-
-
-
-
 }

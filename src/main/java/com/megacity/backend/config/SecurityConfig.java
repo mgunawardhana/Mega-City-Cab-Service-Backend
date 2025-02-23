@@ -56,7 +56,7 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 /* booking */
-                                .requestMatchers("/api/v1/booking/**").hasAnyRole(ADMIN.name())
+                                .requestMatchers("/api/v1/booking/**").hasAnyRole(ADMIN.name(),CUSTOMER.name())
                                 .requestMatchers(GET, "/api/v1/booking/**").hasAnyAuthority(ADMIN_READ.name())
                                 .requestMatchers(POST, "/api/v1/booking/**").hasAnyAuthority(ADMIN_CREATE.name())
                                 .requestMatchers(PUT, "/api/v1/booking/**").hasAnyAuthority(ADMIN_UPDATE.name())

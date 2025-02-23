@@ -36,9 +36,8 @@ public class TokenService {
 
     public Optional<Token> findByToken(String token) {
         String sql = """
-                SELECT id, token, token_type, revoked, expired, user_id
-                FROM token
-                WHERE token = ?
+               SELECT token.id, token.token, token.token_type, token.revoked, token.expired, token.user_id FROM token
+                WHERE token.token = ?
                 """;
 
         try {
