@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestController
 @RequestMapping("api/v1/booking")
-@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -59,7 +58,6 @@ public class BookingController {
 
 
     @GetMapping("/export")
-    @PreAuthorize("hasAuthority('admin:read')")
     public void exportToExcel(HttpServletResponse response) {
         bookingService.exportBookingsToExcel(response);
     }

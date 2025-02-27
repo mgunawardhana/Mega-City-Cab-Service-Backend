@@ -2,7 +2,11 @@ package com.megacity.backend.domain.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.megacity.backend.domain.enums.Role;
+import jakarta.persistence.Column;
 import lombok.*;
+
+import java.util.Date;
+import java.util.List;
 
 @Builder
 @Data
@@ -20,4 +24,17 @@ public class RegistrationRequest {
     private String address;
     private String nic;
     private String phone_number;
+
+    private String driverProfilePicture;
+    private String driverNIC;
+    private String phoneNumber;
+    private String licenseNumber;
+    private Date licenseExpiryDate;
+    private String driverAddress;
+    private String vehicleAssigned;
+    private String driverStatus;
+    private String emergencyContact;
+    private Date dateOfBirth;
+    private Date dateOfJoining;
+    private List<String> licenseImages;
 }

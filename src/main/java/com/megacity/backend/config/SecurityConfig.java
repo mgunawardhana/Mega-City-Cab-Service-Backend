@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import static com.megacity.backend.domain.enums.Permission.*;
 import static com.megacity.backend.domain.enums.Role.ADMIN;
+import static com.megacity.backend.domain.enums.Role.DRIVER;
 import static com.stripe.param.financialconnections.SessionCreateParams.AccountHolder.Type.CUSTOMER;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -33,7 +34,7 @@ public class SecurityConfig {
     @NonNull
     private final AuthenticationProvider authenticationProvider;
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**"};
+    private static final String[] WHITE_LIST_URL = {"api/v1/auth/**","api/v1/web-content/public/**","api/v1/booking/checkout/**"};
 
     private final LogoutHandler logoutHandler;
 
@@ -49,14 +50,16 @@ public class SecurityConfig {
                     cors.addAllowedMethod("*");
                     cors.addAllowedHeader("*");
                     cors.setAllowCredentials(true);
+                    cors.addExposedHeader("Authorization");
                     return cors;
                 }))
+
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
 
                                 /* booking */
-                                .requestMatchers("/api/v1/booking/**").hasAnyRole(ADMIN.name(),CUSTOMER.name())
+                                .requestMatchers("/api/v1/booking/**").hasAnyRole(ADMIN.name(),CUSTOMER.name(), DRIVER.name())
                                 .requestMatchers(GET, "/api/v1/booking/**").hasAnyAuthority(ADMIN_READ.name())
                                 .requestMatchers(POST, "/api/v1/booking/**").hasAnyAuthority(ADMIN_CREATE.name())
                                 .requestMatchers(PUT, "/api/v1/booking/**").hasAnyAuthority(ADMIN_UPDATE.name())

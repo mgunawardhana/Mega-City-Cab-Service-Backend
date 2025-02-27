@@ -14,6 +14,7 @@ import static com.megacity.backend.domain.enums.Permission.*;
 @RequiredArgsConstructor
 public enum Role {
 
+
   USER(Collections.emptySet()),
   ADMIN(
           Set.of(
@@ -22,8 +23,23 @@ public enum Role {
                   ADMIN_DELETE,
                   ADMIN_CREATE
           )
+  ),
+  CUSTOMER(
+          Set.of(
+                  CUSTOMER_READ,
+                  CUSTOMER_UPDATE,
+                  CUSTOMER_DELETE,
+                  CUSTOMER_CREATE
+          )
+  ),
+  DRIVER(
+          Set.of(
+                  DRIVER_READ,
+                  DRIVER_UPDATE,
+                  DRIVER_DELETE,
+                  DRIVER_CREATE
+          )
   );
-
   @Getter
   private final Set<Permission> permissions;
 

@@ -5,6 +5,7 @@ import com.megacity.backend.authentication.repository.UserRepository;
 import com.megacity.backend.authentication.service.impl.AuthenticationService;
 import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Customer;
+import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.entity.Manager;
 import com.megacity.backend.domain.entity.User;
 import com.megacity.backend.domain.enums.Role;
@@ -34,10 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.sql.SQLException;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -69,7 +68,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
         try {
-            // Create user entity
             var user = User.builder()
                     .firstName(registrationRequest.getFirstName())
                     .lastName(registrationRequest.getLastName())
@@ -80,10 +78,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             log.info("Processing registration for user: {}", user.getEmail());
 
-            // Save user
             User savedUser = userRepository.save(user);
 
-            // Handle role-specific data
             try {
                 if (savedUser.getRole().equals(Role.USER)) {
                     writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_CUSTOMER,
@@ -101,17 +97,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             registrationRequest.getPhone_number()
                     );
                     log.info("New Manager profile created successfully");
+                } else if (savedUser.getRole().equals(Role.DRIVER)) {
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_DRIVER,
+                            savedUser.getId(),
+                            registrationRequest.getDriverProfilePicture(),
+                            registrationRequest.getNic(),
+                            registrationRequest.getPhone_number(),
+                            registrationRequest.getLicenseNumber(),
+                            registrationRequest.getLicenseExpiryDate(),
+                            registrationRequest.getDriverAddress(),
+                            registrationRequest.getVehicleAssigned(),
+                            registrationRequest.getDriverStatus(),
+                            registrationRequest.getEmergencyContact(),
+                            registrationRequest.getDateOfBirth(),
+                            registrationRequest.getDateOfJoining(),
+                            registrationRequest.getLicenseImages().toArray(new String[0])
+                    );
+
+                    log.info("New Driver profile created successfully");
                 }
             } catch (Exception e) {
                 log.error("Error creating profile for user {}: {}", savedUser.getEmail(), e.getMessage());
                 throw new RuntimeException("Failed to create user profile", e);
             }
 
-            // Generate tokens
             String accessToken = jwtServiceImpl.generateToken(savedUser);
             String refreshToken = jwtServiceImpl.generateRefreshToken(savedUser);
 
-            // Save token
             try {
                 writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
                         accessToken,
@@ -148,11 +160,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         log.info("AuthenticationResponse From Authenticate Function: {}", user);
 
-        // Generate new tokens
         var accessToken = jwtServiceImpl.generateToken(user);
         var refreshToken = jwtServiceImpl.generateRefreshToken(user);
 
-        // Try to update existing token first
         try {
             int updatedRows = writeJdbcTemplate.update(
                     "UPDATE token SET token = ?, revoked = ?, expired = ? WHERE user_id = ? AND revoked = false",
@@ -162,7 +172,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     user.getId()
             );
 
-            // If no existing active token found, insert new one
             if (updatedRows == 0) {
                 writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
                         accessToken,
@@ -183,6 +192,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(Objects.requireNonNull(accessToken))
                 .refreshToken(Objects.requireNonNull(refreshToken))
+                .userName(user.getFirstName()+" "+user.getLastName())
                 .build();
     }
 
@@ -208,7 +218,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 var accessToken = jwtServiceImpl.generateToken(userDetails);
                 log.info("Generated Token from Refresh Token Function: {}", accessToken);
 
-                // Save the new access token
                 try {
                     writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
                             accessToken,
@@ -274,20 +283,83 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userDetails.put("role", user.getRole());
             userDetails.put("password", passwordEncoder.encode(user.getPassword()));
 
-            // Fetch user-related details based on role
-            if (user.getRole().equals(Role.USER)) {
+            if (user.getRole().equals(Role.DRIVER)) {
+                try {
+                    log.debug("Fetching driver details for user ID: {}", user.getId());
+
+                    List<Driver> query = readJdbcTemplate.query(
+                            SqlQuery.SelectQuery.FIND_DRIVER_BY_ROOT_USER_ID,
+                            new Object[]{user.getId()},
+                            (rs, rowNum) -> {
+                                try {
+                                    return Driver.builder()
+                                            .driverRegistrationNumber(rs.getInt("driver_registration_number"))
+                                            .rootUserId(rs.getInt("root_user_id"))
+                                            .driverProfilePicture(rs.getString("driver_profile_picture"))
+                                            .driverAddress(rs.getString("driver_address"))
+                                            .driverNIC(rs.getString("driver_nic"))
+                                            .phoneNumber(String.valueOf(rs.getLong("phone_number")))
+                                            .vehicleAssigned(rs.getString("vehicle_assigned"))
+                                            .driverStatus(rs.getString("driver_status"))
+                                            .emergencyContact(rs.getString("emergency_contact"))
+                                            .dateOfBirth(rs.getDate("date_of_birth"))
+                                            .dateOfJoining(rs.getDate("date_of_joining"))
+                                            .licenseNumber(rs.getString("license_number"))
+                                            .licenseExpiryDate(rs.getDate("license_expiry_date"))
+                                            .licenseImages(Collections.singletonList(rs.getString("license_images")))
+                                            .build();
+                                } catch (SQLException e) {
+                                    log.error("Error mapping driver row for user ID {}: {}", user.getId(), e.getMessage());
+                                    throw new RuntimeException("Error mapping driver data", e);
+                                }
+                            }
+                    );
+
+                    log.debug("Driver query results size: {}", query.size());
+
+                    if (!query.isEmpty()) {
+                        Driver driver = query.get(0);
+                        userDetails.put("driver_registration_number", driver.getDriverRegistrationNumber());
+                        userDetails.put("root_user_id", driver.getRootUserId());
+                        userDetails.put("driver_profile_picture", driver.getDriverProfilePicture());
+                        userDetails.put("driver_address", driver.getDriverAddress());
+                        userDetails.put("driver_nic", driver.getDriverNIC());
+                        userDetails.put("phone_number", driver.getPhoneNumber());
+                        userDetails.put("vehicle_assigned", driver.getVehicleAssigned());
+                        userDetails.put("driver_status", driver.getDriverStatus());
+                        userDetails.put("emergency_contact", driver.getEmergencyContact());
+                        userDetails.put("date_of_birth", driver.getDateOfBirth());
+                        userDetails.put("date_of_joining", driver.getDateOfJoining());
+                        userDetails.put("license_number", driver.getLicenseNumber());
+                        userDetails.put("license_expiry_date", driver.getLicenseExpiryDate());
+                        String licenseImagesString = driver.getLicenseImages().get(0); // Assuming it's a single comma-separated string
+                        List<String> licenseImagesList = Arrays.asList(licenseImagesString.split(",")); // Split into a list
+
+                        userDetails.put("license_images", licenseImagesList);
+
+
+                    } else {
+                        log.warn("No driver details found for user ID: {}", user.getId());
+                    }
+                } catch (Exception e) {
+                    log.error("Error while getting driver details for user ID {}: {}", user.getId(), e.getMessage(), e);
+                }
+            } else if (user.getRole().equals(Role.CUSTOMER)) {
                 try {
                     List<Customer> query = readJdbcTemplate.query(
                             SqlQuery.SelectQuery.FIND_CUSTOMER_BY_ROOT_USER_ID,
                             new Object[]{user.getId()},
                             (rs, rowNum) -> Customer.builder()
-                                    .registrationNumber(Integer.parseInt(rs.getString("registration_number")))
-                                    .rootUserId(Integer.parseInt(rs.getString("root_user_id")))
+                                    .registrationNumber(rs.getInt("registration_number"))
+                                    .rootUserId(rs.getInt("root_user_id"))
                                     .address(rs.getString("address"))
                                     .NIC(rs.getString("nic"))
                                     .phoneNumber(String.valueOf(rs.getLong("phone_number")))
                                     .build()
                     );
+
+                    log.debug("Customer query results size: {}", query.size());
+
                     if (!query.isEmpty()) {
                         Customer customer = query.get(0);
                         userDetails.put("registration_number", customer.getRegistrationNumber());
@@ -295,20 +367,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         userDetails.put("address", customer.getAddress());
                         userDetails.put("nic", customer.getNIC());
                         userDetails.put("phone_number", customer.getPhoneNumber());
+                    } else {
+                        log.warn("No customer details found for user ID: {}", user.getId());
                     }
                 } catch (Exception e) {
-                    log.error("Error while getting customer details: {}", e.getMessage());
+                    log.error("Error while getting customer details for user ID {}: {}", user.getId(), e.getMessage(), e);
+                    throw new RuntimeException("Error retrieving customer data", e);
                 }
-            }
-
-            if (user.getRole().equals(Role.ADMIN)) {
+            } else if (user.getRole().equals(Role.ADMIN)) {
                 try {
                     List<Manager> query = readJdbcTemplate.query(
                             SqlQuery.SelectQuery.FIND_MANAGER_BY_ROOT_USER_ID,
                             new Object[]{user.getId()},
                             (rs, rowNum) -> Manager.builder()
-                                    .registrationNumber(Integer.parseInt(rs.getString("registration_number")))
-                                    .rootUserId(Integer.parseInt(rs.getString("root_user_id")))
+                                    .registrationNumber(rs.getInt("registration_number"))
+                                    .rootUserId(rs.getInt("root_user_id"))
                                     .address(rs.getString("address"))
                                     .NIC(rs.getString("nic"))
                                     .phoneNumber(String.valueOf(rs.getLong("phone_number")))
@@ -326,6 +399,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     log.error("Error while getting manager details: {}", e.getMessage());
                 }
             }
+
             return userDetails;
         }).toList();
 
