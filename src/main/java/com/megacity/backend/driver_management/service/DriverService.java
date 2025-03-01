@@ -14,4 +14,10 @@ public interface DriverService {
      * @return a ResponseEntity containing the APIResponse with the driver details
      */
     ResponseEntity<APIResponse> getDriverById(String driverNIC);
+
+    /**
+     * Retrieves all drivers by their license number.
+     * @return a ResponseEntity containing the APIResponse with the list of drivers
+     */
+    ResponseEntity<APIResponse> getAllDrivers();
 }

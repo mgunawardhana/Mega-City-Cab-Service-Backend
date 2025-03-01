@@ -21,9 +21,6 @@ public class Driver {
     @Column(name = "root_user_id")
     private Integer rootUserId;
 
-    @Column(name = "driver_profile_picture", nullable = false)
-    private String driverProfilePicture;
-
     @Column(name = "driver_nic", nullable = false)
     private String driverNIC;
 
@@ -54,6 +51,9 @@ public class Driver {
     @Column(name = "date_of_joining")
     private Date dateOfJoining;
 
-    @Column(name = "license_images")
-    private List<String> licenseImages;
+    @Column(name = "license_image_front")
+    private String licenseImageFront;
+
+    @Column(name = "license_image_back")
+    private String licenseImageBack;
 }

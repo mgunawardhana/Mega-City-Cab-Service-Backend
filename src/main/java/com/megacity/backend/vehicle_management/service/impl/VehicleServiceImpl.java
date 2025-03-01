@@ -38,9 +38,11 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public ResponseEntity<APIResponse> registerVehicle(Vehicle vehicle) {
         try {
+            // Ensure the order matches the column definition and parameter list
             writeJdbcTemplate.update(
                     SqlQuery.InsertQuery.ADD_NEW_VEHICLE,
                     vehicle.getRegistrationNumber(),
+                    vehicle.getVehicleImage(),
                     vehicle.getMake(),
                     vehicle.getModel(),
                     vehicle.getYearOfManufacture(),
@@ -59,14 +61,13 @@ public class VehicleServiceImpl implements VehicleService {
                     vehicle.getLicensePlateNumber(),
                     vehicle.getPermitType(),
                     vehicle.isAirConditioning(),
-                    vehicle.getVehicleImage(), // **Added missing vehicle_image field**
                     vehicle.getAdditionalFeatures()
             );
-            log.info("Vehicle registered successfully ");
+            log.info("Vehicle registered successfully");
             return responseUtil.wrapSuccess("Vehicle registered successfully", HttpStatus.OK);
         } catch (Exception e) {
-            log.warn("Failed to register vehicle {}", e.getMessage());
-            return responseUtil.wrapError("Failed to registering vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            log.warn("Failed to register vehicle: {}", e.getMessage());
+            return responseUtil.wrapError("Failed to register vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

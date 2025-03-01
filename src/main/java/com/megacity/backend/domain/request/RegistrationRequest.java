@@ -25,7 +25,7 @@ public class RegistrationRequest {
     private String nic;
     private String phone_number;
 
-    private String driverProfilePicture;
+//    private String driverProfilePicture;
     private String driverNIC;
     private String phoneNumber;
     private String licenseNumber;
@@ -36,5 +36,6 @@ public class RegistrationRequest {
     private String emergencyContact;
     private Date dateOfBirth;
     private Date dateOfJoining;
-    private List<String> licenseImages;
+    private String licenseImageFront;
+    private String licenseImageBack;
 }

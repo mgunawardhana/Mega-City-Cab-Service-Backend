@@ -88,7 +88,7 @@ public class SqlQuery {
         public static final String FIND_DRIVER_BY_ROOT_USER_ID = """
                 SELECT driver_registration_number, root_user_id, driver_profile_picture, driver_nic, phone_number,
                        license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status,
-                       emergency_contact, date_of_birth, date_of_joining, license_images
+                       emergency_contact, date_of_birth, date_of_joining, license_image_front, license_image_back
                 FROM driver
                 WHERE root_user_id = ?
                 """;
@@ -103,8 +103,7 @@ public class SqlQuery {
      */
     public static class InsertQuery {
 
-        public static final String INSERT_TOKEN = "INSERT INTO token (token, token_type, revoked, expired, user_id)\n" +
-                "VALUES (?, ?, ?, ?, ?);\n";
+        public static final String INSERT_TOKEN = "INSERT INTO token (token, token_type, revoked, expired, user_id)\n" + "VALUES (?, ?, ?, ?, ?);\n";
 
         public static final String INSERT_ARTICLE = """
                 INSERT INTO _article ( discount, title, description, author, media, is_active ) VALUES (?, ?, ?, ?, ?, ?);""";
@@ -113,22 +112,23 @@ public class SqlQuery {
                 INSERT INTO guideline (title, description, category, priority, related_to) VALUES (?, ?, ?, ?, ?)""";
 
         public static final String ADD_NEW_VEHICLE = """
-                    INSERT INTO vehicle (
-                        registration_number, make, model, year_of_manufacture, color, fuel_type,
-                        engine_capacity, chassis_number, vehicle_type, owner_name, owner_contact,
-                        owner_address, insurance_provider, insurance_policy_number,
-                        insurance_expiry_date, seating_capacity, license_plate_number,
-                        permit_type, air_conditioning, vehicle_image, additional_features
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-                """;
-
+                INSERT INTO vehicle (
+                    registration_number, vehicle_image, make, model, year_of_manufacture, 
+                    color, fuel_type, engine_capacity, chassis_number, vehicle_type, 
+                    owner_name, owner_contact, owner_address, insurance_provider, 
+                    insurance_policy_number, insurance_expiry_date, seating_capacity, 
+                    license_plate_number, permit_type, air_conditioning, additional_features
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """;
 
         public static final String ADD_NEW_DRIVER = """
-                INSERT INTO driver (root_user_id, driver_profile_picture, driver_nic, phone_number, 
-                                    license_number, license_expiry_date, driver_address, 
-                                    vehicle_assigned, driver_status, emergency_contact, 
-                                    date_of_birth, date_of_joining, license_images) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+    INSERT INTO driver (root_user_id, driver_nic, phone_number, 
+                        license_number, license_expiry_date, driver_address, 
+                        vehicle_assigned, driver_status, emergency_contact, 
+                        date_of_birth, date_of_joining, license_image_front, license_image_back) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+""";
+
 
         public static final String ADD_NEW_CUSTOMER = """
                 INSERT INTO customer (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";

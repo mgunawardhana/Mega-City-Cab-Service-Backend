@@ -27,4 +27,12 @@ public class DriverController {
         log.info("fetchDriverById {}",response);
         return response;
     }
+
+    @GetMapping("/fetch-all")
+    public ResponseEntity<APIResponse> fetchAllDriverRecords(){
+        log.info("fetchAllDriverRecords start");
+        var response = driverService.getAllDrivers();
+        log.info("fetchAllDriverRecords {}",response);
+        return response;
+    }
 }

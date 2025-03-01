@@ -98,21 +98,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     );
                     log.info("New Manager profile created successfully");
                 } else if (savedUser.getRole().equals(Role.DRIVER)) {
-                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_DRIVER,
+                    writeJdbcTemplate.update(
+                            SqlQuery.InsertQuery.ADD_NEW_DRIVER,
                             savedUser.getId(),
-                            registrationRequest.getDriverProfilePicture(),
                             registrationRequest.getNic(),
                             registrationRequest.getPhone_number(),
                             registrationRequest.getLicenseNumber(),
                             registrationRequest.getLicenseExpiryDate(),
                             registrationRequest.getDriverAddress(),
-                            registrationRequest.getVehicleAssigned(),
-                            registrationRequest.getDriverStatus(),
+                            registrationRequest.getVehicleAssigned() != null ? registrationRequest.getVehicleAssigned() : "FALSE", // Default to 'FALSE' if null
+                            registrationRequest.getDriverStatus() != null ? registrationRequest.getDriverStatus() : "Active", // Default to 'Active' if null
                             registrationRequest.getEmergencyContact(),
                             registrationRequest.getDateOfBirth(),
                             registrationRequest.getDateOfJoining(),
-                            registrationRequest.getLicenseImages().toArray(new String[0])
+                            registrationRequest.getLicenseImageFront(),
+                            registrationRequest.getLicenseImageBack()
                     );
+
+                    log.info("## {}",registrationRequest.getLicenseImageFront());
+                    log.info("## {}",registrationRequest.getLicenseImageBack());
+
 
                     log.info("New Driver profile created successfully");
                 }
@@ -281,6 +286,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userDetails.put("lastName", user.getLastName());
             userDetails.put("email", user.getEmail());
             userDetails.put("role", user.getRole());
+            userDetails.put("user_profile_pic",user.getUserProfilePic());
             userDetails.put("password", passwordEncoder.encode(user.getPassword()));
 
             if (user.getRole().equals(Role.DRIVER)) {
@@ -295,7 +301,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                     return Driver.builder()
                                             .driverRegistrationNumber(rs.getInt("driver_registration_number"))
                                             .rootUserId(rs.getInt("root_user_id"))
-                                            .driverProfilePicture(rs.getString("driver_profile_picture"))
+//                                            .driverProfilePicture(rs.getString("driver_profile_picture"))
                                             .driverAddress(rs.getString("driver_address"))
                                             .driverNIC(rs.getString("driver_nic"))
                                             .phoneNumber(String.valueOf(rs.getLong("phone_number")))
@@ -306,7 +312,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                             .dateOfJoining(rs.getDate("date_of_joining"))
                                             .licenseNumber(rs.getString("license_number"))
                                             .licenseExpiryDate(rs.getDate("license_expiry_date"))
-                                            .licenseImages(Collections.singletonList(rs.getString("license_images")))
+                                            .licenseImageFront(rs.getString("license_image_front"))
+                                            .licenseImageBack(rs.getString("license_image_back"))
                                             .build();
                                 } catch (SQLException e) {
                                     log.error("Error mapping driver row for user ID {}: {}", user.getId(), e.getMessage());
@@ -321,7 +328,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         Driver driver = query.get(0);
                         userDetails.put("driver_registration_number", driver.getDriverRegistrationNumber());
                         userDetails.put("root_user_id", driver.getRootUserId());
-                        userDetails.put("driver_profile_picture", driver.getDriverProfilePicture());
+//                        userDetails.put("driver_profile_picture", driver.getDriverProfilePicture());
                         userDetails.put("driver_address", driver.getDriverAddress());
                         userDetails.put("driver_nic", driver.getDriverNIC());
                         userDetails.put("phone_number", driver.getPhoneNumber());
@@ -332,10 +339,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         userDetails.put("date_of_joining", driver.getDateOfJoining());
                         userDetails.put("license_number", driver.getLicenseNumber());
                         userDetails.put("license_expiry_date", driver.getLicenseExpiryDate());
-                        String licenseImagesString = driver.getLicenseImages().get(0); // Assuming it's a single comma-separated string
-                        List<String> licenseImagesList = Arrays.asList(licenseImagesString.split(",")); // Split into a list
-
-                        userDetails.put("license_images", licenseImagesList);
+                        userDetails.put("license_image_front", driver.getLicenseImageFront());
+                        userDetails.put("license_image_back", driver.getLicenseImageBack());
 
 
                     } else {
