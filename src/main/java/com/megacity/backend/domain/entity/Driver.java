@@ -56,4 +56,7 @@ public class Driver {
 
     @Column(name = "license_image_back")
     private String licenseImageBack;
+
+    @Column(name = "user_profile_pic")
+    private String user_profile_pic;
 }

@@ -4,9 +4,9 @@ metadata:
   name: mega-city-cab-service-backend
 spec:
   selector:
-    app: mega-city-cab-service-backend  # Same as app in deployment.yaml
+    app: mega-city-cab-service-backend  # Matches the label in deployment.yaml
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 3000  # Same as containerPort in deployment.yaml
-  type: LoadBalancer  # Can be ClusterIP, NodePort, or LoadBalancer (for cloud)
+      port: 80  # External port exposed by the service (can be accessed via this port)
+      targetPort: 8080  # Internal port your application runs on (matches server.port in application.properties)
+  type: LoadBalancer  # Use ClusterIP for internal access, NodePort for testing, or LoadBalancer for cloud exposure

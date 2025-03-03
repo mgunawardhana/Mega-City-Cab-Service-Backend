@@ -79,4 +79,7 @@ public class Vehicle {
 
     @Column(name = "additional_features")
     private String additionalFeatures;
+
+    @Column(name = "status")
+    private String status;
 }

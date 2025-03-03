@@ -45,6 +45,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "user_profile_pic")
     private String userProfilePic;
 
 

@@ -73,6 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .lastName(registrationRequest.getLastName())
                     .email(registrationRequest.getEmail())
                     .password(passwordEncoder.encode(registrationRequest.getPassword()))
+                    .userProfilePic(registrationRequest.getDriverProfilePicture())
                     .role(registrationRequest.getRole())
                     .build();
 
@@ -198,6 +199,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .accessToken(Objects.requireNonNull(accessToken))
                 .refreshToken(Objects.requireNonNull(refreshToken))
                 .userName(user.getFirstName()+" "+user.getLastName())
+                .role(String.valueOf(user.getRole()))
                 .build();
     }
 

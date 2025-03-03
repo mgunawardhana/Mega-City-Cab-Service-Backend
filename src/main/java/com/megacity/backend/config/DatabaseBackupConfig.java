@@ -31,7 +31,7 @@ public class DatabaseBackupConfig {
     @Value("${spring.datasource.write.password}")
     private String dbPassword;
 
-    @Value("${backup.directory:C:/backup}")
+    @Value("${backup.directory:./resources}")
     private String backupDirectory;
 
     @Value("${backup.retention-days:7}")
@@ -70,7 +70,7 @@ public class DatabaseBackupConfig {
             );
 
             pb.environment().put("PGPASSWORD", dbPassword);
-            pb.redirectErrorStream(true); // Capture both output and errors
+            pb.redirectErrorStream(true);
 
             Process process = pb.start();
             int exitCode = process.waitFor();
