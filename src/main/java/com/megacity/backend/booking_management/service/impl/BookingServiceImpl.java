@@ -35,35 +35,40 @@ public class BookingServiceImpl implements BookingService {
     @NonNull
     private final ExcelExportService excelExportService;
 
-    public BookingServiceImpl(@NonNull JdbcTemplate writeJdbcTemplate, @NonNull JdbcTemplate readJdbcTemplate,
-                              @NonNull ResponseUtil responseUtil, @NonNull ExcelExportService excelExportService) {
+    public BookingServiceImpl(@NonNull JdbcTemplate writeJdbcTemplate, @NonNull JdbcTemplate readJdbcTemplate, @NonNull ResponseUtil responseUtil, @NonNull ExcelExportService excelExportService) {
         this.writeJdbcTemplate = writeJdbcTemplate;
         this.readJdbcTemplate = readJdbcTemplate;
         this.responseUtil = responseUtil;
         this.excelExportService = excelExportService;
     }
 
+    @Override
+    public ResponseEntity<APIResponse> updateBookingByDriverDetails(String bookingId) {
+        try {
+            Long bookingNumber = Long.parseLong(bookingId);
+
+            int rowsAffected = readJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE, bookingNumber);
+
+            if (rowsAffected > 0) {
+                log.info("Successfully updated booking status for bookingId: {}", bookingId);
+                return responseUtil.wrapSuccess("Booking status updated successfully", HttpStatus.OK);
+            } else {
+                log.warn("No booking found with bookingId: {}", bookingId);
+                return responseUtil.wrapError("Booking not found", "No booking exists with ID: " + bookingId, HttpStatus.NOT_FOUND);
+            }
+        } catch (NumberFormatException e) {
+            log.error("Invalid bookingId format: {}", bookingId, e);
+            return responseUtil.wrapError("Invalid booking ID", "Booking ID must be a valid number", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error("Error updating booking for bookingId: {}", bookingId, e);
+            return responseUtil.wrapError("Error updating booking", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @Override
     public void exportBookingsToExcel(HttpServletResponse response) {
         try {
-            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS_WITHOUT_PAGINATION, (rs, rowNum) -> Booking.builder()
-                    .bookingNumber(rs.getLong("booking_number"))
-                    .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
-                    .pickupLocation(rs.getString("pickup_location"))
-                    .dropOffLocation(rs.getString("drop_off_location"))
-                    .carNumber(rs.getString("car_number"))
-                    .taxes(rs.getBigDecimal("taxes"))
-                    .distance(rs.getDouble("distance"))
-                    .estimatedTime(rs.getDouble("estimatedTime"))
-                    .taxWithoutCost(rs.getDouble("tax_without_cost"))
-                    .totalAmount(rs.getBigDecimal("total_amount"))
-                    .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                    .driverId(rs.getString("driver_id"))
-                    .status(rs.getString("status"))
-                    .createdDate(rs.getTimestamp("created_date").toLocalDateTime())
-                    .updatedDate(rs.getTimestamp("updated_date").toLocalDateTime())
-                    .build());
+            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS_WITHOUT_PAGINATION, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).carNumber(rs.getString("car_number")).taxes(rs.getBigDecimal("taxes")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).taxWithoutCost(rs.getDouble("tax_without_cost")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).createdDate(rs.getTimestamp("created_date").toLocalDateTime()).updatedDate(rs.getTimestamp("updated_date").toLocalDateTime()).build());
 
             byte[] excelData = excelExportService.generateExcel(bookings);
 
@@ -76,24 +81,10 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Override
     public ResponseEntity<APIResponse> fetchBookingsByDriverIdAndStatus(String driverId) {
         try {
-            List<Booking> bookings = readJdbcTemplate.query(
-                    SqlQuery.SelectQuery.FIND_BOOKING_BY_DRIVER_ID,
-                    new Object[]{driverId},
-                    (rs, rowNum) -> Booking.builder()
-                            .bookingNumber(rs.getLong("booking_number"))
-                            .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
-                            .pickupLocation(rs.getString("pickup_location"))
-                            .dropOffLocation(rs.getString("drop_off_location"))
-                            .distance(rs.getDouble("distance"))
-                            .estimatedTime(rs.getDouble("estimatedTime"))
-                            .totalAmount(rs.getBigDecimal("total_amount"))
-                            .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                            .driverId(rs.getString("driver_id"))
-                            .status(rs.getString("status"))
-                            .build()
-            );
+            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_BOOKING_BY_DRIVER_ID, new Object[]{driverId}, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).build());
 
             System.out.println(bookings);
 
@@ -106,16 +97,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> advancedSearch(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "100") int size,
-            @RequestParam(required = false) LocalDateTime bookingDate,
-            @RequestParam(required = false) String pickupLocation,
-            @RequestParam(required = false) String dropOffLocation,
-            @RequestParam(required = false) String carNumber,
-            @RequestParam(required = false) String driverId,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) LocalDateTime createdDate) {
+    public ResponseEntity<APIResponse> advancedSearch(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size, @RequestParam(required = false) LocalDateTime bookingDate, @RequestParam(required = false) String pickupLocation, @RequestParam(required = false) String dropOffLocation, @RequestParam(required = false) String carNumber, @RequestParam(required = false) String driverId, @RequestParam(required = false) String status, @RequestParam(required = false) LocalDateTime createdDate) {
 
         try {
             StringBuilder queryBuilder = new StringBuilder("SELECT * FROM booking WHERE 1=1");
@@ -154,26 +136,7 @@ public class BookingServiceImpl implements BookingService {
             params.add(size);
             params.add(page * size);
 
-            List<Booking> query = readJdbcTemplate.query(
-                    queryBuilder.toString(),
-                    params.toArray(),
-                    (rs, rowNum) -> Booking.builder()
-                            .bookingNumber(rs.getLong("booking_number"))
-                            .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
-                            .pickupLocation(rs.getString("pickup_location"))
-                            .dropOffLocation(rs.getString("drop_off_location"))
-                            .carNumber(rs.getString("car_number"))
-                            .taxes(rs.getBigDecimal("taxes"))
-                            .distance(rs.getDouble("distance"))
-                            .estimatedTime(rs.getDouble("estimatedTime"))
-                            .taxWithoutCost(rs.getDouble("tax_without_cost"))
-                            .totalAmount(rs.getBigDecimal("total_amount"))
-                            .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                            .driverId(rs.getString("driver_id"))
-                            .status(rs.getString("status"))
-                            .createdDate(rs.getTimestamp("created_date").toLocalDateTime())
-                            .updatedDate(rs.getTimestamp("updated_date").toLocalDateTime())
-                            .build());
+            List<Booking> query = readJdbcTemplate.query(queryBuilder.toString(), params.toArray(), (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).carNumber(rs.getString("car_number")).taxes(rs.getBigDecimal("taxes")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).taxWithoutCost(rs.getDouble("tax_without_cost")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).createdDate(rs.getTimestamp("created_date").toLocalDateTime()).updatedDate(rs.getTimestamp("updated_date").toLocalDateTime()).build());
 
             log.info("Fetched filtered bookings successfully");
             return responseUtil.wrapSuccess(query, HttpStatus.OK);
@@ -184,24 +147,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> getAllBookings(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "100") int size) {
+    public ResponseEntity<APIResponse> getAllBookings(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
         try {
-            List<Booking> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS, new Object[]{size, page * size}, (rs, rowNum) -> Booking.builder()
-                    .bookingNumber(rs.getLong("booking_number"))
-                    .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
-                    .pickupLocation(rs.getString("pickup_location"))
-                    .dropOffLocation(rs.getString("drop_off_location"))
-                    .carNumber(rs.getString("car_number"))
-                    .taxes(rs.getBigDecimal("taxes"))
-                    .distance(rs.getDouble("distance"))
-                    .estimatedTime(rs.getDouble("estimatedTime"))
-                    .taxWithoutCost(rs.getDouble("tax_without_cost"))
-                    .totalAmount(rs.getBigDecimal("total_amount"))
-                    .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                    .driverId(rs.getString("driver_id"))
-                    .status(rs.getString("status"))
-                    .build());
+            List<Booking> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS, new Object[]{size, page * size}, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).carNumber(rs.getString("car_number")).taxes(rs.getBigDecimal("taxes")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).taxWithoutCost(rs.getDouble("tax_without_cost")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).build());
             log.info("Fetched all bookings successfully");
             return responseUtil.wrapSuccess(query, HttpStatus.OK);
         } catch (Exception e) {
@@ -213,22 +161,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public ResponseEntity<APIResponse> getBookingById(Integer bookingId) {
         try {
-            Booking booking = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_BOOKING_BY_ID,
-                    new Object[]{bookingId}, (rs, rowNum) -> Booking.builder()
-                    .bookingNumber(rs.getLong("booking_number"))
-                    .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
-                    .pickupLocation(rs.getString("pickup_location"))
-                    .dropOffLocation(rs.getString("drop_off_location"))
-                    .carNumber(rs.getString("car_number"))
-                    .taxes(rs.getBigDecimal("taxes"))
-                    .distance(rs.getDouble("distance"))
-                    .estimatedTime(rs.getDouble("estimatedTime"))
-                    .taxWithoutCost(rs.getDouble("tax_without_cost"))
-                    .totalAmount(rs.getBigDecimal("total_amount"))
-                    .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                    .driverId(rs.getString("driver_id"))
-                    .status(rs.getString("status"))
-                    .build());
+            Booking booking = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_BOOKING_BY_ID, new Object[]{bookingId}, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).carNumber(rs.getString("car_number")).taxes(rs.getBigDecimal("taxes")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).taxWithoutCost(rs.getDouble("tax_without_cost")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).build());
             log.info("Fetched booking successfully");
             return responseUtil.wrapSuccess(booking, HttpStatus.OK);
         } catch (Exception e) {
@@ -241,29 +174,14 @@ public class BookingServiceImpl implements BookingService {
     public ResponseEntity<APIResponse> createBooking(Booking booking) {
         try {
 
-            Integer count = writeJdbcTemplate.queryForObject(SqlQuery.InsertQuery.VALIDATE_BOOKING, Integer.class,
-                    booking.getCarNumber(), booking.getBookingDate());
+            Integer count = writeJdbcTemplate.queryForObject(SqlQuery.InsertQuery.VALIDATE_BOOKING, Integer.class, booking.getCarNumber(), booking.getBookingDate());
 
             if (count != null && count > 0) {
                 log.warn("Booking conflict: Another booking exists within 5 hours for car {}", booking.getCarNumber());
-                return responseUtil.wrapError("Booking conflict: Another booking exists within 5 hours.",
-                        "Please select a different time slot.",
-                        HttpStatus.CONFLICT);
+                return responseUtil.wrapError("Booking conflict: Another booking exists within 5 hours.", "Please select a different time slot.", HttpStatus.CONFLICT);
             }
 
-            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING,
-                    booking.getBookingDate(),
-                    booking.getPickupLocation(),
-                    booking.getDropOffLocation(),
-                    booking.getCarNumber(),
-                    booking.getTaxes(),
-                    booking.getDistance(),
-                    booking.getEstimatedTime(),
-                    booking.getTaxWithoutCost(),
-                    booking.getTotalAmount(),
-                    booking.getCustomerRegistrationNumber(),
-                    booking.getDriverId(),
-                    booking.getStatus());
+            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING, booking.getBookingDate(), booking.getPickupLocation(), booking.getDropOffLocation(), booking.getCarNumber(), booking.getTaxes(), booking.getDistance(), booking.getEstimatedTime(), booking.getTaxWithoutCost(), booking.getTotalAmount(), booking.getCustomerRegistrationNumber(), booking.getDriverId(), booking.getStatus());
 
             log.info("Booking created successfully for car {}", booking.getCarNumber());
             return responseUtil.wrapSuccess("Booking created successfully", HttpStatus.OK);
@@ -283,22 +201,7 @@ public class BookingServiceImpl implements BookingService {
             }
             LocalDateTime updatedDate = LocalDateTime.now();
 
-            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_BOOKING,
-                    booking.getBookingDate(),
-                    booking.getPickupLocation(),
-                    booking.getDropOffLocation(),
-                    booking.getCarNumber(),
-                    booking.getTaxes(),
-                    booking.getDistance(),
-                    booking.getEstimatedTime(),
-                    booking.getTaxWithoutCost(),
-                    booking.getTotalAmount(),
-                    booking.getCustomerRegistrationNumber(),
-                    booking.getDriverId(),
-                    booking.getStatus(),
-                    updatedDate,
-                    booking.getBookingNumber()
-            );
+            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_BOOKING, booking.getBookingDate(), booking.getPickupLocation(), booking.getDropOffLocation(), booking.getCarNumber(), booking.getTaxes(), booking.getDistance(), booking.getEstimatedTime(), booking.getTaxWithoutCost(), booking.getTotalAmount(), booking.getCustomerRegistrationNumber(), booking.getDriverId(), booking.getStatus(), updatedDate, booking.getBookingNumber());
 
             log.info("Booking updated successfully for booking number: {}", booking.getBookingNumber());
             return responseUtil.wrapSuccess("Booking updated successfully", HttpStatus.OK);

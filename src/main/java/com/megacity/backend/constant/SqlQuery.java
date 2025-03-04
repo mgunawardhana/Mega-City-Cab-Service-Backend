@@ -252,6 +252,8 @@ public class SqlQuery {
                     WHERE booking_number = ?
                 """;
 
+        public static final String UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE =
+                "UPDATE booking SET status = 'COMPLETED', updated_date = CURRENT_TIMESTAMP WHERE booking_number = ?";
         private UpdateQuery() {
         }
     }

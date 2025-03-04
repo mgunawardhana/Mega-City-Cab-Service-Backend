@@ -48,6 +48,14 @@ public class BookingController {
         return response;
     }
 
+    @PostMapping("/{bookingId}")
+    public ResponseEntity<APIResponse> updateBookingFromDriverSide(@PathVariable String bookingId){
+        log.info("updateBookingFromDriverSide");
+        var resp = bookingService.updateBookingByDriverDetails(bookingId);
+        log.info("updateBookingFromDriverSide");
+        return resp;
+    }
+
     @PostMapping("/checkout")
     public ResponseEntity<StripeResponse> checkOutProducts(@RequestBody ProductRequest productRequest) {
         System.out.println("awa");
