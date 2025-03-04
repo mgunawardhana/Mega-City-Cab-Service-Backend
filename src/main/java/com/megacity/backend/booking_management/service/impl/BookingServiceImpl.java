@@ -3,9 +3,7 @@ package com.megacity.backend.booking_management.service.impl;
 import com.megacity.backend.booking_management.service.BookingService;
 import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Booking;
-import com.megacity.backend.domain.request.ProductRequest;
 import com.megacity.backend.domain.response.APIResponse;
-import com.megacity.backend.domain.response.StripeResponse;
 import com.megacity.backend.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -15,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
@@ -47,6 +43,7 @@ public class BookingServiceImpl implements BookingService {
         this.excelExportService = excelExportService;
     }
 
+
     @Override
     public void exportBookingsToExcel(HttpServletResponse response) {
         try {
@@ -76,6 +73,35 @@ public class BookingServiceImpl implements BookingService {
             response.getOutputStream().flush();
         } catch (Exception e) {
             log.error("Error exporting bookings to Excel", e);
+        }
+    }
+
+    public ResponseEntity<APIResponse> fetchBookingsByDriverIdAndStatus(String driverId) {
+        try {
+            List<Booking> bookings = readJdbcTemplate.query(
+                    SqlQuery.SelectQuery.FIND_BOOKING_BY_DRIVER_ID,
+                    new Object[]{driverId},
+                    (rs, rowNum) -> Booking.builder()
+                            .bookingNumber(rs.getLong("booking_number"))
+                            .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
+                            .pickupLocation(rs.getString("pickup_location"))
+                            .dropOffLocation(rs.getString("drop_off_location"))
+                            .distance(rs.getDouble("distance"))
+                            .estimatedTime(rs.getDouble("estimatedTime"))
+                            .totalAmount(rs.getBigDecimal("total_amount"))
+                            .customerRegistrationNumber(rs.getString("customer_registration_number"))
+                            .driverId(rs.getString("driver_id"))
+                            .status(rs.getString("status"))
+                            .build()
+            );
+
+            System.out.println(bookings);
+
+            log.info("Fetched bookings successfully for driverId: {}", driverId);
+            return responseUtil.wrapSuccess(bookings, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error fetching bookings for driverId: {} ", driverId, e);
+            return responseUtil.wrapError("Error fetching bookings", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -161,7 +187,7 @@ public class BookingServiceImpl implements BookingService {
     public ResponseEntity<APIResponse> getAllBookings(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "100") int size) {
         try {
-            List<Booking> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS,new Object[]{size, page*size}, (rs, rowNum) -> Booking.builder()
+            List<Booking> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS, new Object[]{size, page * size}, (rs, rowNum) -> Booking.builder()
                     .bookingNumber(rs.getLong("booking_number"))
                     .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
                     .pickupLocation(rs.getString("pickup_location"))
@@ -187,7 +213,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public ResponseEntity<APIResponse> getBookingById(Integer bookingId) {
         try {
-            Booking booking = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_BOOKING_BY_ID, new Object[]{bookingId}, (rs, rowNum) -> Booking.builder()
+            Booking booking = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_BOOKING_BY_ID,
+                    new Object[]{bookingId}, (rs, rowNum) -> Booking.builder()
                     .bookingNumber(rs.getLong("booking_number"))
                     .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
                     .pickupLocation(rs.getString("pickup_location"))

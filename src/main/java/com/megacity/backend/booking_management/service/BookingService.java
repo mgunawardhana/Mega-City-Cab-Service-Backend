@@ -54,4 +54,6 @@ public interface BookingService {
 
     void exportBookingsToExcel(HttpServletResponse response);
 
+    ResponseEntity<APIResponse> fetchBookingsByDriverIdAndStatus(String bookingId);
+
 }

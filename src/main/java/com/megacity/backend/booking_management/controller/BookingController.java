@@ -106,4 +106,13 @@ public class BookingController {
         log.info("registerBooking {}", response);
         return response;
     }
+
+    @PostMapping("/filter/{bookingId}")
+    public ResponseEntity<APIResponse> fetchBookingByDriverId(@PathVariable String bookingId) {
+        System.out.println(bookingId);
+        log.info("createBooking {}", bookingId);
+        var response = bookingService.fetchBookingsByDriverIdAndStatus(bookingId);
+        log.info("createBooking {}", response);
+        return response;
+    }
 }

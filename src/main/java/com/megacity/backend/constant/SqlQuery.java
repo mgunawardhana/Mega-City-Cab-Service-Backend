@@ -96,6 +96,22 @@ public class SqlQuery {
         public static final String GET_BOOKING_BY_ID = """
                 SELECT * FROM booking WHERE booking_number = ?""";
 
+        public static final String FIND_BOOKING_BY_DRIVER_ID = """
+                SELECT 
+                    booking_number,
+                    booking_date,
+                    pickup_location,
+                    drop_off_location,
+                    distance,
+                    estimatedTime,
+                    total_amount,
+                    customer_registration_number,
+                    driver_id,
+                    status
+                FROM booking 
+                WHERE driver_id = ?
+                """;
+
         public static final String FIND_CUSTOMER_BY_ROOT_USER_ID = """
                 SELECT registration_number, root_user_id, address, nic, phone_number FROM customer WHERE root_user_id = ?""";
 
