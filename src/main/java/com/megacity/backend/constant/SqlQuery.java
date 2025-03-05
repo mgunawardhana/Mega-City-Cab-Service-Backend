@@ -49,7 +49,7 @@ public class SqlQuery {
                     d.license_image_back,
                     u.user_profile_pic
                 FROM driver d
-                LEFT JOIN users u ON d.root_user_id = u.id""";  // Removed extra \n and ensured proper formatting
+                LEFT JOIN users u ON d.root_user_id = u.id""";
 
         public static final String GET_ALL_CUSTOMERS = """
                 SELECT * FROM customer""";
@@ -70,7 +70,23 @@ public class SqlQuery {
                 SELECT * FROM booking LIMIT ? OFFSET ?;""";
 
         public static final String GET_ALL_BOOKINGS_WITHOUT_PAGINATION = """
-                    SELECT booking_number, booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status, created_date, updated_date FROM booking
+                    SELECT 
+                    booking_number, 
+                    booking_date, 
+                    pickup_location, 
+                    drop_off_location, 
+                    car_number, 
+                    taxes, 
+                    distance, 
+                    estimatedTime, 
+                    tax_without_cost, 
+                    total_amount, 
+                    customer_registration_number, 
+                    driver_id, 
+                    status, 
+                    created_date, 
+                    updated_date 
+                    FROM booking
                 """;
 
         public static final String GET_TOTAL_REVENUE_BY_STATUS_ORDERED = """
@@ -136,6 +152,7 @@ public class SqlQuery {
      */
     public static class InsertQuery {
 
+
         public static final String INSERT_TOKEN = "INSERT INTO token (token, token_type, revoked, expired, user_id)\n" + "VALUES (?, ?, ?, ?, ?);\n";
 
         public static final String INSERT_ARTICLE = """
@@ -170,7 +187,9 @@ public class SqlQuery {
                 INSERT INTO manager (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";
 
         public static final String ADD_NEW_BOOKING = """
-                INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO booking (booking_date, pickup_location, drop_off_location, 
+                car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, 
+                customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String VALIDATE_BOOKING = """
                     SELECT COUNT(*) 
@@ -187,6 +206,23 @@ public class SqlQuery {
      * This holds all the update queries
      */
     public static class UpdateQuery {
+
+        public static final String UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE =
+                "WITH updated_booking AS ( " +
+                        "    UPDATE booking " +
+                        "    SET status = ?, " +
+                        "        updated_date = CURRENT_TIMESTAMP " +
+                        "    WHERE booking_number = ? " +
+                        "    RETURNING booking_number, status, updated_date, driver_id " +
+                        "), " +
+                        "updated_driver AS ( " +
+                        "    UPDATE driver " +
+                        "    SET driver_status = CASE WHEN (SELECT status FROM updated_booking) = 'ACCEPTED' THEN 'BUSY' ELSE 'AVAILABLE' END " +
+                        "    WHERE driver_registration_number = (SELECT CAST(driver_id AS INTEGER) FROM updated_booking) " +
+                        "    RETURNING driver_registration_number " +
+                        ") " +
+                        "SELECT booking_number, status, updated_date, driver_id " +
+                        "FROM updated_booking";
 
         public static final String REVOKE_ALL_USER_TOKENS = "UPDATE token SET revoked = ?, expired = ? WHERE user_id = ? AND (revoked = false OR expired = false)";
 
@@ -251,9 +287,6 @@ public class SqlQuery {
                         updated_date = ? 
                     WHERE booking_number = ?
                 """;
-
-        public static final String UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE =
-                "UPDATE booking SET status = 'COMPLETED', updated_date = CURRENT_TIMESTAMP WHERE booking_number = ?";
         private UpdateQuery() {
         }
     }

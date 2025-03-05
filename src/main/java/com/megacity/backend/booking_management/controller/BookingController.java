@@ -48,10 +48,11 @@ public class BookingController {
         return response;
     }
 
-    @PostMapping("/{bookingId}")
-    public ResponseEntity<APIResponse> updateBookingFromDriverSide(@PathVariable String bookingId){
+    @PostMapping("/{bookingId}/{status}")
+    public ResponseEntity<APIResponse> updateBookingFromDriverSide(@PathVariable String status, @PathVariable String bookingId){
+        log.info("updateBookingFromDriverSide {} {}",status, bookingId);
         log.info("updateBookingFromDriverSide");
-        var resp = bookingService.updateBookingByDriverDetails(bookingId);
+        var resp = bookingService.updateBookingByDriverDetails(status, bookingId);
         log.info("updateBookingFromDriverSide");
         return resp;
     }

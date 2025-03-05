@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  */
 public interface BookingService {
 
-    ResponseEntity<APIResponse> updateBookingByDriverDetails(String bookingId);
+    ResponseEntity<APIResponse> updateBookingByDriverDetails(String status, String bookingId);
 
     /**
      * Performs an advanced search for bookings based on multiple criteria.

@@ -3,21 +3,25 @@ package com.megacity.backend.booking_management.service.impl;
 import com.megacity.backend.booking_management.service.BookingService;
 import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Booking;
+import com.megacity.backend.domain.entity.Guideline;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.util.ResponseUtil;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -43,25 +47,37 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> updateBookingByDriverDetails(String bookingId) {
+    public ResponseEntity<APIResponse> updateBookingByDriverDetails(String booking_id, String status) {
+        log.info("Updating booking status for bookingId: {} with status: {}", booking_id, status);
+
         try {
-            Long bookingNumber = Long.parseLong(bookingId);
+            // Convert booking_id to Long since booking_number is Long in the entity
+            Long bookingIdLong = Long.parseLong(booking_id);
 
-            int rowsAffected = readJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE, bookingNumber);
+            Booking updatedBooking = readJdbcTemplate.queryForObject(
+                    SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE,
+                    new Object[]{status, bookingIdLong},
+                    (rs, rowNum) -> Booking.builder()
+                            .bookingNumber(rs.getLong("booking_number"))
+                            .status(rs.getString("status"))
+                            .updatedDate(rs.getObject("updated_date", LocalDateTime.class))
+                            .driverId(rs.getString("driver_id"))
+                            .build()
+            );
 
-            if (rowsAffected > 0) {
-                log.info("Successfully updated booking status for bookingId: {}", bookingId);
-                return responseUtil.wrapSuccess("Booking status updated successfully", HttpStatus.OK);
-            } else {
-                log.warn("No booking found with bookingId: {}", bookingId);
-                return responseUtil.wrapError("Booking not found", "No booking exists with ID: " + bookingId, HttpStatus.NOT_FOUND);
-            }
+            System.out.println(updatedBooking);
+
+            return responseUtil.wrapSuccess("Booking updated successfully", HttpStatus.OK);
+
         } catch (NumberFormatException e) {
-            log.error("Invalid bookingId format: {}", bookingId, e);
-            return responseUtil.wrapError("Invalid booking ID", "Booking ID must be a valid number", HttpStatus.BAD_REQUEST);
+            log.error("Invalid booking ID format: {}", booking_id, e);
+            return responseUtil.wrapError("Invalid Input", "Booking ID must be numeric", HttpStatus.BAD_REQUEST);
+        } catch (DataAccessException e) {
+            log.error("Database error updating booking for bookingId: {}", booking_id, e);
+            return responseUtil.wrapError("Database Error", "Error updating booking status", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            log.error("Error updating booking for bookingId: {}", bookingId, e);
-            return responseUtil.wrapError("Error updating booking", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Unexpected error updating booking for bookingId: {}", booking_id, e);
+            return responseUtil.wrapError("Unexpected Error", "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -84,7 +100,18 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public ResponseEntity<APIResponse> fetchBookingsByDriverIdAndStatus(String driverId) {
         try {
-            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_BOOKING_BY_DRIVER_ID, new Object[]{driverId}, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).build());
+            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_BOOKING_BY_DRIVER_ID,
+                    new Object[]{driverId}, (rs, rowNum) -> Booking.builder()
+                            .bookingNumber(rs.getLong("booking_number"))
+                            .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
+                            .pickupLocation(rs.getString("pickup_location"))
+                            .dropOffLocation(rs.getString("drop_off_location"))
+                            .distance(rs.getDouble("distance"))
+                            .estimatedTime(rs.getDouble("estimatedTime"))
+                            .totalAmount(rs.getBigDecimal("total_amount"))
+                            .customerRegistrationNumber(rs.getString("customer_registration_number"))
+                            .driverId(rs.getString("driver_id"))
+                            .status(rs.getString("status")).build());
 
             System.out.println(bookings);
 
