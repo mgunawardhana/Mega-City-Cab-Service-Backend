@@ -36,7 +36,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -68,14 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
         try {
-            var user = User.builder()
-                    .firstName(registrationRequest.getFirstName())
-                    .lastName(registrationRequest.getLastName())
-                    .email(registrationRequest.getEmail())
-                    .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                    .userProfilePic(registrationRequest.getDriverProfilePicture())
-                    .role(registrationRequest.getRole())
-                    .build();
+            var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName()).email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).userProfilePic(registrationRequest.getDriverProfilePicture()).role(registrationRequest.getRole()).build();
 
             log.info("Processing registration for user: {}", user.getEmail());
 
@@ -83,41 +79,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             try {
                 if (savedUser.getRole().equals(Role.USER)) {
-                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_CUSTOMER,
-                            savedUser.getId(),
-                            registrationRequest.getAddress(),
-                            registrationRequest.getNic(),
-                            registrationRequest.getPhone_number()
-                    );
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_CUSTOMER, savedUser.getId(), registrationRequest.getAddress(), registrationRequest.getNic(), registrationRequest.getPhone_number());
                     log.info("New Customer profile created successfully");
                 } else if (savedUser.getRole().equals(Role.ADMIN)) {
-                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_MANAGER,
-                            savedUser.getId(),
-                            registrationRequest.getAddress(),
-                            registrationRequest.getNic(),
-                            registrationRequest.getPhone_number()
-                    );
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_MANAGER, savedUser.getId(), registrationRequest.getAddress(), registrationRequest.getNic(), registrationRequest.getPhone_number());
                     log.info("New Manager profile created successfully");
                 } else if (savedUser.getRole().equals(Role.DRIVER)) {
-                    writeJdbcTemplate.update(
-                            SqlQuery.InsertQuery.ADD_NEW_DRIVER,
-                            savedUser.getId(),
-                            registrationRequest.getNic(),
-                            registrationRequest.getPhone_number(),
-                            registrationRequest.getLicenseNumber(),
-                            registrationRequest.getLicenseExpiryDate(),
-                            registrationRequest.getDriverAddress(),
-                            registrationRequest.getVehicleAssigned() != null ? registrationRequest.getVehicleAssigned() : "FALSE", // Default to 'FALSE' if null
-                            registrationRequest.getDriverStatus() != null ? registrationRequest.getDriverStatus() : "Active", // Default to 'Active' if null
-                            registrationRequest.getEmergencyContact(),
-                            registrationRequest.getDateOfBirth(),
-                            registrationRequest.getDateOfJoining(),
-                            registrationRequest.getLicenseImageFront(),
-                            registrationRequest.getLicenseImageBack()
-                    );
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_DRIVER, savedUser.getId(), registrationRequest.getNic(), registrationRequest.getPhone_number(), registrationRequest.getLicenseNumber(), registrationRequest.getLicenseExpiryDate(), registrationRequest.getDriverAddress(), registrationRequest.getVehicleAssigned() != null ? registrationRequest.getVehicleAssigned() : "FALSE", registrationRequest.getDriverStatus() != null ? registrationRequest.getDriverStatus() : "Active", registrationRequest.getEmergencyContact(), registrationRequest.getDateOfBirth(), registrationRequest.getDateOfJoining(), registrationRequest.getLicenseImageFront(), registrationRequest.getLicenseImageBack());
 
-                    log.info("## {}",registrationRequest.getLicenseImageFront());
-                    log.info("## {}",registrationRequest.getLicenseImageBack());
+                    log.info("## {}", registrationRequest.getLicenseImageFront());
+                    log.info("## {}", registrationRequest.getLicenseImageBack());
 
 
                     log.info("New Driver profile created successfully");
@@ -131,23 +102,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String refreshToken = jwtServiceImpl.generateRefreshToken(savedUser);
 
             try {
-                writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
-                        accessToken,
-                        TokenType.BEARER.name(),
-                        Boolean.FALSE,
-                        Boolean.FALSE,
-                        savedUser.getId()
-                );
+                writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN, accessToken, TokenType.BEARER.name(), Boolean.FALSE, Boolean.FALSE, savedUser.getId());
                 log.info("Token saved successfully for user: {}", savedUser.getEmail());
             } catch (Exception e) {
                 log.error("Error saving token for user {}: {}", savedUser.getEmail(), e.getMessage());
                 throw new RuntimeException("Failed to save authentication token", e);
             }
 
-            return AuthenticationResponse.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
+            return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
 
         } catch (Exception e) {
             log.error("Registration failed: {}", e.getMessage());
@@ -157,12 +119,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
 
         log.info("AuthenticationResponse From Authenticate Function: {}", user);
 
@@ -170,22 +129,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtServiceImpl.generateRefreshToken(user);
 
         try {
-            int updatedRows = writeJdbcTemplate.update(
-                    "UPDATE token SET token = ?, revoked = ?, expired = ? WHERE user_id = ? AND revoked = false",
-                    accessToken,
-                    Boolean.FALSE,
-                    Boolean.FALSE,
-                    user.getId()
-            );
+            int updatedRows = writeJdbcTemplate.update("UPDATE token SET token = ?, revoked = ?, expired = ? WHERE user_id = ? AND revoked = false", accessToken, Boolean.FALSE, Boolean.FALSE, user.getId());
 
             if (updatedRows == 0) {
-                writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
-                        accessToken,
-                        TokenType.BEARER.name(),
-                        Boolean.FALSE,
-                        Boolean.FALSE,
-                        user.getId()
-                );
+                writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN, accessToken, TokenType.BEARER.name(), Boolean.FALSE, Boolean.FALSE, user.getId());
             }
             log.info("Token updated/saved successfully for user: {}", user.getEmail());
         } catch (Exception e) {
@@ -195,12 +142,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         log.info("Generated Token from Authenticate Function: {}", accessToken);
 
-        return AuthenticationResponse.builder()
-                .accessToken(Objects.requireNonNull(accessToken))
-                .refreshToken(Objects.requireNonNull(refreshToken))
-                .userName(user.getFirstName()+" "+user.getLastName())
-                .role(String.valueOf(user.getRole()))
-                .build();
+        return AuthenticationResponse.builder().accessToken(Objects.requireNonNull(accessToken)).refreshToken(Objects.requireNonNull(refreshToken)).userName(user.getFirstName() + " " + user.getLastName()).role(String.valueOf(user.getRole())).build();
     }
 
     @Override
@@ -226,22 +168,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 log.info("Generated Token from Refresh Token Function: {}", accessToken);
 
                 try {
-                    writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN,
-                            accessToken,
-                            TokenType.BEARER.name(),
-                            Boolean.FALSE,
-                            Boolean.FALSE,
-                            userDetails.getId()
-                    );
+                    writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_TOKEN, accessToken, TokenType.BEARER.name(), Boolean.FALSE, Boolean.FALSE, userDetails.getId());
                     log.info("New access token saved successfully for user: {}", userDetails.getEmail());
                 } catch (Exception e) {
                     log.error("Error saving new access token for user {}: {}", userDetails.getEmail(), e.getMessage());
                 }
 
-                var authResponse = AuthenticationResponse.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
+                var authResponse = AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
                 log.info("Authentication Response from Refresh Token Function: {}", authResponse);
 
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
@@ -263,11 +196,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             var user = userRepository.findByEmail(userEmail).orElse(null);
             if (user != null) {
                 try {
-                    writeJdbcTemplate.update(SqlQuery.UpdateQuery.REVOKE_ALL_USER_TOKENS,
-                            Boolean.TRUE,
-                            Boolean.TRUE,
-                            user.getId()
-                    );
+                    writeJdbcTemplate.update(SqlQuery.UpdateQuery.REVOKE_ALL_USER_TOKENS, Boolean.TRUE, Boolean.TRUE, user.getId());
                     log.info("Successfully logged out user: {}", userEmail);
                 } catch (Exception e) {
                     log.error("Error during logout for user {}: {}", userEmail, e.getMessage());
@@ -288,40 +217,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userDetails.put("lastName", user.getLastName());
             userDetails.put("email", user.getEmail());
             userDetails.put("role", user.getRole());
-            userDetails.put("user_profile_pic",user.getUserProfilePic());
+            userDetails.put("user_profile_pic", user.getUserProfilePic());
             userDetails.put("password", passwordEncoder.encode(user.getPassword()));
 
             if (user.getRole().equals(Role.DRIVER)) {
                 try {
                     log.debug("Fetching driver details for user ID: {}", user.getId());
 
-                    List<Driver> query = readJdbcTemplate.query(
-                            SqlQuery.SelectQuery.FIND_DRIVER_BY_ROOT_USER_ID,
-                            new Object[]{user.getId()},
-                            (rs, rowNum) -> {
-                                try {
-                                    return Driver.builder()
-                                            .driverRegistrationNumber(rs.getInt("driver_registration_number"))
-                                            .rootUserId(rs.getInt("root_user_id"))
-                                            .driverAddress(rs.getString("driver_address"))
-                                            .driverNIC(rs.getString("driver_nic"))
-                                            .phoneNumber(String.valueOf(rs.getLong("phone_number")))
-                                            .vehicleAssigned(rs.getString("vehicle_assigned"))
-                                            .driverStatus(rs.getString("driver_status"))
-                                            .emergencyContact(rs.getString("emergency_contact"))
-                                            .dateOfBirth(rs.getDate("date_of_birth"))
-                                            .dateOfJoining(rs.getDate("date_of_joining"))
-                                            .licenseNumber(rs.getString("license_number"))
-                                            .licenseExpiryDate(rs.getDate("license_expiry_date"))
-                                            .licenseImageFront(rs.getString("license_image_front"))
-                                            .licenseImageBack(rs.getString("license_image_back"))
-                                            .build();
-                                } catch (SQLException e) {
-                                    log.error("Error mapping driver row for user ID {}: {}", user.getId(), e.getMessage());
-                                    throw new RuntimeException("Error mapping driver data", e);
-                                }
-                            }
-                    );
+                    List<Driver> query = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_DRIVER_BY_ROOT_USER_ID, new Object[]{user.getId()}, (rs, rowNum) -> {
+                        try {
+                            return Driver.builder().driverRegistrationNumber(rs.getInt("driver_registration_number")).rootUserId(rs.getInt("root_user_id")).driverAddress(rs.getString("driver_address")).driverNIC(rs.getString("driver_nic")).phoneNumber(String.valueOf(rs.getLong("phone_number"))).vehicleAssigned(rs.getString("vehicle_assigned")).driverStatus(rs.getString("driver_status")).emergencyContact(rs.getString("emergency_contact")).dateOfBirth(rs.getDate("date_of_birth")).dateOfJoining(rs.getDate("date_of_joining")).licenseNumber(rs.getString("license_number")).licenseExpiryDate(rs.getDate("license_expiry_date")).licenseImageFront(rs.getString("license_image_front")).licenseImageBack(rs.getString("license_image_back")).build();
+                        } catch (SQLException e) {
+                            log.error("Error mapping driver row for user ID {}: {}", user.getId(), e.getMessage());
+                            throw new RuntimeException("Error mapping driver data", e);
+                        }
+                    });
 
                     log.debug("Driver query results size: {}", query.size());
 
@@ -351,17 +261,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             } else if (user.getRole().equals(Role.CUSTOMER)) {
                 try {
-                    List<Customer> query = readJdbcTemplate.query(
-                            SqlQuery.SelectQuery.FIND_CUSTOMER_BY_ROOT_USER_ID,
-                            new Object[]{user.getId()},
-                            (rs, rowNum) -> Customer.builder()
-                                    .registrationNumber(rs.getInt("registration_number"))
-                                    .rootUserId(rs.getInt("root_user_id"))
-                                    .address(rs.getString("address"))
-                                    .NIC(rs.getString("nic"))
-                                    .phoneNumber(String.valueOf(rs.getLong("phone_number")))
-                                    .build()
-                    );
+                    List<Customer> query = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_CUSTOMER_BY_ROOT_USER_ID, new Object[]{user.getId()}, (rs, rowNum) -> Customer.builder().registrationNumber(rs.getInt("registration_number")).rootUserId(rs.getInt("root_user_id")).address(rs.getString("address")).NIC(rs.getString("nic")).phoneNumber(String.valueOf(rs.getLong("phone_number"))).build());
 
                     log.debug("Customer query results size: {}", query.size());
 
@@ -381,17 +281,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             } else if (user.getRole().equals(Role.ADMIN)) {
                 try {
-                    List<Manager> query = readJdbcTemplate.query(
-                            SqlQuery.SelectQuery.FIND_MANAGER_BY_ROOT_USER_ID,
-                            new Object[]{user.getId()},
-                            (rs, rowNum) -> Manager.builder()
-                                    .registrationNumber(rs.getInt("registration_number"))
-                                    .rootUserId(rs.getInt("root_user_id"))
-                                    .address(rs.getString("address"))
-                                    .NIC(rs.getString("nic"))
-                                    .phoneNumber(String.valueOf(rs.getLong("phone_number")))
-                                    .build()
-                    );
+                    List<Manager> query = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_MANAGER_BY_ROOT_USER_ID, new Object[]{user.getId()}, (rs, rowNum) -> Manager.builder().registrationNumber(rs.getInt("registration_number")).rootUserId(rs.getInt("root_user_id")).address(rs.getString("address")).NIC(rs.getString("nic")).phoneNumber(String.valueOf(rs.getLong("phone_number"))).build());
                     if (!query.isEmpty()) {
                         Manager manager = query.get(0);
                         userDetails.put("registration_number", manager.getRegistrationNumber());
