@@ -39,7 +39,10 @@ public class BookingServiceImpl implements BookingService {
     @NonNull
     private final ExcelExportService excelExportService;
 
-    public BookingServiceImpl(@NonNull JdbcTemplate writeJdbcTemplate, @NonNull JdbcTemplate readJdbcTemplate, @NonNull ResponseUtil responseUtil, @NonNull ExcelExportService excelExportService) {
+    public BookingServiceImpl(@NonNull JdbcTemplate writeJdbcTemplate,
+                              @NonNull JdbcTemplate readJdbcTemplate,
+                              @NonNull ResponseUtil responseUtil,
+                              @NonNull ExcelExportService excelExportService) {
         this.writeJdbcTemplate = writeJdbcTemplate;
         this.readJdbcTemplate = readJdbcTemplate;
         this.responseUtil = responseUtil;
@@ -51,7 +54,6 @@ public class BookingServiceImpl implements BookingService {
         log.info("Updating booking status for bookingId: {} with status: {}", booking_id, status);
 
         try {
-            // Convert booking_id to Long since booking_number is Long in the entity
             Long bookingIdLong = Long.parseLong(booking_id);
 
             Booking updatedBooking = readJdbcTemplate.queryForObject(
@@ -84,7 +86,22 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void exportBookingsToExcel(HttpServletResponse response) {
         try {
-            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS_WITHOUT_PAGINATION, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).carNumber(rs.getString("car_number")).taxes(rs.getBigDecimal("taxes")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).taxWithoutCost(rs.getDouble("tax_without_cost")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).createdDate(rs.getTimestamp("created_date").toLocalDateTime()).updatedDate(rs.getTimestamp("updated_date").toLocalDateTime()).build());
+            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_BOOKINGS_WITHOUT_PAGINATION, (rs, rowNum) ->
+                    Booking.builder().bookingNumber(rs.getLong("booking_number"))
+                            .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
+                            .pickupLocation(rs.getString("pickup_location"))
+                            .dropOffLocation(rs.getString("drop_off_location"))
+                            .carNumber(rs.getString("car_number"))
+                            .taxes(rs.getBigDecimal("taxes"))
+                            .distance(rs.getDouble("distance"))
+                            .estimatedTime(rs.getDouble("estimatedTime"))
+                            .taxWithoutCost(rs.getDouble("tax_without_cost"))
+                            .totalAmount(rs.getBigDecimal("total_amount"))
+                            .customerRegistrationNumber(rs.getString("customer_registration_number"))
+                            .driverId(rs.getString("driver_id")).status(rs.getString("status"))
+                            .createdDate(rs.getTimestamp("created_date").toLocalDateTime())
+                            .updatedDate(rs.getTimestamp("updated_date").toLocalDateTime())
+                            .build());
 
             byte[] excelData = excelExportService.generateExcel(bookings);
 
@@ -201,11 +218,17 @@ public class BookingServiceImpl implements BookingService {
     public ResponseEntity<APIResponse> createBooking(Booking booking) {
         try {
 
-            Integer count = writeJdbcTemplate.queryForObject(SqlQuery.InsertQuery.VALIDATE_BOOKING, Integer.class, booking.getCarNumber(), booking.getBookingDate());
+            Integer count = writeJdbcTemplate.queryForObject(SqlQuery.InsertQuery.VALIDATE_BOOKING, Integer.class,
+                    booking.getCarNumber(),
+                    booking.getBookingDate());
 
             if (count != null && count > 0) {
-                log.warn("Booking conflict: Another booking exists within 5 hours for car {}", booking.getCarNumber());
-                return responseUtil.wrapError("Booking conflict: Another booking exists within 5 hours.", "Please select a different time slot.", HttpStatus.CONFLICT);
+                log.warn("Booking conflict: Car {} is already booked until the estimated time is completed", booking.getCarNumber());
+                return responseUtil.wrapError(
+                        "Booking conflict: Car is already booked until the previous trip's estimated time is completed.",
+                        "Please select a different time slot.",
+                        HttpStatus.CONFLICT
+                );
             }
 
             writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING, booking.getBookingDate(), booking.getPickupLocation(), booking.getDropOffLocation(), booking.getCarNumber(), booking.getTaxes(), booking.getDistance(), booking.getEstimatedTime(), booking.getTaxWithoutCost(), booking.getTotalAmount(), booking.getCustomerRegistrationNumber(), booking.getDriverId(), booking.getStatus());
