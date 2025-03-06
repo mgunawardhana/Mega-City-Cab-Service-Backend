@@ -2,7 +2,10 @@ package com.megacity.backend.domain.entity;
 
 import com.megacity.backend.domain.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,14 +34,22 @@ public class User implements UserDetails {
     private String lastName;
 
     @NotBlank(message = "Email is mandatory")
+    @Email(message = "Invalid email format")
     private String email;
 
     @NotBlank(message = "Password is mandatory")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    @NotBlank(message = "Role is mandatory")
+    @NotNull(message = "Role is mandatory")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "user_profile_pic")
+    private String userProfilePic;
+
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

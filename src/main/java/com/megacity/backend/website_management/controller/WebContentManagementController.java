@@ -27,7 +27,7 @@ public class WebContentManagementController {
     @GetMapping("/public")
     public ResponseEntity<APIResponse> checkingIfDeploymentIsSuccess() {
         log.info("Checking if deployment is successful");
-        return responseUtil.wrapSuccess("powerhouse-backend is up and running on aws EC2 instance.", HttpStatus.CREATED);
+        return responseUtil.wrapSuccess("mega-city-backend is up and running on aws EC2 instance.", HttpStatus.CREATED);
     }
 
     @PostMapping("/createArticle")

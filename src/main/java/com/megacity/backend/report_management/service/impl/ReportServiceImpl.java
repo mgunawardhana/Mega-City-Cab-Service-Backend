@@ -69,43 +69,4 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    @Override
-    public ResponseEntity<APIResponse> getTotalIncomeDayWise(String selectedDate) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<APIResponse> getTotalIncomeMonthWise(String SelectedMonth) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<APIResponse> getTotalIncomeAnnually(String SelectedYear) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<APIResponse> getCustomerWiseBookings(String customerNIC) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<APIResponse> getVehicleWiseIncome(String vehicleNumber) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<APIResponse> getVehicleWiseFuelConsumptionWisExpenses(String vehicleNumber) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<APIResponse> getTotalIncome() {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<APIResponse> getTotalExpenses(String customerNIC) {
-        return null;
-    }
 }

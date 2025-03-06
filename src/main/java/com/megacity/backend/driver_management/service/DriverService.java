@@ -6,13 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface DriverService {
 
-    /**
-     * Registers a new driver.
-     *
-     * @param driver the driver to be registered
-     * @return a ResponseEntity containing the APIResponse
-     */
-    ResponseEntity<APIResponse> registerDriver(Driver driver);
 
     /**
      * Retrieves a driver by their NIC.
@@ -27,20 +20,4 @@ public interface DriverService {
      * @return a ResponseEntity containing the APIResponse with the list of drivers
      */
     ResponseEntity<APIResponse> getAllDrivers();
-
-    /**
-     * Deletes a driver by their license number.
-     *
-     * @param licenseNumber the license number of the driver to be deleted
-     * @return a ResponseEntity containing the APIResponse
-     */
-    ResponseEntity<APIResponse> deleteDriverById(String licenseNumber);
-
-    /**
-     * Updates an existing driver.
-     *
-     * @param driver the driver to be updated
-     * @return a ResponseEntity containing the APIResponse
-     */
-    ResponseEntity<APIResponse> updateDriver(Driver driver);
 }

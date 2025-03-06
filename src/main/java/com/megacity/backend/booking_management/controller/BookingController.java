@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestController
 @RequestMapping("api/v1/booking")
-@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -49,6 +48,15 @@ public class BookingController {
         return response;
     }
 
+    @PostMapping("/{bookingId}/{status}")
+    public ResponseEntity<APIResponse> updateBookingFromDriverSide(@PathVariable String status, @PathVariable String bookingId){
+        log.info("updateBookingFromDriverSide {} {}",status, bookingId);
+        log.info("updateBookingFromDriverSide");
+        var resp = bookingService.updateBookingByDriverDetails(status, bookingId);
+        log.info("updateBookingFromDriverSide");
+        return resp;
+    }
+
     @PostMapping("/checkout")
     public ResponseEntity<StripeResponse> checkOutProducts(@RequestBody ProductRequest productRequest) {
         System.out.println("awa");
@@ -59,7 +67,6 @@ public class BookingController {
 
 
     @GetMapping("/export")
-    @PreAuthorize("hasAuthority('admin:read')")
     public void exportToExcel(HttpServletResponse response) {
         bookingService.exportBookingsToExcel(response);
     }
@@ -106,6 +113,15 @@ public class BookingController {
         log.info("registerBooking {}", booking);
         var response = bookingService.createBooking(booking);
         log.info("registerBooking {}", response);
+        return response;
+    }
+
+    @PostMapping("/filter/{bookingId}")
+    public ResponseEntity<APIResponse> fetchBookingByDriverId(@PathVariable String bookingId) {
+        System.out.println(bookingId);
+        log.info("createBooking {}", bookingId);
+        var response = bookingService.fetchBookingsByDriverIdAndStatus(bookingId);
+        log.info("createBooking {}", response);
         return response;
     }
 }

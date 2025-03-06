@@ -18,13 +18,7 @@ public class DriverController {
 
     @NonNull private final DriverService driverService;
 
-    @PostMapping("/register")
-    public ResponseEntity<APIResponse> registerDriver(@RequestBody Driver driver){
-        log.info("registerDriver {}",driver);
-        var response = driverService.registerDriver(driver);
-        log.info("registerDriver {}",response);
-        return response;
-    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse> fetchDriverById(@PathVariable String id){
@@ -39,22 +33,6 @@ public class DriverController {
         log.info("fetchAllDriverRecords start");
         var response = driverService.getAllDrivers();
         log.info("fetchAllDriverRecords {}",response);
-        return response;
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse> deleteDriver(@PathVariable String id){
-        log.info("deleteDriver {}",id);
-        var response = driverService.deleteDriverById(id);
-        log.info("deleteDriver {}",response);
-        return response;
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<APIResponse> updateDriver(@RequestBody Driver driver){
-        log.info("updateDriver {}",driver);
-        var response = driverService.updateDriver(driver);
-        log.info("updateDriver {}",response);
         return response;
     }
 }

@@ -21,7 +21,7 @@ CREATE TABLE booking
     car_number                   VARCHAR(50)      NOT NULL,
     taxes                        NUMERIC(10, 2)   NOT NULL,
     distance                     DOUBLE PRECISION NOT NULL,
-    estimatedTime               DOUBLE PRECISION NOT NULL,
+    estimatedTime                DOUBLE PRECISION NOT NULL,
     tax_without_cost             DOUBLE PRECISION NOT NULL,
     total_amount                 NUMERIC(10, 2)   NOT NULL,
     customer_registration_number VARCHAR(50)      NOT NULL,
@@ -40,25 +40,24 @@ CREATE TABLE Customer
     phone_number        TEXT NOT NULL
 );
 
-CREATE TABLE Driver
+CREATE TABLE driver
 (
     driver_registration_number SERIAL PRIMARY KEY,
-    driver_first_name          TEXT NOT NULL,
-    driver_profile_picture     TEXT NOT NULL,
-    driver_last_name           TEXT NOT NULL,
-    driver_nic                 TEXT NOT NULL UNIQUE,
-    phone_number               TEXT NOT NULL,
-    email_address              TEXT,
-    license_number             TEXT NOT NULL,
+    root_user_id               INTEGER,
+    driver_profile_picture     TEXT,
+    driver_nic                 VARCHAR(50)  NOT NULL UNIQUE,
+    phone_number               VARCHAR(20)  NOT NULL UNIQUE,
+    license_number             VARCHAR(50)  NOT NULL UNIQUE,
     license_expiry_date        DATE,
     driver_address             TEXT,
-    vehicle_assigned           TEXT NOT NULL DEFAULT 'FALSE',
-    driver_status              TEXT NOT NULL DEFAULT 'Active',
-    emergency_contact          TEXT,
-    date_of_birth              DATE NOT NULL,
+    vehicle_assigned           VARCHAR(10)  NOT NULL DEFAULT 'FALSE',
+    driver_status              VARCHAR(20)  NOT NULL DEFAULT 'Active',
+    emergency_contact          VARCHAR(20),
+    date_of_birth              DATE         NOT NULL,
     date_of_joining            DATE,
-    license_images             JSONB -- Store images as JSON array
+    license_images             TEXT[] -- Storing multiple license image paths in an array
 );
+
 
 
 CREATE TABLE Guideline

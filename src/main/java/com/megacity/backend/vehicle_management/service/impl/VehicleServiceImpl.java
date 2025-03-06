@@ -38,9 +38,11 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public ResponseEntity<APIResponse> registerVehicle(Vehicle vehicle) {
         try {
+            // Ensure the order matches the column definition and parameter list
             writeJdbcTemplate.update(
                     SqlQuery.InsertQuery.ADD_NEW_VEHICLE,
                     vehicle.getRegistrationNumber(),
+                    vehicle.getVehicleImage(),
                     vehicle.getMake(),
                     vehicle.getModel(),
                     vehicle.getYearOfManufacture(),
@@ -59,14 +61,14 @@ public class VehicleServiceImpl implements VehicleService {
                     vehicle.getLicensePlateNumber(),
                     vehicle.getPermitType(),
                     vehicle.isAirConditioning(),
-                    vehicle.getVehicleImage(), // **Added missing vehicle_image field**
-                    vehicle.getAdditionalFeatures()
+                    vehicle.getAdditionalFeatures(),
+                    vehicle.getStatus()
             );
-            log.info("Vehicle registered successfully ");
+            log.info("Vehicle registered successfully");
             return responseUtil.wrapSuccess("Vehicle registered successfully", HttpStatus.OK);
         } catch (Exception e) {
-            log.warn("Failed to register vehicle {}", e.getMessage());
-            return responseUtil.wrapError("Failed to registering vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            log.warn("Failed to register vehicle: {}", e.getMessage());
+            return responseUtil.wrapError("Failed to register vehicle", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -95,9 +97,10 @@ public class VehicleServiceImpl implements VehicleService {
                     vehicle.isAirConditioning(),
                     vehicle.getVehicleImage(),
                     vehicle.getAdditionalFeatures(),
-                    vehicle.getId()
+                    vehicle.getStatus(),
+                    vehicle.getId()  // This should be last to match WHERE clause
             );
-            log.info("Vehicle updated successfully ");
+            log.info("Vehicle updated successfully");
             return responseUtil.wrapSuccess("Vehicle registered successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.warn("Failed to update vehicle {}", e.getMessage());
@@ -129,7 +132,30 @@ public class VehicleServiceImpl implements VehicleService {
         }
 
         try {
-            Vehicle vehicle = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.FETCH_VEHICLE_BY_ID, new Object[]{vehicleId}, (rs, rowNum) -> Vehicle.builder().id(rs.getLong("id")).registrationNumber(rs.getString("registration_number")).make(rs.getString("make")).model(rs.getString("model")).yearOfManufacture(rs.getInt("year_of_manufacture")).color(rs.getString("color")).fuelType(rs.getString("fuel_type")).engineCapacity(rs.getString("engine_capacity")).chassisNumber(rs.getString("chassis_number")).vehicleType(rs.getString("vehicle_type")).ownerName(rs.getString("owner_name")).ownerContact(rs.getString("owner_contact")).ownerAddress(rs.getString("owner_address")).insuranceProvider(rs.getString("insurance_provider")).insurancePolicyNumber(rs.getString("insurance_policy_number")).insuranceExpiryDate(rs.getDate("insurance_expiry_date") != null ? rs.getDate("insurance_expiry_date").toLocalDate() : null).seatingCapacity(rs.getInt("seating_capacity")).licensePlateNumber(rs.getString("license_plate_number")).permitType(rs.getString("permit_type")).airConditioning(rs.getBoolean("air_conditioning")).additionalFeatures(rs.getString("additional_features")).build());
+            Vehicle vehicle = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.FETCH_VEHICLE_BY_ID, new Object[]{vehicleId}, (rs, rowNum) -> Vehicle.builder()
+                    .id(rs.getLong("id"))
+                    .registrationNumber(rs.getString("registration_number"))
+                    .make(rs.getString("make"))
+                    .model(rs.getString("model"))
+                    .yearOfManufacture(rs.getInt("year_of_manufacture"))
+                    .color(rs.getString("color"))
+                    .fuelType(rs.getString("fuel_type"))
+                    .engineCapacity(rs.getString("engine_capacity"))
+                    .chassisNumber(rs.getString("chassis_number"))
+                    .vehicleType(rs.getString("vehicle_type"))
+                    .ownerName(rs.getString("owner_name"))
+                    .ownerContact(rs.getString("owner_contact"))
+                    .ownerAddress(rs.getString("owner_address"))
+                    .insuranceProvider(rs.getString("insurance_provider"))
+                    .insurancePolicyNumber(rs.getString("insurance_policy_number"))
+                    .insuranceExpiryDate(rs.getDate("insurance_expiry_date") != null ? rs.getDate("insurance_expiry_date").toLocalDate() : null)
+                    .seatingCapacity(rs.getInt("seating_capacity"))
+                    .licensePlateNumber(rs.getString("license_plate_number"))
+                    .permitType(rs.getString("permit_type"))
+                    .airConditioning(rs.getBoolean("air_conditioning"))
+                    .additionalFeatures(rs.getString("additional_features"))
+                    .status(rs.getString("status"))
+                    .build());
             log.info("Vehicle fetched successfully: {}", vehicle);
             return responseUtil.wrapSuccess(vehicle, HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
@@ -172,6 +198,7 @@ public class VehicleServiceImpl implements VehicleService {
                             .permitType(rs.getString("permit_type"))
                             .airConditioning(rs.getBoolean("air_conditioning"))
                             .additionalFeatures(rs.getString("additional_features"))
+                            .status(rs.getString("status"))
                             .build());
             log.info("All vehicles fetched successfully. Total: {}", vehicleList.size());
             return responseUtil.wrapSuccess(vehicleList, HttpStatus.OK);

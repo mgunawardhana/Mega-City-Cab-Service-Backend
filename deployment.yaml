@@ -13,7 +13,16 @@ spec:
         app: mega-city-cab-service-backend
     spec:
       containers:
-        - name: my-app
+        - name: mega-city-cab-service-backend  # Updated name for clarity and consistency
           image: gstwarrier/mega-city-cab-service-backend:latest
           ports:
-            - containerPort: 3000  # Change this if your app runs on a different port
+            - containerPort: 8080  # Updated to match server.port=8080 in application.properties
+          env:  # Optional: Add environment variables if needed (e.g., database credentials, JWT secrets)
+            - name: SPRING_DATASOURCE_WRITE_URL
+              value: "jdbc:postgresql://postgres-service:5432/megaCityCabService"
+            - name: SPRING_DATASOURCE_WRITE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_WRITE_PASSWORD
+              value: "pgadmin"
+            - name: BACKUP_DIRECTORY
+              value: "/app/backups"  # Adjust as needed for your container

@@ -19,13 +19,11 @@ public class StripeService {
     public StripeResponse checkProduct(ProductRequest productRequest) {
         Stripe.apiKey = secretKey;
 
-        // Build Product Data
         SessionCreateParams.LineItem.PriceData.ProductData productData =
                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
                         .setName(productRequest.getName())
                         .build();
 
-        // Build Price Data
         SessionCreateParams.LineItem.PriceData priceData =
                 SessionCreateParams.LineItem.PriceData.builder()
                         .setCurrency(productRequest.getCurrency() != null ? productRequest.getCurrency() : "LKR")
@@ -33,23 +31,20 @@ public class StripeService {
                         .setProductData(productData)
                         .build();
 
-        // Build Line Item
         SessionCreateParams.LineItem lineItem =
                 SessionCreateParams.LineItem.builder()
                         .setQuantity(productRequest.getQuantity())
                         .setPriceData(priceData)
                         .build();
 
-        // Build Session Parameters
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl("http://localhost:8080/success")
+                        .setSuccessUrl("http://localhost:5173/bill")
                         .setCancelUrl("http://localhost:8080/cancel")
                         .addLineItem(lineItem)
                         .build();
 
-        // Create Session
         try {
             Session session = Session.create(params);
             return new StripeResponse(
