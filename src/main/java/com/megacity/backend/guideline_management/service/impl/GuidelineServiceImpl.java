@@ -68,12 +68,9 @@ public class GuidelineServiceImpl implements GuidelineService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> fetchAllGuidelineRecords(@RequestParam(defaultValue = "0") int page,
-                                                                @RequestParam(defaultValue = "100") int size) {
+    public ResponseEntity<APIResponse> fetchAllGuidelineRecords(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
         try {
-            List<Guideline> guidelines = writeJdbcTemplate.query(SqlQuery.SelectQuery.FETCH_ALL_GUIDELINE,
-                    new Object[]{size, page*size},
-                    (rs, rowNum) -> Guideline.builder().guidanceId(rs.getInt("guidance_id")).title(rs.getString("title")).description(rs.getString("description")).category(rs.getString("category")).priority(rs.getString("priority")).relatedTo(rs.getString("related_to")).build());
+            List<Guideline> guidelines = writeJdbcTemplate.query(SqlQuery.SelectQuery.FETCH_ALL_GUIDELINE, new Object[]{size, page * size}, (rs, rowNum) -> Guideline.builder().guidanceId(rs.getInt("guidance_id")).title(rs.getString("title")).description(rs.getString("description")).category(rs.getString("category")).priority(rs.getString("priority")).relatedTo(rs.getString("related_to")).build());
 
             return responseUtil.wrapSuccess(guidelines, HttpStatus.OK);
         } catch (Exception e) {
@@ -81,7 +78,6 @@ public class GuidelineServiceImpl implements GuidelineService {
             return responseUtil.wrapError("Error occurred while fetching guideline records!", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @Override
     public ResponseEntity<APIResponse> fetchGuidelineById(Long guidelineId) {

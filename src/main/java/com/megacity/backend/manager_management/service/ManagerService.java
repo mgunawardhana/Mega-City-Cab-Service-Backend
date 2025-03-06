@@ -6,43 +6,42 @@ import org.springframework.http.ResponseEntity;
 
 public interface ManagerService {
 
-
     /**
-     * Updates an existing manager.
+     * Updates an existing manager in the system.
      *
-     * @param manager the manager entity to be updated
-     * @return a ResponseEntity containing the APIResponse
+     * @param manager the {@link Manager} object containing the updated manager details
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the result of the update operation
      */
     ResponseEntity<APIResponse> UpdateManager(Manager manager);
 
     /**
-     * Retrieves a manager by their ID.
+     * Retrieves a specific manager by their ID.
      *
-     * @param managerId the ID of the manager to be retrieved
-     * @return a ResponseEntity containing the APIResponse with the manager details
+     * @param managerId the unique identifier of the manager to fetch
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the requested manager details
      */
     ResponseEntity<APIResponse> getManagerById(Integer managerId);
 
     /**
-     * Retrieves all managers.
+     * Retrieves all managers in the system.
      *
-     * @return a ResponseEntity containing the APIResponse with a list of all managers
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the list of all managers
      */
     ResponseEntity<APIResponse> getAllManagers();
 
     /**
-     * Creates a new manager.
+     * Creates a new manager in the system.
      *
-     * @param manager the manager entity to be created
-     * @return a ResponseEntity containing the APIResponse
+     * @param manager the {@link Manager} object containing the manager details to be created
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the result of the creation operation
      */
     ResponseEntity<APIResponse> createManager(Manager manager);
 
     /**
-     * Deletes a manager by their ID.
+     * Deletes a manager from the system based on their ID.
      *
-     * @param managerId the ID of the manager to be deleted
-     * @return a ResponseEntity containing the APIResponse
+     * @param managerId the unique identifier of the manager to be deleted
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the result of the deletion operation
      */
     ResponseEntity<APIResponse> deleteManager(Integer managerId);
 }

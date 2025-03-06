@@ -38,7 +38,6 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public ResponseEntity<APIResponse> registerVehicle(Vehicle vehicle) {
         try {
-            // Ensure the order matches the column definition and parameter list
             writeJdbcTemplate.update(
                     SqlQuery.InsertQuery.ADD_NEW_VEHICLE,
                     vehicle.getRegistrationNumber(),
@@ -98,7 +97,7 @@ public class VehicleServiceImpl implements VehicleService {
                     vehicle.getVehicleImage(),
                     vehicle.getAdditionalFeatures(),
                     vehicle.getStatus(),
-                    vehicle.getId()  // This should be last to match WHERE clause
+                    vehicle.getId()
             );
             log.info("Vehicle updated successfully");
             return responseUtil.wrapSuccess("Vehicle registered successfully", HttpStatus.OK);

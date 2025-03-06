@@ -1,7 +1,6 @@
 package com.megacity.backend.manager_management.service.impl;
 
 import com.megacity.backend.constant.SqlQuery;
-import com.megacity.backend.domain.entity.Customer;
 import com.megacity.backend.domain.entity.Manager;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.manager_management.service.ManagerService;
@@ -37,13 +36,7 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public ResponseEntity<APIResponse> UpdateManager(Manager manager) {
         try {
-            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_MANAGER,
-                    manager.getRootUserId(),
-                    manager.getAddress(),
-                    manager.getNIC(),
-                    manager.getPhoneNumber(),
-                    manager.getRegistrationNumber()
-            );
+            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_MANAGER, manager.getRootUserId(), manager.getAddress(), manager.getNIC(), manager.getPhoneNumber(), manager.getRegistrationNumber());
 
             log.info("Updated manager successfully");
             return responseUtil.wrapSuccess("Updated manager successfully", HttpStatus.OK);
@@ -55,15 +48,8 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public ResponseEntity<APIResponse> getManagerById(Integer managerId) {
-        try{
-            Manager manager = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_MANAGER_BY_ID,
-                    new Object[]{managerId}, (rs, rowNum) -> Manager.builder()
-                            .registrationNumber(rs.getInt("registration_number"))
-                            .rootUserId(rs.getInt("root_user_id"))
-                            .address(rs.getString("address"))
-                            .NIC(rs.getString("nic"))
-                            .phoneNumber(rs.getString("phone_number"))
-                            .build());
+        try {
+            Manager manager = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_MANAGER_BY_ID, new Object[]{managerId}, (rs, rowNum) -> Manager.builder().registrationNumber(rs.getInt("registration_number")).rootUserId(rs.getInt("root_user_id")).address(rs.getString("address")).NIC(rs.getString("nic")).phoneNumber(rs.getString("phone_number")).build());
             log.info("Fetched manager successfully");
             return responseUtil.wrapSuccess(manager, HttpStatus.OK);
         } catch (Exception e) {
@@ -74,14 +60,8 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public ResponseEntity<APIResponse> getAllManagers() {
-        try{
-            List<Manager> managers = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_MANAGERS,
-                    (rs, rowNum) -> Manager.builder()
-                            .registrationNumber(rs.getInt("registration_number"))
-                            .rootUserId(rs.getInt("root_user_id"))
-                            .address(rs.getString("address"))
-                            .NIC(rs.getString("nic"))
-                            .phoneNumber(rs.getString("phone_number")).build());
+        try {
+            List<Manager> managers = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_ALL_MANAGERS, (rs, rowNum) -> Manager.builder().registrationNumber(rs.getInt("registration_number")).rootUserId(rs.getInt("root_user_id")).address(rs.getString("address")).NIC(rs.getString("nic")).phoneNumber(rs.getString("phone_number")).build());
             log.info("Fetched all managers successfully");
             return responseUtil.wrapSuccess(managers, HttpStatus.OK);
         } catch (Exception e) {
@@ -92,12 +72,8 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public ResponseEntity<APIResponse> createManager(Manager manager) {
-        try{
-            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_MANAGER,
-                    manager.getRootUserId(),
-                    manager.getAddress(),
-                    manager.getNIC(),
-                    manager.getPhoneNumber());
+        try {
+            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_MANAGER, manager.getRootUserId(), manager.getAddress(), manager.getNIC(), manager.getPhoneNumber());
             log.info("Manager created successfully");
             return responseUtil.wrapSuccess("Manager created successfully", HttpStatus.OK);
         } catch (Exception e) {
@@ -108,7 +84,7 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public ResponseEntity<APIResponse> deleteManager(Integer managerId) {
-        try{
+        try {
             writeJdbcTemplate.update(SqlQuery.DeleteQuery.DELETE_MANAGER, managerId);
             log.info("Manager deleted successfully");
             return responseUtil.wrapSuccess("Manager deleted successfully", HttpStatus.OK);

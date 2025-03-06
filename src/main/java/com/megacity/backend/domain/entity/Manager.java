@@ -21,10 +21,10 @@ public class Manager {
     @Column(name = "root_user_id")
     private Integer rootUserId;
 
-    @Column(name = "address",nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "nic",nullable = false)
+    @Column(name = "nic", nullable = false)
     private String NIC;
 
     @Column(name = "phone_number", nullable = false)

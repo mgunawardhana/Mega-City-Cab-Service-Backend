@@ -56,7 +56,7 @@ public class DriverServiceImpl implements DriverService {
                             .dateOfJoining(rs.getDate("date_of_joining"))
                             .licenseImageFront(rs.getString("license_image_front"))
                             .licenseImageBack(rs.getString("license_image_back"))
-                            .user_profile_pic(rs.getString("user_profile_pic")) // Using licenseImageFront for profile pic
+                            .user_profile_pic(rs.getString("user_profile_pic"))
                             .build()
             );
             log.info("All drivers fetched successfully. Total: {}", driverList.size());
@@ -74,7 +74,6 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
-
     @Override
     public ResponseEntity<APIResponse> getDriverById(String driverRegNo) {
         try {
@@ -91,7 +90,6 @@ public class DriverServiceImpl implements DriverService {
                             .emergencyContact(rs.getString("emergency_contact"))
                             .dateOfBirth(rs.getDate("date_of_birth"))
                             .dateOfJoining(rs.getDate("date_of_joining"))
-//                            .licenseImages(Collections.singletonList(rs.getString("license_images")))
                             .build());
 
             return responseUtil.wrapSuccess(driver, HttpStatus.OK);

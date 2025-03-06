@@ -1,6 +1,9 @@
 package com.megacity.backend.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -20,7 +23,7 @@ public class Vehicle {
     @Column(name = "registration_number", nullable = false)
     private String registrationNumber;
 
-    @Column(name = "vehicle_image", nullable = false)//
+    @Column(name = "vehicle_image", nullable = false)
     private String vehicleImage;
 
     @Column(name = "make", nullable = false)

@@ -20,7 +20,6 @@ public class GlobalExceptionHandler {
         body.put("message", "An unexpected error occurred");
         body.put("error", ex.getMessage());
         body.put("path", request.getDescription(false));
-
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -31,7 +30,6 @@ public class GlobalExceptionHandler {
         body.put("message", "Invalid argument provided");
         body.put("error", ex.getMessage());
         body.put("path", request.getDescription(false));
-
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -42,7 +40,6 @@ public class GlobalExceptionHandler {
         body.put("message", "Resource not found");
         body.put("error", ex.getMessage());
         body.put("path", request.getDescription(false));
-
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 }
