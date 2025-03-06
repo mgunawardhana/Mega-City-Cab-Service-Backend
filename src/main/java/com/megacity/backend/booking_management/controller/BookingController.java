@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class BookingController {
 
-
     @NonNull
     private final BookingService bookingService;
 
@@ -33,24 +32,16 @@ public class BookingController {
 
     @GetMapping("/advancedSearch")
     @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<APIResponse> advancedSearch(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "100") int size,
-                                                      @RequestParam(required = false) LocalDateTime bookingDate,
-                                                      @RequestParam(required = false) String pickupLocation,
-                                                      @RequestParam(required = false) String dropOffLocation,
-                                                      @RequestParam(required = false) String carNumber,
-                                                      @RequestParam(required = false) String driverId,
-                                                      @RequestParam(required = false) String status,
-                                                      @RequestParam(required = false) LocalDateTime createdDate) {
-        log.info("advancedSearch {} {} {} {} {} {} {} {} {}",page, size, bookingDate, pickupLocation, dropOffLocation, carNumber, driverId, status, createdDate);
+    public ResponseEntity<APIResponse> advancedSearch(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size, @RequestParam(required = false) LocalDateTime bookingDate, @RequestParam(required = false) String pickupLocation, @RequestParam(required = false) String dropOffLocation, @RequestParam(required = false) String carNumber, @RequestParam(required = false) String driverId, @RequestParam(required = false) String status, @RequestParam(required = false) LocalDateTime createdDate) {
+        log.info("advancedSearch {} {} {} {} {} {} {} {} {}", page, size, bookingDate, pickupLocation, dropOffLocation, carNumber, driverId, status, createdDate);
         var response = bookingService.advancedSearch(page, size, bookingDate, pickupLocation, dropOffLocation, carNumber, driverId, status, createdDate);
         log.info("advancedSearch {}", response);
         return response;
     }
 
     @PostMapping("/{bookingId}/{status}")
-    public ResponseEntity<APIResponse> updateBookingFromDriverSide(@PathVariable String status, @PathVariable String bookingId){
-        log.info("updateBookingFromDriverSide {} {}",status, bookingId);
+    public ResponseEntity<APIResponse> updateBookingFromDriverSide(@PathVariable String status, @PathVariable String bookingId) {
+        log.info("updateBookingFromDriverSide {} {}", status, bookingId);
         log.info("updateBookingFromDriverSide");
         var resp = bookingService.updateBookingByDriverDetails(status, bookingId);
         log.info("updateBookingFromDriverSide");
@@ -59,12 +50,9 @@ public class BookingController {
 
     @PostMapping("/checkout")
     public ResponseEntity<StripeResponse> checkOutProducts(@RequestBody ProductRequest productRequest) {
-        System.out.println("awa");
         StripeResponse stripeResponse = stripeService.checkProduct(productRequest);
-        return ResponseEntity .status(HttpStatus.OK)
-                .body(stripeResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(stripeResponse);
     }
-
 
     @GetMapping("/export")
     public void exportToExcel(HttpServletResponse response) {
@@ -75,7 +63,7 @@ public class BookingController {
     @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<APIResponse> getAllBookings(@RequestParam Integer page, @RequestParam Integer size) {
         log.info("getAllBookings start");
-        var response = bookingService.getAllBookings(page,size);
+        var response = bookingService.getAllBookings(page, size);
         log.info("getAllBookings {}", response);
         return response;
     }
@@ -118,7 +106,6 @@ public class BookingController {
 
     @PostMapping("/filter/{bookingId}")
     public ResponseEntity<APIResponse> fetchBookingByDriverId(@PathVariable String bookingId) {
-        System.out.println(bookingId);
         log.info("createBooking {}", bookingId);
         var response = bookingService.fetchBookingsByDriverIdAndStatus(bookingId);
         log.info("createBooking {}", response);

@@ -4,18 +4,14 @@ import com.megacity.backend.domain.entity.Manager;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.manager_management.service.impl.ManagerServiceImpl;
 import com.megacity.backend.util.ResponseUtil;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -23,7 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-public class ManagerManagementServiceTest {
+class ManagerManagementServiceTest {
 
     private final ResponseUtil responseUtils = mock(ResponseUtil.class);
     private final JdbcTemplate writeJdbcTemplate = mock(JdbcTemplate.class);

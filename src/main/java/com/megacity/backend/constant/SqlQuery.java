@@ -192,10 +192,10 @@ public class SqlQuery {
                 customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
         public static final String VALIDATE_BOOKING = """
-                    SELECT COUNT(*) 
-                    FROM booking 
-                    WHERE car_number = ? 
-                    AND ABS(TIMESTAMPDIFF(HOUR, booking_date, ?)) < 5
+                SELECT COUNT(*)
+                FROM booking
+                WHERE car_number = ?
+                AND ? < (booking_date + (estimatedTime * INTERVAL '1 minute'))
                 """;
 
         private InsertQuery() {

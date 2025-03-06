@@ -3,10 +3,8 @@ package com.megacity.backend.booking_management.service.impl;
 import com.megacity.backend.booking_management.service.BookingService;
 import com.megacity.backend.constant.SqlQuery;
 import com.megacity.backend.domain.entity.Booking;
-import com.megacity.backend.domain.entity.Guideline;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.util.ResponseUtil;
-import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +13,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.sql.Types;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -51,21 +48,9 @@ public class BookingServiceImpl implements BookingService {
         log.info("Updating booking status for bookingId: {} with status: {}", booking_id, status);
 
         try {
-            // Convert booking_id to Long since booking_number is Long in the entity
             Long bookingIdLong = Long.parseLong(booking_id);
 
-            Booking updatedBooking = readJdbcTemplate.queryForObject(
-                    SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE,
-                    new Object[]{status, bookingIdLong},
-                    (rs, rowNum) -> Booking.builder()
-                            .bookingNumber(rs.getLong("booking_number"))
-                            .status(rs.getString("status"))
-                            .updatedDate(rs.getObject("updated_date", LocalDateTime.class))
-                            .driverId(rs.getString("driver_id"))
-                            .build()
-            );
-
-            System.out.println(updatedBooking);
+            Booking updatedBooking = readJdbcTemplate.queryForObject(SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE, new Object[]{status, bookingIdLong}, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).status(rs.getString("status")).updatedDate(rs.getObject("updated_date", LocalDateTime.class)).driverId(rs.getString("driver_id")).build());
 
             return responseUtil.wrapSuccess("Booking updated successfully", HttpStatus.OK);
 
@@ -100,20 +85,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public ResponseEntity<APIResponse> fetchBookingsByDriverIdAndStatus(String driverId) {
         try {
-            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_BOOKING_BY_DRIVER_ID,
-                    new Object[]{driverId}, (rs, rowNum) -> Booking.builder()
-                            .bookingNumber(rs.getLong("booking_number"))
-                            .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
-                            .pickupLocation(rs.getString("pickup_location"))
-                            .dropOffLocation(rs.getString("drop_off_location"))
-                            .distance(rs.getDouble("distance"))
-                            .estimatedTime(rs.getDouble("estimatedTime"))
-                            .totalAmount(rs.getBigDecimal("total_amount"))
-                            .customerRegistrationNumber(rs.getString("customer_registration_number"))
-                            .driverId(rs.getString("driver_id"))
-                            .status(rs.getString("status")).build());
-
-            System.out.println(bookings);
+            List<Booking> bookings = readJdbcTemplate.query(SqlQuery.SelectQuery.FIND_BOOKING_BY_DRIVER_ID, new Object[]{driverId}, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).bookingDate(rs.getTimestamp("booking_date").toLocalDateTime()).pickupLocation(rs.getString("pickup_location")).dropOffLocation(rs.getString("drop_off_location")).distance(rs.getDouble("distance")).estimatedTime(rs.getDouble("estimatedTime")).totalAmount(rs.getBigDecimal("total_amount")).customerRegistrationNumber(rs.getString("customer_registration_number")).driverId(rs.getString("driver_id")).status(rs.getString("status")).build());
 
             log.info("Fetched bookings successfully for driverId: {}", driverId);
             return responseUtil.wrapSuccess(bookings, HttpStatus.OK);
@@ -204,8 +176,8 @@ public class BookingServiceImpl implements BookingService {
             Integer count = writeJdbcTemplate.queryForObject(SqlQuery.InsertQuery.VALIDATE_BOOKING, Integer.class, booking.getCarNumber(), booking.getBookingDate());
 
             if (count != null && count > 0) {
-                log.warn("Booking conflict: Another booking exists within 5 hours for car {}", booking.getCarNumber());
-                return responseUtil.wrapError("Booking conflict: Another booking exists within 5 hours.", "Please select a different time slot.", HttpStatus.CONFLICT);
+                log.warn("Booking conflict: Car {} is already booked until the estimated time is completed", booking.getCarNumber());
+                return responseUtil.wrapError("Booking conflict: Car is already booked until the previous trip's estimated time is completed.", "Please select a different time slot.", HttpStatus.CONFLICT);
             }
 
             writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING, booking.getBookingDate(), booking.getPickupLocation(), booking.getDropOffLocation(), booking.getCarNumber(), booking.getTaxes(), booking.getDistance(), booking.getEstimatedTime(), booking.getTaxWithoutCost(), booking.getTotalAmount(), booking.getCustomerRegistrationNumber(), booking.getDriverId(), booking.getStatus());

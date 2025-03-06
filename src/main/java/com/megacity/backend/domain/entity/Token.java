@@ -13,19 +13,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Token {
 
-  @Id
-  @GeneratedValue
-  public Integer id;
+    @Id
+    @GeneratedValue
+    public Integer id;
 
-  @Column(unique = true)
-  public String token;
+    @Column(unique = true)
+    public String token;
 
-  @Enumerated(EnumType.STRING)
-  public TokenType tokenType = TokenType.BEARER;
+    @Enumerated(EnumType.STRING)
+    public TokenType tokenType = TokenType.BEARER;
 
-  public boolean revoked;
+    public boolean revoked;
 
-  public boolean expired;
+    public boolean expired;
 
-  private Integer user_Id;
+    private Integer user_Id;
 }

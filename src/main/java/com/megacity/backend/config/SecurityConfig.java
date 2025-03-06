@@ -36,10 +36,6 @@ import static org.springframework.http.HttpMethod.*;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider;
-    private final LogoutHandler logoutHandler;
-
     /**
      * Array of URL patterns that don't require authentication
      */
@@ -53,6 +49,9 @@ public class SecurityConfig {
             "/api/v1/vehicle/fetch-all/**",
             "/api/v1/booking/filter/**"
     };
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
+    private final LogoutHandler logoutHandler;
 
     /**
      * Configures the security filter chain for HTTP requests.
@@ -72,10 +71,8 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers(WHITE_LIST_URL).permitAll()
 
-                        // Protected endpoints by resource
                         .requestMatchers("/api/v1/booking/**").hasAnyRole(ADMIN.name(), CUSTOMER.name(), DRIVER.name())
                         .requestMatchers(GET, "/api/v1/booking/**").hasAuthority(ADMIN_READ.name())
                         .requestMatchers(POST, "/api/v1/booking/**").hasAuthority(ADMIN_CREATE.name())
@@ -124,7 +121,6 @@ public class SecurityConfig {
                         .requestMatchers(PUT, "/api/v1/web-content/**").hasAuthority(ADMIN_UPDATE.name())
                         .requestMatchers(DELETE, "/api/v1/web-content/**").hasAuthority(ADMIN_DELETE.name())
 
-                        // Default rule
                         .anyRequest().authenticated()
                 )
 

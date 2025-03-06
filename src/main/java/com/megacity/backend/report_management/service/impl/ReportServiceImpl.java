@@ -1,7 +1,6 @@
 package com.megacity.backend.report_management.service.impl;
 
 import com.megacity.backend.constant.SqlQuery;
-import com.megacity.backend.domain.entity.Booking;
 import com.megacity.backend.domain.entity.Report;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.report_management.service.ReportService;
@@ -37,13 +36,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ResponseEntity<APIResponse> getTaxDetailsByStatusWise() {
         try {
-            List<Report> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_TAX_DETAILS_BY_STATUS_WISE, (rs, rowNum) -> Report.builder()
-                    .taxes(rs.getDouble("total_taxes"))
-                    .tax_without_cost(rs.getDouble("total_tax_without_cost"))
-                    .total_income(rs.getDouble("total_amount"))
-                    .status(rs.getString("status"))
-                    .row_count(rs.getInt("row_count"))
-                    .build());
+            List<Report> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_TAX_DETAILS_BY_STATUS_WISE, (rs, rowNum) -> Report.builder().taxes(rs.getDouble("total_taxes")).tax_without_cost(rs.getDouble("total_tax_without_cost")).total_income(rs.getDouble("total_amount")).status(rs.getString("status")).row_count(rs.getInt("row_count")).build());
             log.info("Fetched all status wise details successfully");
             return responseUtil.wrapSuccess(query, HttpStatus.OK);
         } catch (Exception e) {
@@ -56,11 +49,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ResponseEntity<APIResponse> getTotalReportDetails() {
         try {
-            List<Report> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_TOTAL_REVENUE_BY_STATUS_ORDERED, (rs, rowNum) -> Report.builder()
-                    .taxes(rs.getDouble("total_taxes"))
-                    .tax_without_cost(rs.getDouble("total_tax_without_cost"))
-                    .total_income(rs.getDouble("total_amount"))
-                    .build());
+            List<Report> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_TOTAL_REVENUE_BY_STATUS_ORDERED, (rs, rowNum) -> Report.builder().taxes(rs.getDouble("total_taxes")).tax_without_cost(rs.getDouble("total_tax_without_cost")).total_income(rs.getDouble("total_amount")).build());
             log.info("Fetched all revenue successfully");
             return responseUtil.wrapSuccess(query, HttpStatus.OK);
         } catch (Exception e) {

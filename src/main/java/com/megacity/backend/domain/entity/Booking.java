@@ -6,11 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Setter
 @Getter
@@ -20,7 +18,9 @@ import java.util.Date;
 public class Booking {
 
 
-    /** booking related details */
+    /**
+     * booking related details
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_number", nullable = false)
@@ -56,7 +56,9 @@ public class Booking {
     @Column(name = "customer_registration_number", nullable = false)
     private String customerRegistrationNumber;
 
-    /** driver related details for booking */
+    /**
+     * driver related details for booking
+     */
     @Column(name = "driver_id", nullable = false)
     private String driverId;
 

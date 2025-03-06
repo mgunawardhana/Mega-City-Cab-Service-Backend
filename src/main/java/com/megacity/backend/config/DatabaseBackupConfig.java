@@ -58,16 +58,7 @@ public class DatabaseBackupConfig {
 
             log.debug("Attempting to create backup file: {}", backupFile);
 
-            ProcessBuilder pb = new ProcessBuilder(
-                    "pg_dump",
-                    "--host", getHostFromUrl(),
-                    "--port", getPortFromUrl(),
-                    "--username", dbUsername,
-                    "--format", "plain",
-                    "--verbose",
-                    "--file", backupFile,
-                    dbName
-            );
+            ProcessBuilder pb = new ProcessBuilder("pg_dump", "--host", getHostFromUrl(), "--port", getPortFromUrl(), "--username", dbUsername, "--format", "plain", "--verbose", "--file", backupFile, dbName);
 
             pb.environment().put("PGPASSWORD", dbPassword);
             pb.redirectErrorStream(true);

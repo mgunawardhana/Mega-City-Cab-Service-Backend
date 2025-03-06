@@ -56,7 +56,7 @@ public class DriverServiceImpl implements DriverService {
                             .dateOfJoining(rs.getDate("date_of_joining"))
                             .licenseImageFront(rs.getString("license_image_front"))
                             .licenseImageBack(rs.getString("license_image_back"))
-                            .user_profile_pic(rs.getString("user_profile_pic")) // Using licenseImageFront for profile pic
+                            .user_profile_pic(rs.getString("user_profile_pic"))
                             .build()
             );
             log.info("All drivers fetched successfully. Total: {}", driverList.size());
@@ -74,20 +74,14 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
-
     @Override
     public ResponseEntity<APIResponse> getDriverById(String driverRegNo) {
         try {
             Driver driver = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_DRIVER_BY_NIC, new Object[]{driverRegNo}, (rs, rowNum) ->
                     Driver.builder()
                             .driverRegistrationNumber(rs.getInt("driver_registration_number"))
-//                            .driverProfilePicture(rs.getString("driver_profile_picture"))
-//                            .driverProfilePicture(rs.getString("driver_profile_picture"))
-//                            .driverFirstName(rs.getString("driver_first_name"))
-//                            .driverLastName(rs.getString("driver_last_name"))
                             .driverNIC(rs.getString("driver_nic"))
                             .phoneNumber(rs.getString("phone_number"))
-//                            .emailAddress(rs.getString("email_address"))
                             .licenseNumber(rs.getString("license_number"))
                             .licenseExpiryDate(rs.getDate("license_expiry_date"))
                             .driverAddress(rs.getString("driver_address"))
@@ -96,7 +90,6 @@ public class DriverServiceImpl implements DriverService {
                             .emergencyContact(rs.getString("emergency_contact"))
                             .dateOfBirth(rs.getDate("date_of_birth"))
                             .dateOfJoining(rs.getDate("date_of_joining"))
-//                            .licenseImages(Collections.singletonList(rs.getString("license_images")))
                             .build());
 
             return responseUtil.wrapSuccess(driver, HttpStatus.OK);

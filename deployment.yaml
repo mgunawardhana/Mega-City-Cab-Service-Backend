@@ -1,28 +1,56 @@
+# Specifies the API version of the Kubernetes resource
 apiVersion: apps/v1
+# Defines the type of Kubernetes resource (in this case, a Deployment)
 kind: Deployment
+# Metadata for the Deployment, including its name and other identifying information
 metadata:
+  # Name of the Deployment, used to identify it within the cluster
   name: mega-city-cab-service-backend
+# Specification for the Deployment's desired state
 spec:
+  # Number of pod replicas to maintain for high availability and load balancing
   replicas: 2
+  # Selector to match pods managed by this Deployment
   selector:
+    # Labels to match for pod selection
     matchLabels:
+      # Application label to identify pods running the backend service
       app: mega-city-cab-service-backend
+  # Template for creating new pods managed by this Deployment
   template:
+    # Metadata for the pod template
     metadata:
+      # Labels applied to pods created from this template
       labels:
+        # Label identifying the application, must match the selector
         app: mega-city-cab-service-backend
+    # Specification for the pod's configuration
     spec:
+      # List of containers to run in the pod
       containers:
-        - name: mega-city-cab-service-backend  # Updated name for clarity and consistency
+        - # Name of the container, aligned with the application for clarity
+          name: mega-city-cab-service-backend
+          # Docker image to use for the container, pulled from Docker Hub
           image: gstwarrier/mega-city-cab-service-backend:latest
+          # Ports exposed by the container
           ports:
-            - containerPort: 8080  # Updated to match server.port=8080 in application.properties
-          env:  # Optional: Add environment variables if needed (e.g., database credentials, JWT secrets)
-            - name: SPRING_DATASOURCE_WRITE_URL
+            - # Port the application listens on within the container
+              containerPort: 8080
+          # Environment variables to configure the container
+          env:
+            - # Environment variable for the write datasource URL
+              name: SPRING_DATASOURCE_WRITE_URL
+              # Value pointing to the PostgreSQL service within the cluster
               value: "jdbc:postgresql://postgres-service:5432/megaCityCabService"
-            - name: SPRING_DATASOURCE_WRITE_USERNAME
+            - # Environment variable for the write datasource username
+              name: SPRING_DATASOURCE_WRITE_USERNAME
+              # Default username for the PostgreSQL database
               value: "postgres"
-            - name: SPRING_DATASOURCE_WRITE_PASSWORD
+            - # Environment variable for the write datasource password
+              name: SPRING_DATASOURCE_WRITE_PASSWORD
+              # Default password for the PostgreSQL database
               value: "pgadmin"
-            - name: BACKUP_DIRECTORY
+            - # Environment variable for the backup directory path
+              name: BACKUP_DIRECTORY
+              # Directory inside the container where backups are stored
               value: "/app/backups"  # Adjust as needed for your container

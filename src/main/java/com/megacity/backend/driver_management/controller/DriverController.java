@@ -18,8 +18,6 @@ public class DriverController {
 
     @NonNull private final DriverService driverService;
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse> fetchDriverById(@PathVariable String id){
         log.info("fetchDriverById {}",id);
