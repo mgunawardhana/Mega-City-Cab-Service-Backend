@@ -2,11 +2,11 @@ package com.megacity.backend.domain.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.megacity.backend.domain.enums.Role;
-import jakarta.persistence.Column;
+
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
+
 
 @Builder
 @Data

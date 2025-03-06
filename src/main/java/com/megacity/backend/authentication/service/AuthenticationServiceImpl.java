@@ -303,7 +303,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                     return Driver.builder()
                                             .driverRegistrationNumber(rs.getInt("driver_registration_number"))
                                             .rootUserId(rs.getInt("root_user_id"))
-//                                            .driverProfilePicture(rs.getString("driver_profile_picture"))
                                             .driverAddress(rs.getString("driver_address"))
                                             .driverNIC(rs.getString("driver_nic"))
                                             .phoneNumber(String.valueOf(rs.getLong("phone_number")))
@@ -330,7 +329,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         Driver driver = query.get(0);
                         userDetails.put("driver_registration_number", driver.getDriverRegistrationNumber());
                         userDetails.put("root_user_id", driver.getRootUserId());
-//                        userDetails.put("driver_profile_picture", driver.getDriverProfilePicture());
                         userDetails.put("driver_address", driver.getDriverAddress());
                         userDetails.put("driver_nic", driver.getDriverNIC());
                         userDetails.put("phone_number", driver.getPhoneNumber());

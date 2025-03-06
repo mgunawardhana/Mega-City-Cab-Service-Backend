@@ -33,7 +33,6 @@ public class AuthManagementController {
      */
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest registrationRequest) {
-        System.out.println("RegistrationRequest: " + registrationRequest.toString());
         log.info("RegistrationRequest: {}", registrationRequest);
         return ResponseEntity.ok(authenticationServiceImpl.register(registrationRequest));
     }

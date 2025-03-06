@@ -81,13 +81,8 @@ public class DriverServiceImpl implements DriverService {
             Driver driver = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.GET_DRIVER_BY_NIC, new Object[]{driverRegNo}, (rs, rowNum) ->
                     Driver.builder()
                             .driverRegistrationNumber(rs.getInt("driver_registration_number"))
-//                            .driverProfilePicture(rs.getString("driver_profile_picture"))
-//                            .driverProfilePicture(rs.getString("driver_profile_picture"))
-//                            .driverFirstName(rs.getString("driver_first_name"))
-//                            .driverLastName(rs.getString("driver_last_name"))
                             .driverNIC(rs.getString("driver_nic"))
                             .phoneNumber(rs.getString("phone_number"))
-//                            .emailAddress(rs.getString("email_address"))
                             .licenseNumber(rs.getString("license_number"))
                             .licenseExpiryDate(rs.getDate("license_expiry_date"))
                             .driverAddress(rs.getString("driver_address"))

@@ -67,8 +67,6 @@ public class BookingServiceImpl implements BookingService {
                             .build()
             );
 
-            System.out.println(updatedBooking);
-
             return responseUtil.wrapSuccess("Booking updated successfully", HttpStatus.OK);
 
         } catch (NumberFormatException e) {
@@ -129,8 +127,6 @@ public class BookingServiceImpl implements BookingService {
                             .customerRegistrationNumber(rs.getString("customer_registration_number"))
                             .driverId(rs.getString("driver_id"))
                             .status(rs.getString("status")).build());
-
-            System.out.println(bookings);
 
             log.info("Fetched bookings successfully for driverId: {}", driverId);
             return responseUtil.wrapSuccess(bookings, HttpStatus.OK);

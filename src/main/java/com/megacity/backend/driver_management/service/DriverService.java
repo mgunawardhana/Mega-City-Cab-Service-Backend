@@ -1,6 +1,5 @@
 package com.megacity.backend.driver_management.service;
 
-import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.response.APIResponse;
 import org.springframework.http.ResponseEntity;
 

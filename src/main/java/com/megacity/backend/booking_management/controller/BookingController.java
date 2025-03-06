@@ -59,7 +59,6 @@ public class BookingController {
 
     @PostMapping("/checkout")
     public ResponseEntity<StripeResponse> checkOutProducts(@RequestBody ProductRequest productRequest) {
-        System.out.println("awa");
         StripeResponse stripeResponse = stripeService.checkProduct(productRequest);
         return ResponseEntity .status(HttpStatus.OK)
                 .body(stripeResponse);
@@ -118,7 +117,6 @@ public class BookingController {
 
     @PostMapping("/filter/{bookingId}")
     public ResponseEntity<APIResponse> fetchBookingByDriverId(@PathVariable String bookingId) {
-        System.out.println(bookingId);
         log.info("createBooking {}", bookingId);
         var response = bookingService.fetchBookingsByDriverIdAndStatus(bookingId);
         log.info("createBooking {}", response);

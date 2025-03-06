@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @Slf4j
-public class BookingManagementServiceTest {
+class BookingManagementServiceTest {
 
     private final ResponseUtil responseUtils = mock(ResponseUtil.class);
     private final JdbcTemplate writeJdbcTemplate = mock(JdbcTemplate.class);
