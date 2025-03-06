@@ -1,6 +1,7 @@
 package com.megacity.backend.config;
 
 import com.megacity.backend.authentication.service.JwtServiceImpl;
+import com.megacity.backend.authentication.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Objects;
-
-import static com.megacity.backend.util.Constant.BEARER;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 
 @Component
@@ -33,6 +30,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @NonNull
     private final UserDetailsService userDetailsService;
+
+    @Autowired
+    private final TokenService tokenService;
 
     /**
      * Filters incoming HTTP requests to validate JWT tokens and set the authentication context.
@@ -49,20 +49,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-
-        final String authorizationHeader = request.getHeader(Objects.requireNonNull(AUTHORIZATION, "Authorization header cannot be null"));
-
-        if (authorizationHeader == null || !authorizationHeader.startsWith(Objects.requireNonNull(BEARER, "BEARER token cannot be null"))) {
+        if (request.getServletPath().contains("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        final String jwt = authorizationHeader.substring(7);
-        final String userEmail = jwtServiceImpl.extractUserName(jwt);
-
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        jwt = authHeader.substring(7);
+        userEmail = jwtServiceImpl.extractUserName(jwt);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(Objects.requireNonNull(userEmail, "User email cannot be null"));
-            if (jwtServiceImpl.isTokenValidated(jwt, userDetails)) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            var isTokenValid = tokenService.findByToken(jwt).map(t -> !t.isExpired() && !t.isRevoked()).orElse(false);
+            System.out.println(isTokenValid);
+            if (jwtServiceImpl.isTokenValidated(jwt, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);

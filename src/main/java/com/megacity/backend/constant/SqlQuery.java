@@ -32,7 +32,24 @@ public class SqlQuery {
                 SELECT * FROM driver WHERE driver_nic = ?;""";
 
         public static final String FETCH_ALL_DRIVERS = """
-                SELECT * FROM driver""";
+                SELECT 
+                    d.driver_registration_number,
+                    d.root_user_id,
+                    d.driver_nic,
+                    d.phone_number,
+                    d.license_number,
+                    d.license_expiry_date,
+                    d.driver_address,
+                    d.vehicle_assigned,
+                    d.driver_status,
+                    d.emergency_contact,
+                    d.date_of_birth,
+                    d.date_of_joining,
+                    d.license_image_front,
+                    d.license_image_back,
+                    u.user_profile_pic
+                FROM driver d
+                LEFT JOIN users u ON d.root_user_id = u.id""";
 
         public static final String GET_ALL_CUSTOMERS = """
                 SELECT * FROM customer""";
@@ -53,7 +70,23 @@ public class SqlQuery {
                 SELECT * FROM booking LIMIT ? OFFSET ?;""";
 
         public static final String GET_ALL_BOOKINGS_WITHOUT_PAGINATION = """
-                    SELECT booking_number, booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status, created_date, updated_date FROM booking
+                    SELECT 
+                    booking_number, 
+                    booking_date, 
+                    pickup_location, 
+                    drop_off_location, 
+                    car_number, 
+                    taxes, 
+                    distance, 
+                    estimatedTime, 
+                    tax_without_cost, 
+                    total_amount, 
+                    customer_registration_number, 
+                    driver_id, 
+                    status, 
+                    created_date, 
+                    updated_date 
+                    FROM booking
                 """;
 
         public static final String GET_TOTAL_REVENUE_BY_STATUS_ORDERED = """
@@ -79,11 +112,35 @@ public class SqlQuery {
         public static final String GET_BOOKING_BY_ID = """
                 SELECT * FROM booking WHERE booking_number = ?""";
 
+        public static final String FIND_BOOKING_BY_DRIVER_ID = """
+                SELECT 
+                    booking_number,
+                    booking_date,
+                    pickup_location,
+                    drop_off_location,
+                    distance,
+                    estimatedTime,
+                    total_amount,
+                    customer_registration_number,
+                    driver_id,
+                    status
+                FROM booking 
+                WHERE driver_id = ?
+                """;
+
         public static final String FIND_CUSTOMER_BY_ROOT_USER_ID = """
                 SELECT registration_number, root_user_id, address, nic, phone_number FROM customer WHERE root_user_id = ?""";
 
         public static final String FIND_MANAGER_BY_ROOT_USER_ID = """
                 SELECT registration_number, root_user_id, address, nic, phone_number FROM manager WHERE root_user_id = ?""";
+
+        public static final String FIND_DRIVER_BY_ROOT_USER_ID = """
+                SELECT driver_registration_number, root_user_id, driver_profile_picture, driver_nic, phone_number,
+                       license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status,
+                       emergency_contact, date_of_birth, date_of_joining, license_image_front, license_image_back
+                FROM driver
+                WHERE root_user_id = ?
+                """;
 
 
         private SelectQuery() {
@@ -95,6 +152,9 @@ public class SqlQuery {
      */
     public static class InsertQuery {
 
+
+        public static final String INSERT_TOKEN = "INSERT INTO token (token, token_type, revoked, expired, user_id)\n" + "VALUES (?, ?, ?, ?, ?);\n";
+
         public static final String INSERT_ARTICLE = """
                 INSERT INTO _article ( discount, title, description, author, media, is_active ) VALUES (?, ?, ?, ?, ?, ?);""";
 
@@ -103,17 +163,22 @@ public class SqlQuery {
 
         public static final String ADD_NEW_VEHICLE = """
                     INSERT INTO vehicle (
-                        registration_number, make, model, year_of_manufacture, color, fuel_type,
-                        engine_capacity, chassis_number, vehicle_type, owner_name, owner_contact,
-                        owner_address, insurance_provider, insurance_policy_number,
-                        insurance_expiry_date, seating_capacity, license_plate_number,
-                        permit_type, air_conditioning, vehicle_image, additional_features
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                        registration_number, vehicle_image, make, model, year_of_manufacture, 
+                        color, fuel_type, engine_capacity, chassis_number, vehicle_type, 
+                        owner_name, owner_contact, owner_address, insurance_provider, 
+                        insurance_policy_number, insurance_expiry_date, seating_capacity, 
+                        license_plate_number, permit_type, air_conditioning, additional_features, status
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """;
 
-
         public static final String ADD_NEW_DRIVER = """
-                INSERT INTO driver (driver_first_name, driver_profile_picture, driver_last_name, driver_nic, phone_number, email_address, license_number, license_expiry_date, driver_address, vehicle_assigned, driver_status, emergency_contact, date_of_birth, date_of_joining) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+                    INSERT INTO driver (root_user_id, driver_nic, phone_number, 
+                                        license_number, license_expiry_date, driver_address, 
+                                        vehicle_assigned, driver_status, emergency_contact, 
+                                        date_of_birth, date_of_joining, license_image_front, license_image_back) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+
 
         public static final String ADD_NEW_CUSTOMER = """
                 INSERT INTO customer (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";
@@ -122,11 +187,16 @@ public class SqlQuery {
                 INSERT INTO manager (root_user_id, address, nic, phone_number) VALUES (?, ?, ?, ?)""";
 
         public static final String ADD_NEW_BOOKING = """
-                INSERT INTO booking (booking_date, pickup_location, drop_off_location, car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO booking (booking_date, pickup_location, drop_off_location, 
+                car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, 
+                customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
-        public static final String INSERT_DOCTOR = """
-                INSERT INTO instructor ( first_name, last_name, email, phone_number, date_of_birth, specialization, license_number, license_expiry_date, issuing_country, qualifications, registration_authority, registration_id, nationality, years_of_experience, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""";
-
+        public static final String VALIDATE_BOOKING = """
+                    SELECT COUNT(*) 
+                    FROM booking 
+                    WHERE car_number = ? 
+                    AND ABS(TIMESTAMPDIFF(HOUR, booking_date, ?)) < 5
+                """;
 
         private InsertQuery() {
         }
@@ -137,6 +207,10 @@ public class SqlQuery {
      */
     public static class UpdateQuery {
 
+        public static final String UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE = "WITH updated_booking AS ( " + "    UPDATE booking " + "    SET status = ?, " + "        updated_date = CURRENT_TIMESTAMP " + "    WHERE booking_number = ? " + "    RETURNING booking_number, status, updated_date, driver_id " + "), " + "updated_driver AS ( " + "    UPDATE driver " + "    SET driver_status = CASE WHEN (SELECT status FROM updated_booking) = 'ACCEPTED' THEN 'BUSY' ELSE 'AVAILABLE' END " + "    WHERE driver_registration_number = (SELECT CAST(driver_id AS INTEGER) FROM updated_booking) " + "    RETURNING driver_registration_number " + ") " + "SELECT booking_number, status, updated_date, driver_id " + "FROM updated_booking";
+
+        public static final String REVOKE_ALL_USER_TOKENS = "UPDATE token SET revoked = ?, expired = ? WHERE user_id = ? AND (revoked = false OR expired = false)";
+
         public static final String UPDATE_ARTICLE = """
                 UPDATE _article SET discount = ?, title = ?, description = ?, author = ?, media = ?, is_active = ? WHERE article_id = ?""";
 
@@ -145,33 +219,34 @@ public class SqlQuery {
 
         public static final String UPDATE_VEHICLE = """
                     UPDATE vehicle SET 
-                        registration_number = ?, 
-                        make = ?, 
-                        model = ?, 
-                        year_of_manufacture = ?, 
-                        color = ?, 
-                        fuel_type = ?, 
-                        engine_capacity = ?, 
-                        chassis_number = ?, 
-                        vehicle_type = ?, 
-                        owner_name = ?, 
-                        owner_contact = ?, 
-                        owner_address = ?, 
-                        insurance_provider = ?, 
-                        insurance_policy_number = ?, 
-                        insurance_expiry_date = ?, 
-                        seating_capacity = ?, 
-                        license_plate_number = ?, 
-                        permit_type = ?, 
-                        air_conditioning = ?, 
-                        vehicle_image = ?, 
-                        additional_features = ? 
+                        registration_number = ?,
+                        make = ?,
+                        model = ?,
+                        year_of_manufacture = ?,
+                        color = ?,
+                        fuel_type = ?,
+                        engine_capacity = ?,
+                        chassis_number = ?,
+                        vehicle_type = ?,
+                        owner_name = ?,
+                        owner_contact = ?,
+                        owner_address = ?,
+                        insurance_provider = ?,
+                        insurance_policy_number = ?,
+                        insurance_expiry_date = ?,
+                        seating_capacity = ?,
+                        license_plate_number = ?,
+                        permit_type = ?,
+                        air_conditioning = ?,
+                        vehicle_image = ?,
+                        additional_features = ?,
+                        status = ?
                     WHERE id = ?
                 """;
 
 
         public static final String UPDATE_DRIVER = """
-                UPDATE driver SET driver_first_name = ?, driver_last_name = ?, driver_nic = ?, phone_number = ?, email_address = ?, license_number = ?, license_expiry_date = ?, driver_address = ?, vehicle_assigned = ?, driver_status = ?, emergency_contact = ?, date_of_birth = ?, date_of_joining = ? WHERE driver_registration_number = ?""";
+                UPDATE driver SET driver_first_name = ?, driver_last_name = ?, driver_nic = ?, phone_number = ?, email_address = ?, license_number = ?, license_expiry_date = ?, driver_address = ?, vehicle_assigned = ?, driver_status = ?, emergency_contact = ?, date_of_birth = ?, date_of_joining = ?, license_images = ? WHERE driver_registration_number = ?""";
 
         public static final String UPDATE_CUSTOMER = """
                 UPDATE customer SET root_user_id = ?, address = ?, nic = ?, phone_number = ? WHERE registration_number = ?""";

@@ -27,7 +27,7 @@ public class WebContentManagementController {
     @GetMapping("/public")
     public ResponseEntity<APIResponse> checkingIfDeploymentIsSuccess() {
         log.info("Checking if deployment is successful");
-        return responseUtil.wrapSuccess("powerhouse-backend is up and running on aws EC2 instance.", HttpStatus.CREATED);
+        return responseUtil.wrapSuccess("mega-city-backend is up and running on aws EC2 instance.", HttpStatus.CREATED);
     }
 
     @PostMapping("/createArticle")
@@ -45,7 +45,7 @@ public class WebContentManagementController {
     @GetMapping("/public/getArticle/{articleId}")
     public ResponseEntity<APIResponse> getArticle(@PathVariable Integer articleId) {
         log.info("Article ID for getArticle By ID: {}", articleId);
-        return webContentManagementService.getArticle(articleId);
+        return webContentManagementService.getArticleById(articleId);
     }
 
     @PostMapping("/public/get-article-with-pagination")
