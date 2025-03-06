@@ -207,22 +207,7 @@ public class SqlQuery {
      */
     public static class UpdateQuery {
 
-        public static final String UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE =
-                "WITH updated_booking AS ( " +
-                        "    UPDATE booking " +
-                        "    SET status = ?, " +
-                        "        updated_date = CURRENT_TIMESTAMP " +
-                        "    WHERE booking_number = ? " +
-                        "    RETURNING booking_number, status, updated_date, driver_id " +
-                        "), " +
-                        "updated_driver AS ( " +
-                        "    UPDATE driver " +
-                        "    SET driver_status = CASE WHEN (SELECT status FROM updated_booking) = 'ACCEPTED' THEN 'BUSY' ELSE 'AVAILABLE' END " +
-                        "    WHERE driver_registration_number = (SELECT CAST(driver_id AS INTEGER) FROM updated_booking) " +
-                        "    RETURNING driver_registration_number " +
-                        ") " +
-                        "SELECT booking_number, status, updated_date, driver_id " +
-                        "FROM updated_booking";
+        public static final String UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE = "WITH updated_booking AS ( " + "    UPDATE booking " + "    SET status = ?, " + "        updated_date = CURRENT_TIMESTAMP " + "    WHERE booking_number = ? " + "    RETURNING booking_number, status, updated_date, driver_id " + "), " + "updated_driver AS ( " + "    UPDATE driver " + "    SET driver_status = CASE WHEN (SELECT status FROM updated_booking) = 'ACCEPTED' THEN 'BUSY' ELSE 'AVAILABLE' END " + "    WHERE driver_registration_number = (SELECT CAST(driver_id AS INTEGER) FROM updated_booking) " + "    RETURNING driver_registration_number " + ") " + "SELECT booking_number, status, updated_date, driver_id " + "FROM updated_booking";
 
         public static final String REVOKE_ALL_USER_TOKENS = "UPDATE token SET revoked = ?, expired = ? WHERE user_id = ? AND (revoked = false OR expired = false)";
 
@@ -234,28 +219,28 @@ public class SqlQuery {
 
         public static final String UPDATE_VEHICLE = """
                     UPDATE vehicle SET 
-                        registration_number = ?, 
-                        make = ?, 
-                        model = ?, 
-                        year_of_manufacture = ?, 
-                        color = ?, 
-                        fuel_type = ?, 
-                        engine_capacity = ?, 
-                        chassis_number = ?, 
-                        vehicle_type = ?, 
-                        owner_name = ?, 
-                        owner_contact = ?, 
-                        owner_address = ?, 
-                        insurance_provider = ?, 
-                        insurance_policy_number = ?, 
-                        insurance_expiry_date = ?, 
-                        seating_capacity = ?, 
-                        license_plate_number = ?, 
-                        permit_type = ?, 
-                        air_conditioning = ?, 
-                        vehicle_image = ?, 
+                        registration_number = ?,
+                        make = ?,
+                        model = ?,
+                        year_of_manufacture = ?,
+                        color = ?,
+                        fuel_type = ?,
+                        engine_capacity = ?,
+                        chassis_number = ?,
+                        vehicle_type = ?,
+                        owner_name = ?,
+                        owner_contact = ?,
+                        owner_address = ?,
+                        insurance_provider = ?,
+                        insurance_policy_number = ?,
+                        insurance_expiry_date = ?,
+                        seating_capacity = ?,
+                        license_plate_number = ?,
+                        permit_type = ?,
+                        air_conditioning = ?,
+                        vehicle_image = ?,
                         additional_features = ?,
-                        status = ?, 
+                        status = ?
                     WHERE id = ?
                 """;
 
@@ -287,6 +272,7 @@ public class SqlQuery {
                         updated_date = ? 
                     WHERE booking_number = ?
                 """;
+
         private UpdateQuery() {
         }
     }

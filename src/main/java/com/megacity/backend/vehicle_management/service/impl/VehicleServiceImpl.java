@@ -98,9 +98,9 @@ public class VehicleServiceImpl implements VehicleService {
                     vehicle.getVehicleImage(),
                     vehicle.getAdditionalFeatures(),
                     vehicle.getStatus(),
-                    vehicle.getId()
+                    vehicle.getId()  // This should be last to match WHERE clause
             );
-            log.info("Vehicle updated successfully ");
+            log.info("Vehicle updated successfully");
             return responseUtil.wrapSuccess("Vehicle registered successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.warn("Failed to update vehicle {}", e.getMessage());
