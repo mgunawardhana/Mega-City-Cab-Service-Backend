@@ -4,7 +4,6 @@ import com.megacity.backend.domain.entity.Token;
 import com.megacity.backend.domain.enums.TokenType;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -36,8 +35,8 @@ public class TokenService {
 
     public Optional<Token> findByToken(String token) {
         String sql = """
-               SELECT token.id, token.token, token.token_type, token.revoked, token.expired, token.user_id FROM token
-                WHERE token.token = ?
+                SELECT token.id, token.token, token.token_type, token.revoked, token.expired, token.user_id FROM token
+                 WHERE token.token = ?
                 """;
 
         try {
@@ -50,19 +49,10 @@ public class TokenService {
     }
 
     public boolean isTokenValid(String token) {
-        return findByToken(token)
-                .map(t -> !t.isExpired() && !t.isRevoked())
-                .orElse(false);
+        return findByToken(token).map(t -> !t.isExpired() && !t.isRevoked()).orElse(false);
     }
 
     private Token mapTokenRow(ResultSet rs, int rowNum) throws SQLException {
-        return Token.builder()
-                .id(rs.getInt("id"))
-                .token(rs.getString("token"))
-                .tokenType(TokenType.valueOf(rs.getString("token_type")))
-                .revoked(rs.getBoolean("revoked"))
-                .expired(rs.getBoolean("expired"))
-                .user_Id(rs.getInt("user_id"))
-                .build();
+        return Token.builder().id(rs.getInt("id")).token(rs.getString("token")).tokenType(TokenType.valueOf(rs.getString("token_type"))).revoked(rs.getBoolean("revoked")).expired(rs.getBoolean("expired")).user_Id(rs.getInt("user_id")).build();
     }
 }

@@ -39,14 +39,7 @@ public class WebContentManagementServiceImpl implements WebContentManagementServ
     @Override
     public ResponseEntity<APIResponse> createArticle(Article article) {
         try {
-            writeJdbcTemplate.update(
-                    SqlQuery.InsertQuery.INSERT_ARTICLE,
-                    article.getRatings(),
-                    article.getTitle(),
-                    article.getDescription(),
-                    article.getAuthor(),
-                    article.getMedia(),
-                    article.getIs_active());
+            writeJdbcTemplate.update(SqlQuery.InsertQuery.INSERT_ARTICLE, article.getRatings(), article.getTitle(), article.getDescription(), article.getAuthor(), article.getMedia(), article.getIs_active());
 
             return responseUtil.wrapSuccess("Article created successfully", HttpStatus.CREATED);
         } catch (Exception e) {
@@ -58,15 +51,7 @@ public class WebContentManagementServiceImpl implements WebContentManagementServ
     @Override
     public ResponseEntity<APIResponse> updateArticle(Article article) {
         try {
-            writeJdbcTemplate.update(
-                    SqlQuery.UpdateQuery.UPDATE_ARTICLE,
-                    article.getRatings(),
-                    article.getTitle(),
-                    article.getDescription(),
-                    article.getAuthor(),
-                    article.getMedia(),
-                    article.getIs_active(),
-                    article.getArticleId());
+            writeJdbcTemplate.update(SqlQuery.UpdateQuery.UPDATE_ARTICLE, article.getRatings(), article.getTitle(), article.getDescription(), article.getAuthor(), article.getMedia(), article.getIs_active(), article.getArticleId());
 
             return responseUtil.wrapSuccess("Article updated successfully", HttpStatus.OK);
         } catch (Exception e) {
@@ -89,19 +74,7 @@ public class WebContentManagementServiceImpl implements WebContentManagementServ
     @Override
     public ResponseEntity<APIResponse> getArticleById(Integer articleId) {
         try {
-            Article article = readJdbcTemplate.queryForObject(
-                    SqlQuery.SelectQuery.SELECT_ARTICLE_BY_ID,
-                    new Object[]{articleId},
-                    (rs, rowNum) ->
-                            Article.builder()
-                                    .articleId(rs.getInt("article_id"))
-                                    .ratings(rs.getDouble("discount"))
-                                    .title(rs.getString("title"))
-                                    .description(rs.getString("description"))
-                                    .author(rs.getString("author"))
-                                    .media(rs.getString("media"))
-                                    .is_active(rs.getBoolean("is_active"))
-                                    .build());
+            Article article = readJdbcTemplate.queryForObject(SqlQuery.SelectQuery.SELECT_ARTICLE_BY_ID, new Object[]{articleId}, (rs, rowNum) -> Article.builder().articleId(rs.getInt("article_id")).ratings(rs.getDouble("discount")).title(rs.getString("title")).description(rs.getString("description")).author(rs.getString("author")).media(rs.getString("media")).is_active(rs.getBoolean("is_active")).build());
             return responseUtil.wrapSuccess(article, HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
             log.error("Article not found with ID: {}", articleId, e);
@@ -113,22 +86,9 @@ public class WebContentManagementServiceImpl implements WebContentManagementServ
     }
 
     @Override
-    public ResponseEntity<APIResponse> getArticles(@RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "4") int size) {
+    public ResponseEntity<APIResponse> getArticles(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "4") int size) {
         try {
-            List<Article> articles = readJdbcTemplate.query(
-                    SqlQuery.SelectQuery.SELECT_ARTICLES,
-                    new Object[]{size, page * size},
-                    (rs, rowNum) ->
-                            Article.builder()
-                                    .articleId(rs.getInt("article_id"))
-                                    .ratings(rs.getDouble("discount"))
-                                    .title(rs.getString("title"))
-                                    .description(rs.getString("description"))
-                                    .author(rs.getString("author"))
-                                    .media(rs.getString("media"))
-                                    .is_active(rs.getBoolean("is_active"))
-                                    .build());
+            List<Article> articles = readJdbcTemplate.query(SqlQuery.SelectQuery.SELECT_ARTICLES, new Object[]{size, page * size}, (rs, rowNum) -> Article.builder().articleId(rs.getInt("article_id")).ratings(rs.getDouble("discount")).title(rs.getString("title")).description(rs.getString("description")).author(rs.getString("author")).media(rs.getString("media")).is_active(rs.getBoolean("is_active")).build());
             return responseUtil.wrapSuccess(articles, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error fetching articles: ", e);

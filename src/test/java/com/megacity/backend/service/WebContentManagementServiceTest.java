@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-public class WebContentManagementServiceTest {
+class WebContentManagementServiceTest {
 
     private final ResponseUtil responseUtils = mock(ResponseUtil.class);
     private final JdbcTemplate writeJdbcTemplate = mock(JdbcTemplate.class);

@@ -8,43 +8,43 @@ import org.springframework.http.ResponseEntity;
 public interface WebContentManagementService {
 
     /**
-     * Creates a new article.
+     * Creates a new article in the system.
      *
-     * @param article the article to be created
-     * @return a ResponseEntity containing the APIResponse
+     * @param article the {@link Article} object containing the article details to be created
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the result of the creation operation
      */
     ResponseEntity<APIResponse> createArticle(Article article);
 
     /**
-     * Updates an existing article.
+     * Updates an existing article in the system.
      *
-     * @param article the article to be updated
-     * @return a ResponseEntity containing the APIResponse
+     * @param article the {@link Article} object containing the updated article details
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the result of the update operation
      */
     ResponseEntity<APIResponse> updateArticle(Article article);
 
     /**
-     * Deletes an article by its ID.
+     * Deletes an article from the system based on its ID.
      *
-     * @param articleId the ID of the article to be deleted
-     * @return a ResponseEntity containing the APIResponse
+     * @param articleId the unique identifier of the article to be deleted
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the result of the deletion operation
      */
     ResponseEntity<APIResponse> deleteArticle(Integer articleId);
 
     /**
-     * Retrieves an article by its ID.
+     * Retrieves a specific article by its ID.
      *
-     * @param articleId the ID of the article to be retrieved
-     * @return a ResponseEntity containing the APIResponse with the article details
+     * @param articleId the unique identifier of the article to fetch
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the requested article details
      */
     ResponseEntity<APIResponse> getArticleById(Integer articleId);
 
     /**
-     * Retrieves a paginated list of articles.
+     * Retrieves a paginated list of all articles.
      *
-     * @param page the page number to retrieve
+     * @param page the page number to retrieve (zero-based)
      * @param size the number of articles per page
-     * @return a ResponseEntity containing the APIResponse with the list of articles
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the list of articles
      */
     ResponseEntity<APIResponse> getArticles(int page, int size);
 }

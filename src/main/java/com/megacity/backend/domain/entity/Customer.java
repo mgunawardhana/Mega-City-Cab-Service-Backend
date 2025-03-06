@@ -1,6 +1,9 @@
 package com.megacity.backend.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
 @Setter
@@ -18,10 +21,10 @@ public class Customer {
     @Column(name = "root_user_id")
     private Integer rootUserId;
 
-    @Column(name = "address",nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "nic",nullable = false)
+    @Column(name = "nic", nullable = false)
     private String NIC;
 
     @Column(name = "phone_number", nullable = false)

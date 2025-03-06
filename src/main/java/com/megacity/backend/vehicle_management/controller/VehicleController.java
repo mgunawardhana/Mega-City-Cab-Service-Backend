@@ -20,42 +20,42 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping("/register")
-    public ResponseEntity<APIResponse> registerVehicle(@RequestBody Vehicle vehicle){
-        log.info("registerVehicle {}",vehicle);
+    public ResponseEntity<APIResponse> registerVehicle(@RequestBody Vehicle vehicle) {
+        log.info("registerVehicle {}", vehicle);
         var response = vehicleService.registerVehicle(vehicle);
-        log.info("registerVehicle {}",response);
+        log.info("registerVehicle {}", response);
         return response;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse> fetchVehicleById(@PathVariable String id){
-        log.info("fetchVehicleById {}",id);
+    public ResponseEntity<APIResponse> fetchVehicleById(@PathVariable String id) {
+        log.info("fetchVehicleById {}", id);
         var response = vehicleService.fetchVehicleById(Long.valueOf(id));
-        log.info("fetchVehicleById {}",response);
+        log.info("fetchVehicleById {}", response);
         return response;
     }
 
     @GetMapping("/fetch-all")
-    public ResponseEntity<APIResponse> fetchAllVehicleRecords(@RequestParam Integer page, @RequestParam Integer size){
+    public ResponseEntity<APIResponse> fetchAllVehicleRecords(@RequestParam Integer page, @RequestParam Integer size) {
         log.info("fetchAllVehicleRecords start");
-        var response = vehicleService.fetchAllVehicle(page,size);
-        log.info("fetchAllVehicleRecords {}",response);
+        var response = vehicleService.fetchAllVehicle(page, size);
+        log.info("fetchAllVehicleRecords {}", response);
         return response;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse> deleteVehicle(@PathVariable Long id){
-        log.info("deleteVehicle {}",id);
+    public ResponseEntity<APIResponse> deleteVehicle(@PathVariable Long id) {
+        log.info("deleteVehicle {}", id);
         var response = vehicleService.deleteVehicle(id);
-        log.info("deleteVehicle {}",response);
+        log.info("deleteVehicle {}", response);
         return response;
     }
 
     @PutMapping("/update")
-    public ResponseEntity<APIResponse> updateVehicle(@RequestBody Vehicle vehicle){
-        log.info("updateVehicle {}",vehicle);
+    public ResponseEntity<APIResponse> updateVehicle(@RequestBody Vehicle vehicle) {
+        log.info("updateVehicle {}", vehicle);
         var response = vehicleService.updateVehicle(vehicle);
-        log.info("updateVehicle {}",response);
+        log.info("updateVehicle {}", response);
         return response;
     }
 
