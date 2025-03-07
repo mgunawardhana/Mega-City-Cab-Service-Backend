@@ -58,6 +58,7 @@ public class GuidelineServiceImpl implements GuidelineService {
 
     @Override
     public ResponseEntity<APIResponse> deleteGuideline(Long guidelineId) {
+        log.error("guidelineId={}", guidelineId);
         try {
             writeJdbcTemplate.update(SqlQuery.DeleteQuery.DELETE_GUIDELINE, guidelineId);
             return responseUtil.wrapSuccess("Guideline deleted successfully", HttpStatus.OK);

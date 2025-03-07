@@ -180,7 +180,24 @@ public class BookingServiceImpl implements BookingService {
                 return responseUtil.wrapError("Booking conflict: Car is already booked until the previous trip's estimated time is completed.", "Please select a different time slot.", HttpStatus.CONFLICT);
             }
 
-            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING, booking.getBookingDate(), booking.getPickupLocation(), booking.getDropOffLocation(), booking.getCarNumber(), booking.getTaxes(), booking.getDistance(), booking.getEstimatedTime(), booking.getTaxWithoutCost(), booking.getTotalAmount(), booking.getCustomerRegistrationNumber(), booking.getDriverId(), booking.getStatus());
+            writeJdbcTemplate.update(SqlQuery.InsertQuery.ADD_NEW_BOOKING,
+                    booking.getBookingDate(),
+                    booking.getPickupLocation(),
+                    booking.getDropOffLocation(),
+                    booking.getCarNumber(),
+                    booking.getTaxes(),
+                    booking.getDistance(),
+                    booking.getEstimatedTime(),
+                    booking.getTaxWithoutCost(),
+                    booking.getTotalAmount(),
+                    booking.getCustomerRegistrationNumber(),
+                    booking.getDriverId(),
+                    booking.getStatus()
+            );
+
+            writeJdbcTemplate.update(SqlQuery.InsertQuery.UPDATE_VEHICLE_STATUS,
+                    booking.getCarNumber()
+            );
 
             log.info("Booking created successfully for car {}", booking.getCarNumber());
             return responseUtil.wrapSuccess("Booking created successfully", HttpStatus.OK);

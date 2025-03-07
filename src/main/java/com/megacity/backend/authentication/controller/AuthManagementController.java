@@ -49,4 +49,10 @@ public class AuthManagementController {
         return authenticationServiceImpl.getAllAuthentications(page, size);
     }
 
+    @PostMapping("/get-user-by-email/{email}")
+    public ResponseEntity<APIResponse> getUserByEmail(@PathVariable String email) throws IOException {
+        log.info("Get User By Email: {}", email);
+        return authenticationServiceImpl.findDriverEmailByDriverId(email);
+    }
+
 }

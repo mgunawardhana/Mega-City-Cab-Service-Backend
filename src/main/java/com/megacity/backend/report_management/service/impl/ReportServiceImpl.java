@@ -36,7 +36,12 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ResponseEntity<APIResponse> getTaxDetailsByStatusWise() {
         try {
-            List<Report> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_TAX_DETAILS_BY_STATUS_WISE, (rs, rowNum) -> Report.builder().taxes(rs.getDouble("total_taxes")).tax_without_cost(rs.getDouble("total_tax_without_cost")).total_income(rs.getDouble("total_amount")).status(rs.getString("status")).row_count(rs.getInt("row_count")).build());
+            List<Report> query = readJdbcTemplate.query(SqlQuery.SelectQuery.GET_TAX_DETAILS_BY_STATUS_WISE, (rs, rowNum) ->
+                    Report.builder().taxes(rs.getDouble("total_taxes"))
+                            .tax_without_cost(rs.getDouble("total_tax_without_cost"))
+                            .total_income(rs.getDouble("total_amount"))
+                            .status(rs.getString("status"))
+                            .row_count(rs.getInt("row_count")).build());
             log.info("Fetched all status wise details successfully");
             return responseUtil.wrapSuccess(query, HttpStatus.OK);
         } catch (Exception e) {
