@@ -193,6 +193,8 @@ public class SqlQuery {
                 car_number, taxes, distance, estimatedTime, tax_without_cost, total_amount, 
                 customer_registration_number, driver_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
+        public static final String UPDATE_VEHICLE_STATUS = "UPDATE vehicle SET status = 'UNAVAILABLE' WHERE id = CAST(? AS INTEGER)";
+
         public static final String VALIDATE_BOOKING = """
                 SELECT COUNT(*)
                 FROM booking
