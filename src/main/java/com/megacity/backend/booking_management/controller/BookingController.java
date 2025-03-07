@@ -96,7 +96,6 @@ public class BookingController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<APIResponse> registerBooking(@RequestBody Booking booking) {
         log.info("registerBooking {}", booking);
         var response = bookingService.createBooking(booking);

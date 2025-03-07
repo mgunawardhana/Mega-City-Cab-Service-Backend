@@ -68,6 +68,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ResponseUtil responseUtil;
 
     @Override
+    public ResponseEntity<APIResponse> findDriverEmailByDriverId(String email) throws IOException {
+        try {
+            Integer driverId = readJdbcTemplate.queryForObject(
+                    SqlQuery.SelectQuery.FIND_ID_BY_EMAIL,
+                    new Object[]{email},
+                    (rs, rowNum) -> rs.getInt("id")
+            );
+            return responseUtil.wrapSuccess(driverId, HttpStatus.OK);
+        } catch (Exception e) {
+            log.warn("Failed to retrieve driver ID {}", e.getMessage());
+            return responseUtil.wrapError("Failed to retrieve driver ID", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
     @Transactional
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
         try {

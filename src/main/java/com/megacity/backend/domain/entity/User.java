@@ -49,7 +49,6 @@ public class User implements UserDetails {
     @Column(name = "user_profile_pic")
     private String userProfilePic;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

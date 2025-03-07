@@ -44,7 +44,7 @@ public class SecurityConfig {
             "api/v1/guideline/**",
             "/api/v1/auth/register",
             "/api/v1/web-content/public/**",
-            "/api/v1/booking/checkout/**",
+            "/api/v1/booking/**",
             "/api/v1/driver/fetch-all",
             "/api/v1/vehicle/fetch-all/**",
             "/api/v1/booking/filter/**"
