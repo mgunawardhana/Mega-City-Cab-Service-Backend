@@ -1,6 +1,7 @@
 package com.megacity.backend.driver_management.service.impl;
 
 import com.megacity.backend.constant.SqlQuery;
+import com.megacity.backend.domain.entity.Booking;
 import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.driver_management.service.DriverService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,33 @@ public class DriverServiceImpl implements DriverService {
         this.writeJdbcTemplate = writeJdbcTemplate;
         this.readJdbcTemplate = readJdbcTemplate;
         this.responseUtil = responseUtil;
+    }
+
+    @Override
+    public ResponseEntity<APIResponse> updateDriverStatus(String rootUserId, String driverStatus) {
+        try {
+
+            int rowsAffected = readJdbcTemplate.update(
+                    SqlQuery.UpdateQuery.UPDATE_DRIVER_AVAILABILITY,
+                    driverStatus,
+                    rootUserId
+            );
+
+            if (rowsAffected == 0) {
+                return responseUtil.wrapError("Not Found",
+                        "No driver found with rootUserId: " + rootUserId,
+                        HttpStatus.NOT_FOUND);
+            }
+
+            return responseUtil.wrapSuccess("Driver status updated successfully", HttpStatus.OK);
+
+        } catch (NumberFormatException e) {
+            return responseUtil.wrapError("Invalid Input", "rootUserId must be numeric", HttpStatus.BAD_REQUEST);
+        } catch (DataAccessException e) {
+            return responseUtil.wrapError("Database Error", "Error updating driver status", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return responseUtil.wrapError("Unexpected Error", "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

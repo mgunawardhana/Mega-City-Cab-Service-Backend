@@ -112,6 +112,7 @@ CREATE TABLE Vehicle
     license_plate_number    TEXT    NOT NULL,
     permit_type             TEXT,
     air_conditioning        BOOLEAN,
-    additional_features     TEXT
+    additional_features     TEXT,
+    status                  TEXT
 );
 

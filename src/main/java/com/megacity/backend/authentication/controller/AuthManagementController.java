@@ -1,6 +1,7 @@
 package com.megacity.backend.authentication.controller;
 
 import com.megacity.backend.authentication.service.AuthenticationServiceImpl;
+import com.megacity.backend.authentication.service.impl.AuthenticationService;
 import com.megacity.backend.domain.request.AuthenticationRequest;
 import com.megacity.backend.domain.request.RegistrationRequest;
 import com.megacity.backend.domain.response.APIResponse;
@@ -23,30 +24,36 @@ import java.io.IOException;
 public class AuthManagementController {
 
     @NonNull
-    private final AuthenticationServiceImpl authenticationServiceImpl;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest registrationRequest) {
         log.info("RegistrationRequest: {}", registrationRequest);
-        return ResponseEntity.ok(authenticationServiceImpl.register(registrationRequest));
+        return ResponseEntity.ok(authenticationService.register(registrationRequest));
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
         log.info("AuthenticationRequest: {}", request.toString());
-        return ResponseEntity.ok(authenticationServiceImpl.authenticate(request));
+        return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
     @PostMapping("/refresh")
     public void refresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("Refresh Request: {} Response: {}", request.toString(), response.toString());
-        authenticationServiceImpl.refreshToken(request, response);
+        authenticationService.refreshToken(request, response);
     }
 
     @PostMapping("/get-all-users")
     public ResponseEntity<APIResponse> getAllUsers(@RequestParam Integer page, @RequestParam Integer size) {
         log.info("Get All Users");
-        return authenticationServiceImpl.getAllAuthentications(page, size);
+        return authenticationService.getAllAuthentications(page, size);
+    }
+
+    @PostMapping("/get-user-by-email/{email}")
+    public ResponseEntity<APIResponse> getUserByEmail(@PathVariable String email) throws IOException {
+        log.info("Get User By Email: {}", email);
+        return authenticationService.findDriverEmailByDriverId(email);
     }
 
 }

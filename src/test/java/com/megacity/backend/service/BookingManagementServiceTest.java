@@ -34,7 +34,41 @@ class BookingManagementServiceTest {
     private final BookingServiceImpl bookingService = new BookingServiceImpl(writeJdbcTemplate, readJdbcTemplate, responseUtils, excelService);
 
     private Booking createBooking() {
-        return Booking.builder().bookingNumber(1L).bookingDate(LocalDateTime.now()).pickupLocation("Location A").dropOffLocation("Location B").carNumber("123ABC").taxes(BigDecimal.valueOf(100.0)).distance(200.0).estimatedTime(2.5).taxWithoutCost(50.0).totalAmount(BigDecimal.valueOf(150.0)).customerRegistrationNumber("CUST123").driverId("DRIVER123").status("Active").build();
+        return Booking.builder()
+                .bookingNumber(1L).bookingDate(LocalDateTime.now())
+                .pickupLocation("Location A")
+                .dropOffLocation("Location B")
+                .carNumber("123ABC").taxes(BigDecimal.valueOf(100.0))
+                .distance(200.0).estimatedTime(2.5)
+                .taxWithoutCost(50.0)
+                .totalAmount(BigDecimal.valueOf(150.0))
+                .customerRegistrationNumber("CUST123")
+                .driverId("DRIVER123").status("Active")
+                .build();
+    }
+
+    @Test
+    @DisplayName("Update booking success scenario")
+    void updateBookingTest() {
+        Booking booking = createBooking();
+        when(writeJdbcTemplate.update(anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(1);
+        when(responseUtils.wrapSuccess(anyString(), eq(HttpStatus.OK))).thenReturn(new ResponseEntity<>(APIResponse.builder().build(), HttpStatus.OK));
+        ResponseEntity<APIResponse> response = bookingService.updateBooking(booking);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Create guideline error scenario")
+    void createGuidelineError() {
+        Booking booking = createBooking();
+        when(writeJdbcTemplate.update(anyString(), any(Object[].class))).thenThrow(new RuntimeException("Database error"));
+        when(responseUtils.wrapError(anyString(), anyString(), eq(HttpStatus.INTERNAL_SERVER_ERROR))).thenReturn(new ResponseEntity<>(APIResponse.builder()
+                .statusMessage("Database error").statusCode("500").build(), HttpStatus.INTERNAL_SERVER_ERROR));
+        ResponseEntity<APIResponse> response = bookingService.createBooking(booking);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Database error", response.getBody().getStatusMessage());
+        assertEquals("500", response.getBody().getStatusCode());
     }
 
     @Test
@@ -46,19 +80,6 @@ class BookingManagementServiceTest {
         when(responseUtils.wrapSuccess(anyString(), eq(HttpStatus.OK))).thenReturn(new ResponseEntity<>(APIResponse.builder().build(), HttpStatus.OK));
         ResponseEntity<APIResponse> response = bookingService.createBooking(booking);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("Create guideline error scenario")
-    void createGuidelineError() {
-        Booking booking = createBooking();
-        when(writeJdbcTemplate.update(anyString(), any(Object[].class))).thenThrow(new RuntimeException("Database error"));
-        when(responseUtils.wrapError(anyString(), anyString(), eq(HttpStatus.INTERNAL_SERVER_ERROR))).thenReturn(new ResponseEntity<>(APIResponse.builder().statusMessage("Database error").statusCode("500").build(), HttpStatus.INTERNAL_SERVER_ERROR));
-        ResponseEntity<APIResponse> response = bookingService.createBooking(booking);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Database error", response.getBody().getStatusMessage());
-        assertEquals("500", response.getBody().getStatusCode());
     }
 
     @Test
@@ -83,16 +104,6 @@ class BookingManagementServiceTest {
         assertNotNull(response.getBody());
     }
 
-
-    @Test
-    @DisplayName("Update booking success scenario")
-    void updateBookingTest() {
-        Booking booking = createBooking();
-        when(writeJdbcTemplate.update(anyString(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(1);
-        when(responseUtils.wrapSuccess(anyString(), eq(HttpStatus.OK))).thenReturn(new ResponseEntity<>(APIResponse.builder().build(), HttpStatus.OK));
-        ResponseEntity<APIResponse> response = bookingService.updateBooking(booking);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
 
     @Test
     @DisplayName("Delete booking success scenario")

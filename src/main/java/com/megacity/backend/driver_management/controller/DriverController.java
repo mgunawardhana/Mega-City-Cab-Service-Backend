@@ -1,14 +1,16 @@
 package com.megacity.backend.driver_management.controller;
 
 
-import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.driver_management.service.DriverService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -16,21 +18,31 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DriverController {
 
-    @NonNull private final DriverService driverService;
+    @NonNull
+    private final DriverService driverService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse> fetchDriverById(@PathVariable String id){
-        log.info("fetchDriverById {}",id);
+    public ResponseEntity<APIResponse> fetchDriverById(@PathVariable String id) {
+        log.info("fetchDriverById {}", id);
         var response = driverService.getDriverById(id);
-        log.info("fetchDriverById {}",response);
+        log.info("fetchDriverById {}", response);
         return response;
     }
 
     @GetMapping("/fetch-all")
-    public ResponseEntity<APIResponse> fetchAllDriverRecords(){
+    public ResponseEntity<APIResponse> fetchAllDriverRecords() {
         log.info("fetchAllDriverRecords start");
         var response = driverService.getAllDrivers();
-        log.info("fetchAllDriverRecords {}",response);
+        log.info("fetchAllDriverRecords {}", response);
+        return response;
+    }
+
+    //TODO check if this working
+    @GetMapping("/update-availability/{id}/{availability}")
+    public ResponseEntity<APIResponse> updateAvailability(@PathVariable String id, @PathVariable String availability) {
+        log.info("updateAvailability {} {}", id, availability);
+        var response = driverService.updateDriverStatus(id, availability);
+        log.info("updateAvailability {} {}", id, availability);
         return response;
     }
 }
