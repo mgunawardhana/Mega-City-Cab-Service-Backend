@@ -44,6 +44,7 @@ class WebContentManagementServiceTest {
         assertNotNull(response.getBody());
     }
 
+
     @Test
     @DisplayName("create article error scenario")
     void createArticleError() {
