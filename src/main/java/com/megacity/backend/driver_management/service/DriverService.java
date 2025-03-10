@@ -20,4 +20,6 @@ public interface DriverService {
      * @return a ResponseEntity containing the APIResponse with the list of drivers
      */
     ResponseEntity<APIResponse> getAllDrivers();
+
+    ResponseEntity<APIResponse> updateDriverStatus(String rootUserId, String driverStatus);
 }

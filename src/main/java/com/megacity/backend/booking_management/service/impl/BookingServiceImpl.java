@@ -50,7 +50,11 @@ public class BookingServiceImpl implements BookingService {
         try {
             Long bookingIdLong = Long.parseLong(booking_id);
 
-            Booking updatedBooking = readJdbcTemplate.queryForObject(SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE, new Object[]{status, bookingIdLong}, (rs, rowNum) -> Booking.builder().bookingNumber(rs.getLong("booking_number")).status(rs.getString("status")).updatedDate(rs.getObject("updated_date", LocalDateTime.class)).driverId(rs.getString("driver_id")).build());
+            Booking updatedBooking = readJdbcTemplate.queryForObject(SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE,
+                    new Object[]{status, bookingIdLong}, (rs, rowNum) -> Booking.builder()
+                            .bookingNumber(rs.getLong("booking_number")).status(rs.getString("status"))
+                            .updatedDate(rs.getObject("updated_date", LocalDateTime.class))
+                            .driverId(rs.getString("driver_id")).build());
 
             return responseUtil.wrapSuccess("Booking updated successfully", HttpStatus.OK);
 

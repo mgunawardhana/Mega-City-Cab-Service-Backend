@@ -85,8 +85,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public AuthenticationResponse register(RegistrationRequest registrationRequest) {
+
         try {
-            var user = User.builder().firstName(registrationRequest.getFirstName()).lastName(registrationRequest.getLastName()).email(registrationRequest.getEmail()).password(passwordEncoder.encode(registrationRequest.getPassword())).userProfilePic(registrationRequest.getDriverProfilePicture()).role(registrationRequest.getRole()).build();
+            var user = User.builder()
+                    .firstName(registrationRequest.getFirstName())
+                    .lastName(registrationRequest.getLastName())
+                    .email(registrationRequest.getEmail())
+                    .password(passwordEncoder.encode(registrationRequest.getPassword()))
+                    .userProfilePic(registrationRequest.getDriverProfilePicture())
+                    .role(registrationRequest.getRole())
+                    .build();
 
             log.info("Processing registration for user: {}", user.getEmail());
 

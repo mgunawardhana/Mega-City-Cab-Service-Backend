@@ -1,0 +1,41 @@
+# Save as deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mega-city-cab-service-backend  # Must match HPA’s scaleTargetRef
+spec:
+  replicas: 500  # Initial replicas; HPA will override this
+  selector:
+    matchLabels:
+      app: mega-city-cab-service-backend
+  template:
+    metadata:
+      labels:
+        app: mega-city-cab-service-backend
+    spec:
+      containers:
+        - name: mega-city-cab-service-backend
+          image: gstwarrier/mega-city-cab-service-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_WRITE_URL
+              value: "jdbc:postgresql://postgres-service:5432/megaCityCabService"
+            - name: SPRING_DATASOURCE_WRITE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_WRITE_PASSWORD
+              value: "pgadmin"
+            - name: BACKUP_DIRECTORY
+              value: "/app/backups"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+
+
+
+
