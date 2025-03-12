@@ -5,7 +5,11 @@
 </div>
 
 <div align="center">
+  
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=mgunawardhana_Mega-City-Cab-Service-Backend)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
 
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+  
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
