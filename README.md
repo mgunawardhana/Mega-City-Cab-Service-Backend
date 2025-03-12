@@ -9,31 +9,20 @@
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=mgunawardhana_Mega-City-Cab-Service-Backend)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
 
 [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-  
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
 
 </div>
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
 
 <div align="center">
 
