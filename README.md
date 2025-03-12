@@ -1,4 +1,8 @@
+<div align="center">
+  
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=40&pause=1000&color=F7C860&center=true&vCenter=true&width=750&height=60&lines=MEGA+CITY+CAB+SERVICE+BACKEND)](https://git.io/typing-svg)
+
+</div>
 
 <div align="center">
 
