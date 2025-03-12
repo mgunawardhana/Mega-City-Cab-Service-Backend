@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ReportManagementTest {
+public class ReportManagementServiceTest {
 
     private JdbcTemplate writeJdbcTemplate;
     private JdbcTemplate readJdbcTemplate;
