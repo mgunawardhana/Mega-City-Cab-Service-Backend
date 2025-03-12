@@ -7,10 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -37,10 +34,9 @@ public class DriverController {
         return response;
     }
 
-    //TODO check if this working
-    @GetMapping("/update-availability/{id}/{availability}")
-    public ResponseEntity<APIResponse> updateAvailability(@PathVariable String id, @PathVariable String availability) {
-        log.info("updateAvailability {} {}", id, availability);
+    @PutMapping("/update-availability/{id}/{availability}")
+    public ResponseEntity<APIResponse> updateAvailability(@PathVariable Integer id, @PathVariable String availability) {
+        log.error("updateAvailability {} {}", id, availability);
         var response = driverService.updateDriverStatus(id, availability);
         log.info("updateAvailability {} {}", id, availability);
         return response;

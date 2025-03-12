@@ -39,7 +39,9 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public ResponseEntity<APIResponse> updateDriverStatus(String rootUserId, String driverStatus) {
+    public ResponseEntity<APIResponse> updateDriverStatus(Integer rootUserId, String driverStatus) {
+
+        log.error("updateDriverStatus from service {} {}", rootUserId, driverStatus);
         try {
 
             int rowsAffected = readJdbcTemplate.update(
@@ -47,6 +49,8 @@ public class DriverServiceImpl implements DriverService {
                     driverStatus,
                     rootUserId
             );
+
+            System.out.println(rowsAffected);
 
             if (rowsAffected == 0) {
                 return responseUtil.wrapError("Not Found",
