@@ -75,7 +75,7 @@ public class DatabaseBackupConfig {
                 log.error("Database backup failed with exit code: {}. Output: {}", exitCode, output);
             }
 
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             log.error("Error during database backup: {}", e.getMessage(), e);
         }
     }

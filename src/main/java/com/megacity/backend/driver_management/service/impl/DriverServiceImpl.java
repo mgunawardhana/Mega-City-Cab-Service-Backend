@@ -50,8 +50,6 @@ public class DriverServiceImpl implements DriverService {
                     rootUserId
             );
 
-            System.out.println(rowsAffected);
-
             if (rowsAffected == 0) {
                 return responseUtil.wrapError("Not Found",
                         "No driver found with rootUserId: " + rootUserId,
