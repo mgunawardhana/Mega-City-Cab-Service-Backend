@@ -21,5 +21,5 @@ public interface DriverService {
      */
     ResponseEntity<APIResponse> getAllDrivers();
 
-    ResponseEntity<APIResponse> updateDriverStatus(String rootUserId, String driverStatus);
+    ResponseEntity<APIResponse> updateDriverStatus(Integer rootUserId, String driverStatus);
 }

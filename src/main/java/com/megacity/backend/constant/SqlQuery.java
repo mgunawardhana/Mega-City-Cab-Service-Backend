@@ -209,7 +209,7 @@ public class SqlQuery {
      */
     public static class UpdateQuery {
 
-        public static final String UPDATE_DRIVER_AVAILABILITY = "UPDATE driver SET driver_status = :driverStatus WHERE root_user_id = :rootUserId;";
+        public static final String UPDATE_DRIVER_AVAILABILITY = "UPDATE driver SET driver_status = ? WHERE root_user_id = ?";
 
         public static final String UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE = "WITH updated_booking AS (UPDATE booking SET status = ?, updated_date = CURRENT_TIMESTAMP WHERE booking_number = ? RETURNING booking_number, status, updated_date, driver_id), updated_driver AS ( UPDATE driver SET driver_status = CASE WHEN (SELECT status FROM updated_booking) = 'ACCEPTED' THEN 'BUSY' ELSE 'AVAILABLE' END WHERE driver_registration_number = (SELECT CAST(driver_id AS INTEGER) FROM updated_booking) RETURNING driver_registration_number) SELECT booking_number, status, updated_date, driver_id FROM updated_booking";
 
