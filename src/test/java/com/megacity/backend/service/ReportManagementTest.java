@@ -61,7 +61,6 @@ public class ReportManagementTest {
     @Test
     @DisplayName("Get tax details by status wise - Error scenario")
     void getTaxDetailsByStatusWiseErrorTest() {
-        // Arrange
         RuntimeException exception = new RuntimeException("Database connection failed");
         when(readJdbcTemplate.query(anyString(), any(RowMapper.class))).thenThrow(exception);
         when(responseUtil.wrapError(anyString(), eq(exception.getMessage()), eq(HttpStatus.INTERNAL_SERVER_ERROR)))

@@ -1,5 +1,4 @@
 package com.megacity.backend.service;
-
 import com.megacity.backend.domain.entity.Vehicle;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.util.ResponseUtil;
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class VehicleManagementTest {
-
     private JdbcTemplate writeJdbcTemplate;
     private JdbcTemplate readJdbcTemplate;
     private ResponseUtil responseUtil;
@@ -72,9 +70,7 @@ public class VehicleManagementTest {
                 .thenReturn(new ResponseEntity<>(APIResponse.builder()
                         .statusMessage("Vehicle registered successfully")
                         .build(), HttpStatus.OK));
-
         ResponseEntity<APIResponse> response = vehicleService.registerVehicle(vehicle);
-
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(writeJdbcTemplate, times(1)).update(anyString(), any(Object[].class));
@@ -92,10 +88,8 @@ public class VehicleManagementTest {
                         .statusMessage("Failed to register vehicle")
                         .statusCode("500")
                         .build(), HttpStatus.INTERNAL_SERVER_ERROR));
-
         ResponseEntity<APIResponse> response = vehicleService.registerVehicle(vehicle);
-
-        assertNotNull(response);  // Add null check
+        assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("Failed to register vehicle", response.getBody().getStatusMessage());
         verify(writeJdbcTemplate, times(1)).update(anyString(), any(Object[].class));
