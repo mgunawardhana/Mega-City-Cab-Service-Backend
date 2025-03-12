@@ -1,5 +1,6 @@
 package com.megacity.backend.service;
 
+import com.megacity.backend.domain.entity.Booking;
 import com.megacity.backend.domain.entity.Driver;
 import com.megacity.backend.domain.response.APIResponse;
 import com.megacity.backend.driver_management.service.impl.DriverServiceImpl;
@@ -52,5 +53,10 @@ public class DriverManagementServiceTest {
                 .build();
     }
 
+    @Test
+    @DisplayName("")
+    void updateDriver() {
+        Driver driver = createTestDriver();
+    }
 
 }
