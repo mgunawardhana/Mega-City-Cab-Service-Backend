@@ -4,7 +4,6 @@ public class SqlQuery {
 
     private SqlQuery() {
     }
-
     /**
      * This holds all the select queries
      */
@@ -106,7 +105,6 @@ public class SqlQuery {
                                 WHEN order_status = 'PENDING' THEN 4
                              END
                 """;
-
 
         public static final String GET_TAX_DETAILS_BY_STATUS_WISE = """
                 SELECT status, COUNT(*) AS row_count, SUM(taxes) AS total_taxes, SUM(tax_without_cost) AS total_tax_without_cost, SUM(total_amount) AS total_amount FROM booking GROUP BY status""";
