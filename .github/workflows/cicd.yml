@@ -23,7 +23,7 @@ jobs:
       - name: Publishing Docker Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/mega-city-cab-service-backend:latest
-  
+
   deploy:
     needs: build
     runs-on: [self-hosted, aws-ec2]
