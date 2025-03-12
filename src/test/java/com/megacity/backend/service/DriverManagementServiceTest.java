@@ -66,7 +66,7 @@ public class DriverManagementServiceTest {
                         .statusMessage("Driver status updated successfully")
                         .build(), HttpStatus.OK));
 
-        ResponseEntity<APIResponse> response = driverService.updateDriverStatus(rootUserId, driverStatus);
+        ResponseEntity<APIResponse> response = driverService.updateDriverStatus(Integer.valueOf(rootUserId), driverStatus);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -85,7 +85,7 @@ public class DriverManagementServiceTest {
                         .statusMessage("Not Found")
                         .build(), HttpStatus.NOT_FOUND));
 
-        ResponseEntity<APIResponse> response = driverService.updateDriverStatus(rootUserId, driverStatus);
+        ResponseEntity<APIResponse> response = driverService.updateDriverStatus(Integer.valueOf(rootUserId), driverStatus);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
