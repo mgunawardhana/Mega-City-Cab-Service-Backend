@@ -27,6 +27,12 @@
 
 </div>
 
+<div align="center">
+ <h3>USED TECHNOLOGIES & TOOLS</h3>
+     <img src="https://skillicons.dev/icons?i=java,maven,spring,idea,postman,postgres,git,github,githubactions,docker,aws,kubernetes" />
+
+</div>
+
 <br><br>
 <div align="center">
 
