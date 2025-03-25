@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -49,6 +50,26 @@ public class BookingServiceImpl implements BookingService {
 
         try {
             Long bookingIdLong = Long.parseLong(booking_id);
+
+            APIResponse body = getBookingById(Integer.parseInt(booking_id)).getBody();
+
+            if (body != null && body.getResult() != null) {
+                try {
+                    Booking booking = (Booking) body.getResult();
+
+                    if (Objects.equals(status, "CLOSED")) {
+                        writeJdbcTemplate.update(
+                                SqlQuery.UpdateQuery.MAKE_VEHICLE_AVAILABLE,
+                                Long.parseLong(booking.getCarNumber())
+                        );
+                    }
+
+                } catch (ClassCastException e) {
+                    log.error("Error: result is not a Booking object");
+                }
+            } else {
+                log.error("Error: APIResponse or result is null");
+            }
 
             Booking updatedBooking = readJdbcTemplate.queryForObject(SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE,
                     new Object[]{status, bookingIdLong}, (rs, rowNum) -> Booking.builder()
