@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -56,11 +57,10 @@ public class BookingServiceImpl implements BookingService {
                 try {
                     Booking booking = (Booking) body.getResult();
 
-                    if (status.equalsIgnoreCase("CLOSED")) {
-                        readJdbcTemplate.queryForObject(
+                    if (Objects.equals(status, "CLOSED")) {
+                        writeJdbcTemplate.update(
                                 SqlQuery.UpdateQuery.MAKE_VEHICLE_AVAILABLE,
-                                new Object[]{booking.getCarNumber()},
-                                Void.class
+                                Long.parseLong(booking.getCarNumber())
                         );
                     }
 
