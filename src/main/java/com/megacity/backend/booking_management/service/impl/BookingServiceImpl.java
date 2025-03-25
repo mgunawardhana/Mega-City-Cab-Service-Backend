@@ -50,6 +50,27 @@ public class BookingServiceImpl implements BookingService {
         try {
             Long bookingIdLong = Long.parseLong(booking_id);
 
+            APIResponse body = getBookingById(Integer.parseInt(booking_id)).getBody();
+
+            if (body != null && body.getResult() != null) {
+                try {
+                    Booking booking = (Booking) body.getResult();
+
+                    if (status.equalsIgnoreCase("CLOSED")) {
+                        readJdbcTemplate.queryForObject(
+                                SqlQuery.UpdateQuery.MAKE_VEHICLE_AVAILABLE,
+                                new Object[]{booking.getCarNumber()},
+                                Void.class
+                        );
+                    }
+
+                } catch (ClassCastException e) {
+                    log.error("Error: result is not a Booking object");
+                }
+            } else {
+                log.error("Error: APIResponse or result is null");
+            }
+
             Booking updatedBooking = readJdbcTemplate.queryForObject(SqlQuery.UpdateQuery.UPDATE_BOOKING_STATUS_FROM_DRIVER_SIDE,
                     new Object[]{status, bookingIdLong}, (rs, rowNum) -> Booking.builder()
                             .bookingNumber(rs.getLong("booking_number")).status(rs.getString("status"))
