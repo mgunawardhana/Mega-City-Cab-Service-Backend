@@ -14,19 +14,6 @@
 
 <div align="center">
 
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=mgunawardhana_Mega-City-Cab-Service-Backend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=mgunawardhana_Mega-City-Cab-Service-Backend)
-
-</div>
-
-<div align="center">
-
 ### (★) ɪꜰ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ʙᴜɢꜱ ᴏʀ ɪꜱꜱᴜᴇꜱ , ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴇxᴘʟᴀɪɴ ᴍʏ ᴄᴏᴅᴇ ᴏʀ ɪꜰ ʏᴏᴜ ɴᴇᴇᴅ ʜᴇʟᴘ ᴛᴏ ᴅᴇᴠᴇʟᴏᴘ ʏᴏᴜʀ ᴘʀᴏᴊᴇᴄᴛꜱ ᴘʟᴇᴀꜱᴇ ᴄᴏɴᴛᴀᴄᴛ ᴍᴇ ᴏɴ (★) 👇<br> <br> <br> maneesha.gunawardhana.contact@gmail.com
 
 </div>
