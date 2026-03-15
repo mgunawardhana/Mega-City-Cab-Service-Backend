@@ -34,12 +34,7 @@ public class DataSourceConfig {
         return new HikariDataSource(config);
     }
 
-    /**
-     * Returns the JdbcTemplate for write operations.
-     *
-     * @param dataSource @{@link DataSource}
-     * @return @{@link JdbcTemplate}
-     */
+    
     @Bean(name = "writeJdbcTemplate")
     public JdbcTemplate writeJdbcTemplate(@Qualifier("writeDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
